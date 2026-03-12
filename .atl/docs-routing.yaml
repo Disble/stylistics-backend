@@ -1,0 +1,45 @@
+# Canonical project-local docs routing for KIN.
+# Keep entries small and actionable. Only add sources the project actually wants.
+
+version: 1
+
+defaults:
+  prefer:
+    - official-skill
+    - official-mcp
+    - llms-txt
+    - context7
+    - official-docs
+    - github
+
+project_instructions:
+  canonical: .atl/docs-routing.yaml
+  pointer_block: |
+    ## KIN Docs Routing
+
+    KIN project-local docs routing lives in `.atl/docs-routing.yaml`.
+    Read that file before `.atl/skill-registry.md`, project instruction files, or engram strategies when resolving external-library docs.
+
+libraries:
+  example-lib:
+    aliases:
+      - example
+    prefer:
+      - official-skill
+      - llms-txt
+      - context7
+    skills:
+      - .agents/skills/example-lib/SKILL.md
+    mcp:
+      provider: official
+      notes: Use official MCP when the manifest exposes tool-use guidance.
+    llms:
+      docs_domain: docs.example.dev
+      manifest_url: https://docs.example.dev/llms.txt
+    official_docs:
+      - https://docs.example.dev/guide/getting-started
+    github:
+      repo: example/example-lib
+      discussions: https://github.com/example/example-lib/discussions
+    notes:
+      - Prefer the project skill for conventions, then confirm API details from docs.

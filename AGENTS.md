@@ -84,6 +84,32 @@ This project has skills installed for the following agents:
 
 Skills are automatically available to agents in your project once installed. Agents can access and use these skills without additional configuration.
 
+## KIN Docs Routing
+
+KIN project-local docs routing lives in `.atl/docs-routing.yaml`.
+Read that file before `.atl/skill-registry.md`, project instruction files, or engram strategies when resolving external-library docs.
+
+## KIN (Knowledge Ingestion Network)
+
+KIN is an internal documentation intelligence service. It resolves the best documentation source for any library/framework and returns docs to its CALLER (another agent or process), not to the user.
+
+### When KIN activates
+- Agent needs docs for a library already in the project
+- Agent needs docs for a library/version NOT yet in the project
+- Agent is unsure about an API and needs authoritative reference
+
+### KIN routing (decision tree)
+1. Read project-local routing in `.atl/docs-routing.yaml` first when it exists.
+2. Reuse relevant `knowledge/` strategies only when they still fit the current library/version context.
+3. Follow project-routed skills, MCP/tool-use guidance, `llms.txt`, or official docs before rediscovering sources.
+4. Only after routing and manifest discovery are exhausted, fall back to Context7 -> official docs -> GitHub.
+
+### Commands
+- `/kin-search <query>` - Rare direct access. User asks KIN to find docs on a topic.
+
+### Confidence scoring
+Run `node ~/.config/opencode/skills/kin/kin-score.mjs <lib1> <lib2> ...` to evaluate whether internal knowledge is sufficient or external docs should be fetched.
+
 ## Resources
 
 - [Mastra Documentation](https://mastra.ai/llms.txt)

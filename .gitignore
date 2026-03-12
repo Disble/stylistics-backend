@@ -42,3 +42,4 @@ dist
 *.db-* 
 .netlify 
 .vercel 
+.ignore/Novedades_DLE_23.8.1-Seleccion.pdf
