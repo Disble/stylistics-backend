@@ -21,25 +21,34 @@ project_instructions:
     Read that file before `.atl/skill-registry.md`, project instruction files, or engram strategies when resolving external-library docs.
 
 libraries:
-  example-lib:
+  mastra:
     aliases:
-      - example
+      - "@mastra/core"
+      - "@mastra/evals"
+      - "@mastra/libsql"
+      - "@mastra/loggers"
+      - "@mastra/memory"
+      - "@mastra/observability"
+      - "@mastra/pg"
     prefer:
       - official-skill
+      - official-mcp
       - llms-txt
-      - context7
+      - official-docs
+      - github
     skills:
-      - .agents/skills/example-lib/SKILL.md
+      - .agents/skills/mastra/SKILL.md
     mcp:
       provider: official
-      notes: Use official MCP when the manifest exposes tool-use guidance.
+      notes: Prefer official Mastra MCP/tool-use guidance when the manifest or docs expose it.
     llms:
-      docs_domain: docs.example.dev
-      manifest_url: https://docs.example.dev/llms.txt
+      docs_domain: mastra.ai
+      manifest_url: https://mastra.ai/llms.txt
     official_docs:
-      - https://docs.example.dev/guide/getting-started
-    github:
-      repo: example/example-lib
-      discussions: https://github.com/example/example-lib/discussions
+      - https://mastra.ai/docs
+      - https://mastra.ai/reference
+      - https://mastra.ai/docs/build-with-ai/mcp-docs-server
+      - https://mastra.ai/.well-known/skills/index.json
     notes:
-      - Prefer the project skill for conventions, then confirm API details from docs.
+      - Load the local Mastra skill first for project-specific guidance, then confirm current APIs via embedded docs or Mastra's llms.txt/docs.
+      - This project depends on Mastra packages locally, so prefer version-matched embedded docs before remote references when API signatures matter.
