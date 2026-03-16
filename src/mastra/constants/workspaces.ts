@@ -1,14 +1,19 @@
-import { Workspace, LocalFilesystem, LocalSandbox } from '@mastra/core/workspace';
-import { resolve } from 'node:path';
+import {
+  Workspace,
+  LocalFilesystem,
+  LocalSandbox,
+} from "@mastra/core/workspace";
+import { resolve } from "node:path";
 
-console.log(resolve(import.meta.dirname, '../../workspace'));
+console.log(resolve(import.meta.dirname, "../../workspace"));
 
 export const workspace = new Workspace({
   filesystem: new LocalFilesystem({
-    basePath: resolve(import.meta.dirname, '../../workspace'),
+    basePath: resolve(import.meta.dirname, "../../workspace"),
   }),
   sandbox: new LocalSandbox({
-    workingDirectory: resolve(import.meta.dirname, '../../workspace'),
+    workingDirectory: resolve(import.meta.dirname, "../../workspace"),
+    isolation: "none",
   }),
-  skills: ['/skills'],
-})
+  skills: ["skills"],
+});

@@ -87,7 +87,8 @@ Skills are automatically available to agents in your project once installed. Age
 ## KIN Docs Routing
 
 KIN project-local docs routing lives in `.atl/docs-routing.yaml`.
-Read that file before `.atl/skill-registry.md`, project instruction files, or engram strategies when resolving external-library docs.
+Read that file first when resolving external-library docs.
+Then use `.atl/skill-registry.md`, project instruction files, and relevant skills only to discover or follow sources that routing and the current project context point to; they do not replace local routing.
 
 ## KIN (Knowledge Ingestion Network)
 
@@ -99,10 +100,11 @@ KIN is an internal documentation intelligence service. It resolves the best docu
 - Agent is unsure about an API and needs authoritative reference
 
 ### KIN routing (decision tree)
-1. Read project-local routing in `.atl/docs-routing.yaml` first when it exists.
-2. Reuse relevant `knowledge/` strategies only when they still fit the current library/version context.
-3. Follow project-routed skills, MCP/tool-use guidance, `llms.txt`, or official docs before rediscovering sources.
-4. Only after routing and manifest discovery are exhausted, fall back to Context7 -> official docs -> GitHub.
+1. Read project-local routing in `.atl/docs-routing.yaml` first when it exists. That file is the canonical source for project doc-source choices.
+2. Use `.atl/skill-registry.md`, project instruction files, and relevant skills only to discover sources or guidance named by routing or the current project context; they do not replace routing.
+3. If routing or project guidance points to docs domains, manifests, or tool-use guidance, inspect manifest/capability signals before falling back.
+4. Reuse `knowledge/strategies/{lib}` only as supporting experience when it still matches the current library/version context; never treat it as higher priority than routing.
+5. Only after routing, discovery, and manifest/capability scanning are exhausted, run the linear fallback chain: Context7 -> official docs -> GitHub.
 
 ### Commands
 - `/kin-search <query>` - Rare direct access. User asks KIN to find docs on a topic.
