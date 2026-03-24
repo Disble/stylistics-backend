@@ -43,3 +43,8 @@ dist
 .netlify 
 .vercel 
 .ignore/Novedades_DLE_23.8.1-Seleccion.pdf
+
+# workspace generated artifacts
+workspace/dlexa
+workspace/dlexa.exe
+workspace/output.json
