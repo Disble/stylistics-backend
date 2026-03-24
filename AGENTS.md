@@ -84,6 +84,13 @@ This project has skills installed for the following agents:
 
 Skills are automatically available to agents in your project once installed. Agents can access and use these skills without additional configuration.
 
+### Workspace Skills
+
+| Skill | Description | Source |
+|-------|-------------|--------|
+| `diccionario` | Consultar el DLE usando el binario local `dlexa.exe` | [SKILL.md](workspace/skills/diccionario/SKILL.md) |
+| `perfil-autor` | Gestiona perfiles de corrección de autores en `workspace/autores/`; cargar siempre antes de corregir | [SKILL.md](workspace/skills/perfil-autor/SKILL.md) |
+
 ## KIN Docs Routing
 
 KIN project-local docs routing lives in `.atl/docs-routing.yaml`.
