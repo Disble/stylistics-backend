@@ -3,6 +3,20 @@ import { z } from "zod";
 import { logger } from "../utils/logger";
 import { editorialWorkflowOutputSchema } from "./editorial-workflow";
 
+// Schema for the correction agent's structured output (suggestions + cleanPatterns)
+const correctorOutputSchema = z.object({
+  suggestions: z.array(
+    z.object({
+      originalText: z.string(),
+      suggestedText: z.string(),
+      justification: z.string(),
+      category: z.string(),
+      severity: z.enum(["high", "medium", "low"]),
+    }),
+  ),
+  cleanPatterns: z.array(z.string()),
+});
+
 const stylisticWorkflowInputSchema = z.object({
   text: z.string().describe("Texto a corregir"),
   autorSlug: z
@@ -22,7 +36,7 @@ const stylisticWorkflowInputSchema = z.object({
     .describe("Género del texto, para aplicar criterios específicos"),
 });
 
-// Intermediate schema: suggestions + metadata for the profile step
+// Intermediate schema: corrections + metadata for the profile step
 const correctionOutputSchema = z.object({
   suggestions: z.array(
     z.object({
@@ -33,6 +47,7 @@ const correctionOutputSchema = z.object({
       severity: z.enum(["high", "medium", "low"]),
     }),
   ),
+  cleanPatterns: z.array(z.string()),
   autorSlug: z.string(),
 });
 
@@ -66,28 +81,32 @@ const correctText = createStep({
 
     const prompt =
       `EJECUTA los siguientes pasos EN ORDEN. No omitas ninguno.\n\n` +
-      `## PASO 1 — CARGA DEL CONTEXTO DEL AUTOR\n` +
-      `Leé la sección REFLEXIONES del perfil del autor: ${autorProfilePath}\n` +
-      `Si no existe, procedé sin contexto previo (primera sesión).\n\n` +
+      `## PASO 1 — CARGA DEL PERFIL DEL AUTOR\n` +
+      `Leé el perfil completo del autor: ${autorProfilePath}\n` +
+      `Si no existe, procedé sin contexto previo (primera sesión).\n` +
+      `Usá los patrones del perfil como checklist activo durante la corrección.\n\n` +
       `## PASO 2 — CORRECCIÓN\n` +
       `Género del texto: ${inputData.genero}\n\n` +
       `Texto a corregir:\n${inputData.text}\n\n` +
       `Aplica la metodología completa de corrección ortotipográfica y de estilo integrada.\n` +
       `Usa las reflexiones del autor como contexto de máxima prioridad.\n\n` +
       `## PASO 3 — OUTPUT\n` +
-      `Devuelve el resultado como un array "suggestions" donde cada elemento tiene: ` +
+      `Devuelve el resultado como un objeto JSON con dos campos:\n` +
+      `1. "suggestions": array donde cada elemento tiene: ` +
       `originalText (fragmento MÍNIMO del original que contiene el error — NUNCA párrafos enteros, solo las 2-4 palabras alrededor de la corrección), ` +
       `suggestedText (versión corregida del MISMO fragmento mínimo), ` +
       `justification (explicación técnica de por qué se corrige), ` +
       `category (ortografia | gramatica | puntuacion | tipografia | estilo-nivelA | estilo-nivelB | estilo-nivelC), ` +
-      `severity (high para Nivel A, medium para Nivel B, low para Nivel C).\n\n` +
+      `severity (high para Nivel A, medium para Nivel B, low para Nivel C).\n` +
+      `2. "cleanPatterns": array de strings con patrones del perfil que encontraste usados CORRECTAMENTE en el texto. ` +
+      `Solo patrones con evidencia positiva real. Array vacío si es primera sesión.\n\n` +
       `REGLA CRÍTICA: originalText debe ser el fragmento más CORTO que permita localizar la corrección. ` +
       `Si cambiás un signo de puntuación, marcá solo las palabras adyacentes, NO la oración ni el párrafo.`;
 
     logger.debug({ prompt }, "stylistic-workflow prompt");
 
     const stream = await agent.stream(prompt, {
-      structuredOutput: { schema: editorialWorkflowOutputSchema },
+      structuredOutput: { schema: correctorOutputSchema },
     });
 
     for await (const chunk of stream.textStream) {
@@ -106,9 +125,10 @@ const correctText = createStep({
       "✅ Corrección estilística completada",
     );
 
-    // Return suggestions + autorSlug for the profile step
+    // Return suggestions + cleanPatterns + autorSlug for the profile step
     return {
       suggestions: object.suggestions,
+      cleanPatterns: object.cleanPatterns ?? [],
       autorSlug: inputData.autorSlug,
     };
   },
@@ -145,7 +165,9 @@ const updateProfile = createStep({
       `Skill de referencia: skills/perfil-autor/SKILL.md\n\n` +
       `Sugerencias de corrección de esta sesión:\n` +
       `${JSON.stringify(inputData.suggestions, null, 2)}\n\n` +
-      `Ejecutá las 3 fases: OBSERVAR → REFLEJAR → PODAR.\n` +
+      `Patrones encontrados limpios (evidencia positiva):\n` +
+      `${JSON.stringify(inputData.cleanPatterns, null, 2)}\n\n` +
+      `Ejecutá las 4 fases: OBSERVAR → TRANSICIONAR → PODAR → REFLEJAR.\n` +
       `Escribí el perfil actualizado en ${autorProfilePath} usando la herramienta de escritura del workspace.`;
 
     logger.debug({ prompt }, "profile-update prompt");

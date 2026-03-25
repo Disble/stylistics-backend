@@ -13,7 +13,7 @@ metadata:
 ## Cuándo Usar
 
 - **Agente Corrector**: al iniciar una corrección — leer SOLO las reflexiones del perfil como contexto rápido
-- **Profile Agent**: al finalizar una corrección — ejecutar el protocolo de actualización completo (observar, reflejar, podar)
+- **Profile Agent**: al finalizar una corrección — ejecutar el protocolo de actualización completo (observar, transicionar, podar, reflejar)
 - Cuando no existe perfil del autor — crear el archivo inicial desde la plantilla incluida abajo
 
 ## Estructura del Perfil (2 Capas)
@@ -38,29 +38,30 @@ El perfil implementa un modelo destilado de Observational Memory con dos capas:
 El agente corrector NO actualiza el perfil. Solo lo lee.
 Este protocolo es ejecutado exclusivamente por el Profile Agent.
 
-### Fase 1: OBSERVAR (siempre)
-1. Recibir las sugerencias de corrección de la sesión (JSON estructurado)
+### Fase 1: OBSERVAR
+1. Recibir las sugerencias de corrección (suggestions) y los patrones limpios (cleanPatterns) de la sesión
 2. Comparar contra las observaciones existentes del perfil
-3. Para cada patrón detectado en las sugerencias:
-   - Si ya existe en observaciones → reforzar (actualizar descripción/frecuencia relativa)
-   - Si es nuevo → agregar como nueva observación en la categoría correspondiente
-4. Para patrones existentes NO detectados en esta sesión:
-   - Si hay evidencia de mejora (el autor ya no comete el error) → marcar para poda
-   - Si simplemente no apareció → mantener sin cambios
+3. Para cada patrón en suggestions:
+   - Si ya existe en observaciones → reforzar descripción, estado se mantiene o vuelve a 🔴 si era 🟡
+   - Si es nuevo → agregar como nueva observación 🔴 en la categoría correspondiente
+4. Para patrones existentes NO mencionados en suggestions ni en cleanPatterns:
+   - Mantener sin cambios (sin evidencia no se toca)
 
-### Fase 2: REFLEJAR (siempre)
-1. Leer TODAS las observaciones actualizadas
-2. Sintetizar las REFLEXIONES completas (~500 tokens máx):
-   - Principales desafíos del autor (los más frecuentes/severos)
-   - Preferencias estilísticas confirmadas
-   - Elementos que nunca se deben tocar
-   - Nivel de intervención recomendado
-3. Las reflexiones se reescriben COMPLETAS cada vez — no se appendean
+### Fase 2: TRANSICIONAR
+1. Para cada patrón en cleanPatterns:
+   - Buscar semánticamente en las observaciones (no matching exacto)
+   - Aplicar las reglas de transición del semáforo
+   - 🔴 → 🟡, 🟡 → 🟢
+2. Si un patrón aparece en suggestions Y cleanPatterns: suggestions prevalece (fallback defensivo)
 
-### Fase 3: PODAR (siempre)
-1. Eliminar observaciones marcadas para poda (patrones superados)
-2. Si el autor mejoró en un patrón → eliminarlo de observaciones
-3. Las reflexiones se actualizan automáticamente en la Fase 2 al no incluir patrones podados
+### Fase 3: PODAR
+1. Eliminar todas las observaciones en estado 🟢
+2. Estos patrones están confirmados como superados por el autor
+
+### Fase 4: REFLEJAR
+1. Reescribir las REFLEXIONES completas basándose en las observaciones actualizadas
+2. Las reflexiones son una SÍNTESIS del perfil (~500 tokens máx cuando hay muchas observaciones)
+3. Se reescriben SIEMPRE, sin importar si hubo cambios significativos o no
 
 ### Prohibiciones absolutas
 - NO fechas
@@ -68,6 +69,34 @@ Este protocolo es ejecutado exclusivamente por el Profile Agent.
 - NO "confirmado en N textos"
 - NO sección de historial
 - NO sección de deprecados
+
+## Sistema de Semáforo
+
+Cada observación tiene un estado representado por un emoji al inicio de la línea:
+
+- 🔴 **RED** — Error activo. El autor comete este error.
+- 🟡 **YELLOW** — Primer reporte limpio. Fue RED, pero en la última sesión el corrector encontró la construcción usada correctamente. Necesita confirmación.
+- 🟢 **GREEN** — Confirmado limpio. Segundo reporte limpio consecutivo. Se poda inmediatamente.
+
+### Reglas de transición
+
+| Estado actual | Evidencia en esta sesión | Nuevo estado |
+|---|---|---|
+| (nuevo) | Aparece en suggestions | 🔴 |
+| 🔴 | Aparece en cleanPatterns | 🟡 |
+| 🔴 | Aparece en suggestions | 🔴 (se mantiene) |
+| 🔴 | Sin evidencia | 🔴 (se mantiene) |
+| 🟡 | Aparece en cleanPatterns | 🟢 → se poda |
+| 🟡 | Aparece en suggestions | 🔴 (reset) |
+| 🟡 | Sin evidencia | 🟡 (se mantiene) |
+| Podado | Aparece en suggestions | 🔴 (nueva observación) |
+
+### Reglas clave
+- Un patrón va en suggestions O en cleanPatterns, NUNCA en ambos
+- Si por error aparece en ambos: suggestions prevalece (fallback defensivo)
+- Un cleanPattern es SOLO cuando el corrector encontró la construcción en el texto y estaba correcta. "No encontré errores" NO es un cleanPattern.
+- GREEN se poda inmediatamente — no se mantiene una sesión más
+- La poda de un 🟢 debe reflejarse en las reflexiones (se reescriben siempre)
 
 ## Criterios de Relevancia
 
@@ -116,6 +145,9 @@ slug: {slug}
 - (pendiente de primera corrección)
 ```
 
+Nota: Al crear observaciones, todas inician en estado 🔴. Ejemplo:
+`- 🔴 Omisión de tildes en gerundios enclíticos: frecuente, severidad alta`
+
 ## Convención de Slug
 
 | Nombre del autor       | Slug correcto        |
@@ -137,10 +169,10 @@ slug: {slug}
 
 ### Profile Agent — ACTUALIZACIÓN (después de corregir)
 1. Leer el perfil COMPLETO (reflexiones + observaciones)
-2. Recibir las sugerencias de corrección del agente corrector (JSON)
-3. Ejecutar las 3 fases: OBSERVAR → REFLEJAR → PODAR
+2. Recibir las sugerencias (suggestions) y patrones limpios (cleanPatterns) de la sesión
+3. Ejecutar las 4 fases: OBSERVAR → TRANSICIONAR → PODAR → REFLEJAR
 4. Escribir el perfil reescrito en `workspace/autores/{slug}.md`
-5. Si es primera sesión → crear el archivo desde la plantilla
+5. Si es primera sesión → crear el archivo desde la plantilla con observaciones en 🔴
 
 ## Recursos
 
