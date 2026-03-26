@@ -5,8 +5,9 @@ import {
   stylisticWorkflowInputSchema,
   stylisticWorkflowOutputSchema,
 } from "../../application/stylistics/run-stylistic-correction";
-import { logger } from "../utils/logger";
 import { modelPool } from "../constants/models";
+import { logger } from "../utils/logger";
+
 const STRUCTURED_OUTPUT_MODEL = modelPool["stylistic-agent"].model;
 
 // Step 1 produces the structured correction payload. The stylistic agent can

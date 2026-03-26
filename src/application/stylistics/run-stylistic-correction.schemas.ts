@@ -9,12 +9,16 @@ export const stylisticSuggestionSchema = z.object({
 });
 
 export const stylisticWorkflowOutputSchema = z.object({
-  suggestions: z.array(stylisticSuggestionSchema).describe(
-    "Corrections to apply. Each item must describe one localized change only.",
-  ),
-  cleanPatterns: z.array(z.string()).describe(
-    "Profile patterns found in the text with positive evidence of correct usage.",
-  ),
+  suggestions: z
+    .array(stylisticSuggestionSchema)
+    .describe(
+      "Corrections to apply. Each item must describe one localized change only.",
+    ),
+  cleanPatterns: z
+    .array(z.string())
+    .describe(
+      "Profile patterns found in the text with positive evidence of correct usage.",
+    ),
 });
 
 export const stylisticWorkflowInputSchema = z.object({
@@ -26,11 +30,17 @@ export const stylisticWorkflowInputSchema = z.object({
       "Identificador del autor en kebab-case (ej: maria-garcia). Se usa para cargar el perfil desde workspace/autores/{autorSlug}.md",
     ),
   genero: z
-    .enum(["narrativa-literaria", "ensayo-academico", "periodismo-cultural", "general"])
+    .enum([
+      "narrativa-literaria",
+      "ensayo-academico",
+      "periodismo-cultural",
+      "general",
+    ])
     .default("general")
     .describe("Genero del texto, para aplicar criterios especificos"),
 });
 
-export const stylisticCorrectionStepSchema = stylisticWorkflowOutputSchema.extend({
-  autorSlug: z.string(),
-});
+export const stylisticCorrectionStepSchema =
+  stylisticWorkflowOutputSchema.extend({
+    autorSlug: z.string(),
+  });

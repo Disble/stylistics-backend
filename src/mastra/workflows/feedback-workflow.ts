@@ -6,9 +6,11 @@ const feedbackWorkflowInputSchema = z.object({
   category: z.string(),
   originalText: z.string(),
   suggestedText: z.string(),
-  justification: z.string().describe(
-    "Justificación original del corrector. Permite al agente distinguir entre errores normativos y decisiones estilísticas intencionales.",
-  ),
+  justification: z
+    .string()
+    .describe(
+      "Justificación original del corrector. Permite al agente distinguir entre errores normativos y decisiones estilísticas intencionales.",
+    ),
   rating: z.enum(["positive", "negative"]),
   severity: z.enum(["high", "medium", "low"]),
   comment: z.string().optional(),

@@ -1,32 +1,43 @@
 import { Mastra } from "@mastra/core/mastra";
 import { PinoLogger } from "@mastra/loggers";
 import {
-  Observability,
-  DefaultExporter,
   CloudExporter,
+  DefaultExporter,
+  Observability,
   SensitiveDataFilter,
 } from "@mastra/observability";
-import { weatherWorkflow } from "./workflows/weather-workflow";
-import { editorialWorkflow } from "./workflows/editorial-workflow";
-import { stylisticWorkflow } from "./workflows/stylistic-workflow";
-import { feedbackWorkflow } from "./workflows/feedback-workflow";
-import { weatherAgent } from "./agents/weather-agent";
 import { editorialAgent } from "./agents/editorial-agent";
-import { stylisticAgent } from "./agents/stylistic-agent";
-import { profileAgent } from "./agents/profile-agent";
 import { feedbackAgent } from "./agents/feedback-agent";
+import { profileAgent } from "./agents/profile-agent";
+import { stylisticAgent } from "./agents/stylistic-agent";
+import { weatherAgent } from "./agents/weather-agent";
+import { pgStore } from "./constants/db";
+import { pgVector, VECTOR_STORE } from "./constants/vector";
+import { workspace } from "./constants/workspaces";
 import {
-  toolCallAppropriatenessScorer,
   completenessScorer,
+  toolCallAppropriatenessScorer,
   translationScorer,
 } from "./scorers/weather-scorer";
-import { pgStore } from "./constants/db";
-import { workspace } from "./constants/workspaces";
-import { pgVector, VECTOR_STORE } from "./constants/vector";
+import { editorialWorkflow } from "./workflows/editorial-workflow";
+import { feedbackWorkflow } from "./workflows/feedback-workflow";
+import { stylisticWorkflow } from "./workflows/stylistic-workflow";
+import { weatherWorkflow } from "./workflows/weather-workflow";
 
 export const mastra = new Mastra({
-  workflows: { weatherWorkflow, editorialWorkflow, stylisticWorkflow, feedbackWorkflow },
-  agents: { weatherAgent, editorialAgent, stylisticAgent, profileAgent, feedbackAgent },
+  workflows: {
+    weatherWorkflow,
+    editorialWorkflow,
+    stylisticWorkflow,
+    feedbackWorkflow,
+  },
+  agents: {
+    weatherAgent,
+    editorialAgent,
+    stylisticAgent,
+    profileAgent,
+    feedbackAgent,
+  },
   scorers: {
     toolCallAppropriatenessScorer,
     completenessScorer,

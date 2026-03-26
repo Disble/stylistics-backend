@@ -5,6 +5,6 @@ if (!process.env.POSTGRES_URL) {
 }
 
 export const pgStore = new PostgresStore({
-  id: 'pg-storage',
+  id: "pg-storage",
   connectionString: process.env.POSTGRES_URL,
-}) 
+});

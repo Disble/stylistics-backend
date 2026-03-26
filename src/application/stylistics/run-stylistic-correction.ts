@@ -16,13 +16,16 @@ import type {
   StylisticWorkflowInput,
 } from "./run-stylistic-correction.types";
 
+export type { StylisticWorkflowInput };
 export {
   stylisticCorrectionStepSchema,
   stylisticWorkflowInputSchema,
   stylisticWorkflowOutputSchema,
 };
 
-export type { StylisticWorkflowInput };
+type StylisticCorrectionResult = Awaited<
+  ReturnType<StylisticAgent["generate"]>
+>;
 
 /**
  * Runs the structured stylistic correction pass and normalizes provider-specific
@@ -54,12 +57,14 @@ export async function runStylisticCorrection({
     "stylistic-workflow prompt prepared",
   );
 
-  let result;
+  let result: StylisticCorrectionResult;
 
   try {
     result = await agent.generate(prompt, options);
   } catch (error) {
-    const safetyBlock = isGoogleModel(model) ? getGoogleSafetyBlock(error) : undefined;
+    const safetyBlock = isGoogleModel(model)
+      ? getGoogleSafetyBlock(error)
+      : undefined;
 
     if (safetyBlock) {
       logger.error(

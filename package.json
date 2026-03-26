@@ -4,8 +4,10 @@
   "type": "module",
   "private": true,
   "devDependencies": {
+    "@biomejs/biome": "^2.4.9",
     "@types/bun": "latest",
     "@types/node": "^25.4.0",
+    "lefthook": "^2.1.4",
     "mastra": "^1.3.15"
   },
   "peerDependencies": {
@@ -15,9 +17,18 @@
     "node": ">=22.13.0"
   },
   "scripts": {
+    "prepare": "lefthook install",
     "dev": "mastra dev",
     "build": "mastra build",
-    "start": "mastra start"
+    "start": "mastra start",
+    "lint": "biome check .",
+    "lint:write": "biome check --write .",
+    "format": "biome format --write .",
+    "lint:staged": "biome check --staged --write",
+    "check:filenames": "node scripts/check-file-naming.mjs",
+    "validate": "bun run lint && bun run check:filenames",
+    "hooks:install": "lefthook install",
+    "hooks:pre-commit": "lefthook run pre-commit"
   },
   "dependencies": {
     "@mastra/core": "^1.17.0",

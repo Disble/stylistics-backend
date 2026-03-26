@@ -1,6 +1,5 @@
 import { Agent } from "@mastra/core/agent";
 import { memory } from "../constants/memory";
-import { ollama } from "ai-sdk-ollama";
 import { modelPool } from "../constants/models";
 
 export const editorialAgent = new Agent({

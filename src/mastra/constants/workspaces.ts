@@ -1,9 +1,9 @@
+import { resolve } from "node:path";
 import {
-  Workspace,
   LocalFilesystem,
   LocalSandbox,
+  Workspace,
 } from "@mastra/core/workspace";
-import { resolve } from "node:path";
 
 console.log(resolve(import.meta.dirname, "../../workspace"));
 

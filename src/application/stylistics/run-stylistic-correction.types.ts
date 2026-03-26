@@ -1,16 +1,22 @@
-import { z } from "zod";
+import type { z } from "zod";
 
-import {
+import type {
   stylisticCorrectionStepSchema,
   stylisticWorkflowInputSchema,
   stylisticWorkflowOutputSchema,
 } from "./run-stylistic-correction.schemas";
 
-export type StylisticWorkflowInput = z.infer<typeof stylisticWorkflowInputSchema>;
+export type StylisticWorkflowInput = z.infer<
+  typeof stylisticWorkflowInputSchema
+>;
 
-export type StylisticWorkflowOutput = z.infer<typeof stylisticWorkflowOutputSchema>;
+export type StylisticWorkflowOutput = z.infer<
+  typeof stylisticWorkflowOutputSchema
+>;
 
-export type StylisticCorrectionStepOutput = z.infer<typeof stylisticCorrectionStepSchema>;
+export type StylisticCorrectionStepOutput = z.infer<
+  typeof stylisticCorrectionStepSchema
+>;
 
 export type StylisticGenerateOptions = {
   structuredOutput: { schema: typeof stylisticWorkflowOutputSchema };

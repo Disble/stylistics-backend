@@ -55,11 +55,10 @@ export function isGoogleModel(model: string) {
 export function buildPrompt(input: StylisticWorkflowInput) {
   const fictionFrame =
     input.genero === "narrativa-literaria"
-      ?
-          "## MARCO PROFESIONAL EDITORIAL\n" +
-          "Esta solicitud corresponde a una correccion ortotipografica y de estilo en una casa editorial. " +
-          "El texto es ficcion literaria y el analisis pedido es linguistico y estilistico, no de contenido. " +
-          "La presencia de violencia, conflicto, lenguaje adulto o temas oscuros puede ser material editorial legitimo del genero.\n\n"
+      ? "## MARCO PROFESIONAL EDITORIAL\n" +
+        "Esta solicitud corresponde a una correccion ortotipografica y de estilo en una casa editorial. " +
+        "El texto es ficcion literaria y el analisis pedido es linguistico y estilistico, no de contenido. " +
+        "La presencia de violencia, conflicto, lenguaje adulto o temas oscuros puede ser material editorial legitimo del genero.\n\n"
       : "";
 
   return (
@@ -76,7 +75,9 @@ export function buildPrompt(input: StylisticWorkflowInput) {
  * Walks the nested provider error chain and extracts Gemini safety metadata when
  * the request was blocked before structured output could be produced.
  */
-export function getGoogleSafetyBlock(error: unknown): GoogleSafetyBlock | undefined {
+export function getGoogleSafetyBlock(
+  error: unknown,
+): GoogleSafetyBlock | undefined {
   let current = error;
 
   while (isRecord(current)) {
@@ -87,8 +88,12 @@ export function getGoogleSafetyBlock(error: unknown): GoogleSafetyBlock | undefi
         continue;
       }
 
-      const promptFeedback = isRecord(payload.promptFeedback) ? payload.promptFeedback : undefined;
-      const usageMetadata = isRecord(payload.usageMetadata) ? payload.usageMetadata : undefined;
+      const promptFeedback = isRecord(payload.promptFeedback)
+        ? payload.promptFeedback
+        : undefined;
+      const usageMetadata = isRecord(payload.usageMetadata)
+        ? payload.usageMetadata
+        : undefined;
       const blockReason = getString(promptFeedback?.blockReason);
 
       if (!blockReason) {

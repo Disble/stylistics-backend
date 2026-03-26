@@ -114,6 +114,22 @@ src/application/stylistics/
 - Do not use `utils.ts` as a dumping ground when `helpers.ts` or a more specific suffix would be clearer.
 - Do not duplicate exported contracts across multiple files; one source of truth per schema/type.
 
+## Linting And Naming Enforcement
+
+- Use Biome as the default formatter and linter for this backend. Keep tooling centralized and minimal instead of stacking ESLint + Prettier + custom formatter glue.
+- Enable Biome filename enforcement with `useFilenamingConvention` and keep source files in kebab-case.
+- Biome handles filename case, but project architecture also expects role-suffixed sibling files for split feature modules. Back that up with a tiny repository script that verifies `feature-name.helpers.ts`, `feature-name.schemas.ts`, and `feature-name.types.ts` only exist next to their base `feature-name.ts` file.
+- Apply the sibling-file convention mainly in feature-oriented application/domain/infrastructure/shared modules. Do not force Mastra adapter files into artificial dot-suffix splits when a single `weather-agent.ts` or `editorial-workflow.ts` file is still cohesive.
+- Treat generic `utils.ts` names inside feature folders as an architecture smell. Prefer a specific feature filename or a `*.helpers.ts` sibling when the helper scope belongs to one feature.
+
+## Git Hook Workflow
+
+- Use Lefthook for repository hooks; keep the workflow explicit and easy to run locally.
+- Install hooks through the package manager lifecycle (`prepare`) or an explicit hook script so every contributor can rehydrate hooks after install.
+- Keep `pre-commit` focused on fast safety rails only: staged Biome fixes/checks plus the lightweight file-naming validation.
+- Do not add builds or heavy integration checks to `pre-commit`; those belong to later validation stages.
+- If a hook auto-fixes files, stage the fixes and rerun the check until the commit input is clean.
+
 ## Workflow Rules
 
 - Keep workflows thin: coordinate steps, pass validated data, call application services, stop.
