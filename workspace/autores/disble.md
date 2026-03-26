@@ -7,24 +7,28 @@ slug: disble
 
 ## REFLEXIONES
 
-(Pendiente de primera corrección)
+El autor presenta errores recurrentes en la acentuación de verbos en pretérito perfecto simple y en el uso de tildes diacríticas en pronombres personales. En cuanto a gramática, se observa una tendencia a omitir artículos determinados necesarios y a confundir formas verbales (presente vs. pretérito). En estilo, tiende a incluir artículos innecesarios que afectan la fluidez. La puntuación requiere atención en el uso de comas en estructuras condicionales.
 
 ## OBSERVACIONES
 
 ### Ortografía
-- (pendiente de primera corrección)
+- 🔴 Error de acentuación en pretérito perfecto simple (ej. "creó").
+- 🔴 Falta de tilde diacrítica en pronombres personales (ej. "tú").
+- 🔴 Uso incorrecto de tilde diacrítica en el pronombre relativo "quien".
 
 ### Gramática
-- (pendiente de primera corrección)
+- 🔴 Omisión de artículos determinados necesarios (ej. "desde el principio").
+- 🔴 Confusión en formas verbales (ej. "me llamo" vs "me llamó").
+- 🔴 Uso innecesario del artículo "del" ante conceptos generales (ej. "usuaria de aura").
 
 ### Puntuación
-- (pendiente de primera corrección)
+- 🔴 Uso incorrecto de coma entre "ni" y "aunque".
 
 ### Tipografía
 - (pendiente de primera corrección)
 
 ### Estilo
-- (pendiente de primera corrección)
+- 🔴 Inclusión de artículos innecesarios que afectan la fluidez (ej. "viaje de vacaciones").
 
 ### Preferencias
 - (pendiente de primera corrección)

@@ -84,6 +84,13 @@ This project has skills installed for the following agents:
 
 Skills are automatically available to agents in your project once installed. Agents can access and use these skills without additional configuration.
 
+### Project Skills
+
+| Skill | Description | Source |
+|-------|-------------|--------|
+| `mastra` | Guía base para trabajar con APIs vigentes de Mastra y verificar documentación antes de escribir código | [.agents/skills/mastra/SKILL.md](.agents/skills/mastra/SKILL.md) |
+| `stylistics-mastra-architecture` | Arquitectura objetivo del backend: Mastra como orquestación, workflows livianos, lógica de aplicación separada y límites para evitar workflows espagueti | [.agents/skills/stylistics-mastra-architecture/SKILL.md](.agents/skills/stylistics-mastra-architecture/SKILL.md) |
+
 ### Workspace Skills
 
 | Skill | Description | Source |
