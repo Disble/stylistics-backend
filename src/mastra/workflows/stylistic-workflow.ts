@@ -106,7 +106,10 @@ const correctText = createStep({
     logger.debug({ prompt }, "stylistic-workflow prompt");
 
     const stream = await agent.stream(prompt, {
-      structuredOutput: { schema: correctorOutputSchema },
+      structuredOutput: {
+        schema: correctorOutputSchema,
+        jsonPromptInjection: true,
+      },
     });
 
     for await (const chunk of stream.textStream) {
@@ -117,7 +120,7 @@ const correctText = createStep({
 
     if (!object) {
       logger.error("⚠️ El agente no devolvió output estructurado");
-      throw new Error("No output");
+      throw new Error("No output structured received from stylistic agent");
     }
 
     logger.info(
@@ -174,10 +177,7 @@ const updateProfile = createStep({
 
     await agent.generate(prompt);
 
-    logger.info(
-      { autorSlug: inputData.autorSlug },
-      "✅ Perfil actualizado",
-    );
+    logger.info({ autorSlug: inputData.autorSlug }, "✅ Perfil actualizado");
 
     // Passthrough: return the suggestions for the frontend
     return { suggestions: inputData.suggestions };

@@ -9,10 +9,12 @@ import {
 import { weatherWorkflow } from "./workflows/weather-workflow";
 import { editorialWorkflow } from "./workflows/editorial-workflow";
 import { stylisticWorkflow } from "./workflows/stylistic-workflow";
+import { feedbackWorkflow } from "./workflows/feedback-workflow";
 import { weatherAgent } from "./agents/weather-agent";
 import { editorialAgent } from "./agents/editorial-agent";
 import { stylisticAgent } from "./agents/stylistic-agent";
 import { profileAgent } from "./agents/profile-agent";
+import { feedbackAgent } from "./agents/feedback-agent";
 import {
   toolCallAppropriatenessScorer,
   completenessScorer,
@@ -23,8 +25,8 @@ import { workspace } from "./constants/workspaces";
 import { pgVector, VECTOR_STORE } from "./constants/vector";
 
 export const mastra = new Mastra({
-  workflows: { weatherWorkflow, editorialWorkflow, stylisticWorkflow },
-  agents: { weatherAgent, editorialAgent, stylisticAgent, profileAgent },
+  workflows: { weatherWorkflow, editorialWorkflow, stylisticWorkflow, feedbackWorkflow },
+  agents: { weatherAgent, editorialAgent, stylisticAgent, profileAgent, feedbackAgent },
   scorers: {
     toolCallAppropriatenessScorer,
     completenessScorer,

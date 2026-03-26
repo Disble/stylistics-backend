@@ -12,4 +12,7 @@ export const modelPool = {
   "profile-agent": {
     model: "google/gemini-3.1-flash-lite-preview",
   },
+  "feedback-agent": {
+    model: "lmstudio/qwen3.5-9b-claude-4.6-opus-reasoning-distilled-v2",
+  },
 };
