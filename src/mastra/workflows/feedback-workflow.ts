@@ -14,6 +14,7 @@ const feedbackWorkflowInputSchema = z.object({
   rating: z.enum(["positive", "negative"]),
   severity: z.enum(["high", "medium", "low"]),
   comment: z.string().optional(),
+  autorSlug: z.string().default("disble"),
 });
 
 const feedbackWorkflowOutputSchema = z.object({
@@ -57,13 +58,14 @@ const processFeedback = createStep({
 
     logger.info("🤖 Feedback agent encontrado, procesando comentario...");
 
-    const autorProfilePath = `autores/disble.md`; // hardcoded for alpha
-    const skillPath = `skills/feedback-autor/SKILL.md`;
+    const autorProfilePath = `autores/${inputData.autorSlug}.md`;
+    const skillPath = "skills/feedback-autor/SKILL.md";
 
     const prompt =
+      `RUTAS EXACTAS (usar tal cual, sin modificar):\n` +
+      `- Perfil del autor: ${autorProfilePath}\n` +
+      `- Skill de referencia: ${skillPath}\n\n` +
       `Procesá el siguiente feedback del autor sobre una corrección.\n\n` +
-      `Perfil del autor: ${autorProfilePath}\n` +
-      `Skill de referencia: ${skillPath}\n\n` +
       `Payload de feedback:\n` +
       `${JSON.stringify(inputData, null, 2)}\n\n` +
       `Ejecutá el protocolo completo: LEER → RAZONAR → DECIDIR → ACTUAR.\n` +

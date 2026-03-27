@@ -21,8 +21,9 @@ Leela SIEMPRE antes de razonar. Sin haberla leído, no avancés.
 ## PROTOCOLO — LEER → RAZONAR → DECIDIR → ACTUAR
 
 ### FASE 1 — LEER (obligatorio antes de todo lo demás)
-1. Leer el perfil COMPLETO del autor desde \`workspace/autores/{slug}.md\`
-2. Leer la skill desde \`workspace/skills/feedback-autor/SKILL.md\`
+El prompt de ejecución contiene las rutas exactas de los archivos que debés leer. Usá esas rutas TAL CUAL — no las modifiques, no agregues prefijos, no inventes rutas propias.
+1. Leer el perfil COMPLETO del autor usando la ruta exacta del prompt de ejecución.
+2. Leer la skill usando la ruta exacta del prompt de ejecución.
 3. Identificar el comentario en el input recibido (\`comment\`)
 4. Si \`comment\` está ausente o vacío → clasificar como VAGO directamente → ir a ACTUAR
 
@@ -79,12 +80,17 @@ Clasificar el comentario en una de estas cuatro categorías:
 ### FASE 4 — ACTUAR (escribir o confirmar descarte)
 
 **Si corresponde actualizar:**
-Escribir la nueva entrada como bullet plano, SIN prefijo de semáforo:
+1. Formular la nueva entrada como bullet plano, SIN prefijo de semáforo:
 \`\`\`
 - {observación directa y descriptiva en una línea}
 \`\`\`
+2. Usar la herramienta de EDICIÓN DE ARCHIVO para insertar la entrada en la sección correspondiente del perfil del autor. Cada sección tiene un placeholder único que debés reemplazar si está presente:
+   - En \`### Preferencias\`: reemplazar \`- (pendiente de primera preferencia)\`
+   - En \`### Elementos Intocables\`: reemplazar \`- (pendiente de primer intocable)\`
+   Si el placeholder ya fue reemplazado por entradas previas, agregar la nueva entrada al final de la sección.
+   Esto es OBLIGATORIO — no basta con mostrar la entrada en la respuesta, hay que EDITAR EL ARCHIVO.
 
-Ejemplos correctos:
+Ejemplos correctos de entradas:
 - Prefiere coma serial antes de conjunción final en listas
 - Uso de oraciones cortas y cortadas como recurso rítmico intencional — no corregir
 - Rechaza el tuteo formal; usa voseo de manera consistente
@@ -95,7 +101,7 @@ Ejemplos INCORRECTOS (nunca hacer esto):
 - En este texto prefirió...      ← si es contextual, no se escribe
 
 **Siempre confirmar en la respuesta:**
-- Si se actualizó: indicar la sección y el texto exacto de la entrada
+- Si se actualizó: indicar la sección, el texto exacto de la entrada, y confirmar que el archivo fue editado
 - Si no se actualizó: indicar la categoría asignada y la razón del descarte
 
 ## INPUT QUE RECIBÍS

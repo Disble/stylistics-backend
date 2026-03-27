@@ -139,10 +139,10 @@ slug: {slug}
 - (pendiente de primera corrección)
 
 ### Preferencias
-- (pendiente de primera corrección)
+- (pendiente de primera preferencia)
 
 ### Elementos Intocables
-- (pendiente de primera corrección)
+- (pendiente de primer intocable)
 ```
 
 Nota: Al crear observaciones, todas inician en estado 🔴. Ejemplo:
