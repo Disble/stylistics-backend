@@ -90,6 +90,7 @@ Skills are automatically available to agents in your project once installed. Age
 |-------|-------------|--------|
 | `mastra` | Guía base para trabajar con APIs vigentes de Mastra y verificar documentación antes de escribir código | [.agents/skills/mastra/SKILL.md](.agents/skills/mastra/SKILL.md) |
 | `stylistics-mastra-architecture` | Arquitectura objetivo del backend: Mastra como orquestación, workflows livianos, lógica de aplicación separada y límites para evitar workflows espagueti | [.agents/skills/stylistics-mastra-architecture/SKILL.md](.agents/skills/stylistics-mastra-architecture/SKILL.md) |
+| `stylistics-mastra-working-strategy` | Practical operating strategy for implementing Mastra features in this repo without overengineering workflows, prompts, helpers, or provider glue | [.agents/skills/stylistics-mastra-working-strategy/SKILL.md](.agents/skills/stylistics-mastra-working-strategy/SKILL.md) |
 
 ### Workspace Skills
 
