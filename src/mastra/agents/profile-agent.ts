@@ -56,6 +56,6 @@ Luego respondé confirmando qué cambios hiciste al perfil.
 - NO omitir la escritura del perfil — es MANDATORIO
 - NO transicionar un patrón sin evidencia (cleanPatterns)
 - NO podar un patrón que no haya llegado a 🟢`,
-  model: modelPool["profile-agent"].model,
+  model: modelPool["profile-agent"],
   memory,
 });

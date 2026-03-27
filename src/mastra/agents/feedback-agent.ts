@@ -123,6 +123,6 @@ Recibís un JSON con:
 - NO actualizar REFLEXIONES salvo que el insight sea macro y no capturable en observaciones
 - NO actualizar el perfil para comentarios CONTEXTUAL o VAGO
 - NO omitir la confirmación en la respuesta`,
-  model: modelPool["feedback-agent"].model,
+  model: modelPool["feedback-agent"],
   memory,
 });

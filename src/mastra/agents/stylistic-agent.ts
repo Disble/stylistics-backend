@@ -171,9 +171,6 @@ Si la llamada incluye un schema JSON/Zod, respetalo EXACTAMENTE.
 - category usa una sola etiqueta relevante y severity mantiene el mapeo: high = Nivel A, medium = Nivel B, low = Nivel C.
 - cleanPatterns incluye solo patrones del perfil con evidencia positiva real en el texto.
 - Si no hay hallazgos, devolvé arrays vacíos.`,
-  // model: "google/gemini-2.5-pro",
-  // model: "google/gemini-3-flash-preview",
-  // model: ollama("qwen3-vl:8b"),
-  model: modelPool["stylistic-agent"].model,
+  model: modelPool["stylistic-agent"],
   memory,
 });

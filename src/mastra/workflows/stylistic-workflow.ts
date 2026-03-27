@@ -8,7 +8,7 @@ import {
 import { modelPool } from "../constants/models";
 import { logger } from "../utils/logger";
 
-const STRUCTURED_OUTPUT_MODEL = modelPool["stylistic-agent"].model;
+const STRUCTURED_OUTPUT_MODEL = modelPool["stylistic-agent"];
 
 // Step 1 produces the structured correction payload. The stylistic agent can
 // read the author's profile for context, but profile mutations stay out of this step.
