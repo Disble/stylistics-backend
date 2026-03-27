@@ -1,32 +1,47 @@
+import {
+  GOOGLE_FICTION_SAFETY_SETTINGS,
+  GOOGLE_PROVIDER_PREFIX,
+} from "./run-stylistic-correction.constants";
 import { stylisticWorkflowOutputSchema } from "./run-stylistic-correction.schemas";
 import type {
   GoogleSafetyBlock,
   StylisticGenerateOptions,
+  StylisticModelConfig,
   StylisticWorkflowInput,
 } from "./run-stylistic-correction.types";
 
-const GOOGLE_PROVIDER_PREFIX = "google/";
+/**
+ * Extracts raw model ID strings from a Mastra model config.
+ * Handles single strings, ModelWithRetries arrays, and OpenAICompatibleConfig objects.
+ */
+export function getModelIds(model: StylisticModelConfig): string[] {
+  if (typeof model === "function") return [];
+  if (typeof model === "string") return [model];
 
-// Fiction can legitimately contain violent or adult material, so the workflow
-// relaxes only the categories that tend to block editorial analysis by mistake.
-const googleFictionSafetySettings = [
-  {
-    category: "HARM_CATEGORY_HARASSMENT",
-    threshold: "BLOCK_NONE",
-  },
-  {
-    category: "HARM_CATEGORY_HATE_SPEECH",
-    threshold: "BLOCK_NONE",
-  },
-  {
-    category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-    threshold: "BLOCK_NONE",
-  },
-  {
-    category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-    threshold: "BLOCK_NONE",
-  },
-] as const;
+  if (Array.isArray(model)) {
+    return model
+      .map((entry) => entry.model)
+      .filter((m): m is string => typeof m === "string");
+  }
+
+  if (typeof model === "object" && model !== null) {
+    if (
+      "model" in model &&
+      typeof (model as { model: unknown }).model === "string"
+    ) {
+      return [(model as { model: string }).model];
+    }
+    if ("id" in model && typeof (model as { id: unknown }).id === "string") {
+      return [(model as { id: string }).id];
+    }
+  }
+
+  return [];
+}
+
+export function hasGoogleModel(model: StylisticModelConfig): boolean {
+  return getModelIds(model).some((id) => id.startsWith(GOOGLE_PROVIDER_PREFIX));
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -132,14 +147,14 @@ export function getGoogleSafetyBlock(
  * provider-specific overrides stay aligned across workflow callers.
  */
 export function buildGenerateOptions(
-  model: string,
+  model: StylisticModelConfig,
   genero: StylisticWorkflowInput["genero"],
 ): StylisticGenerateOptions {
   const providerOptions =
-    isGoogleModel(model) && genero === "narrativa-literaria"
+    hasGoogleModel(model) && genero === "narrativa-literaria"
       ? {
           google: {
-            safetySettings: googleFictionSafetySettings,
+            safetySettings: GOOGLE_FICTION_SAFETY_SETTINGS,
           },
         }
       : undefined;

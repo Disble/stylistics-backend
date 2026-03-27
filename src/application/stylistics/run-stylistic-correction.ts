@@ -2,7 +2,8 @@ import {
   buildGenerateOptions,
   buildPrompt,
   getGoogleSafetyBlock,
-  isGoogleModel,
+  getModelIds,
+  hasGoogleModel,
 } from "./run-stylistic-correction.helpers";
 import {
   stylisticCorrectionStepSchema,
@@ -13,6 +14,7 @@ import type {
   StylisticAgent,
   StylisticCorrectionLogger,
   StylisticCorrectionStepOutput,
+  StylisticModelConfig,
   StylisticWorkflowInput,
 } from "./run-stylistic-correction.types";
 
@@ -39,7 +41,7 @@ export async function runStylisticCorrection({
 }: {
   agent: StylisticAgent;
   logger: StylisticCorrectionLogger;
-  model: string;
+  model: StylisticModelConfig;
   input: StylisticWorkflowInput;
 }): Promise<StylisticCorrectionStepOutput> {
   const prompt = buildPrompt(input);
@@ -62,7 +64,8 @@ export async function runStylisticCorrection({
   try {
     result = await agent.generate(prompt, options);
   } catch (error) {
-    const safetyBlock = isGoogleModel(model)
+    const modelIds = getModelIds(model);
+    const safetyBlock = hasGoogleModel(model)
       ? getGoogleSafetyBlock(error)
       : undefined;
 
@@ -71,7 +74,7 @@ export async function runStylisticCorrection({
         {
           autorSlug: input.autorSlug,
           genero: input.genero,
-          model,
+          models: modelIds,
           textLength: input.text.length,
           promptLength: prompt.length,
           ...safetyBlock,
@@ -80,7 +83,7 @@ export async function runStylisticCorrection({
       );
 
       throw new Error(
-        `Google/Gemini blocked stylistic correction (blockReason=${safetyBlock.blockReason}, model=${model}, autorSlug=${input.autorSlug}, genero=${input.genero})`,
+        `Google/Gemini blocked stylistic correction (blockReason=${safetyBlock.blockReason}, models=${modelIds.join(",")}, autorSlug=${input.autorSlug}, genero=${input.genero})`,
         { cause: error },
       );
     }

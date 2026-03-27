@@ -1,3 +1,4 @@
+import type { AgentConfig } from "@mastra/core/agent";
 import type { z } from "zod";
 
 import type {
@@ -5,6 +6,9 @@ import type {
   stylisticWorkflowInputSchema,
   stylisticWorkflowOutputSchema,
 } from "./run-stylistic-correction.schemas";
+
+/** Matches the `model` parameter of Mastra's Agent constructor. */
+export type StylisticModelConfig = AgentConfig["model"];
 
 export type StylisticWorkflowInput = z.infer<
   typeof stylisticWorkflowInputSchema
