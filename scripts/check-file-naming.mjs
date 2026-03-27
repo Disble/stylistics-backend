@@ -15,8 +15,14 @@ const managedRoots = [
   path.join(sourceDirectory, "providers"),
 ];
 const supportedExtensions = [".ts", ".tsx", ".js", ".mjs", ".cjs"];
-const siblingRoleSuffixes = new Set(["helpers", "schemas", "types"]);
+const siblingRoleSuffixes = new Set([
+  "constants",
+  "helpers",
+  "schemas",
+  "types",
+]);
 const allowedCompoundSuffixes = new Set([
+  "constants",
   "helpers",
   "schemas",
   "types",

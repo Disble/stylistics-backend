@@ -81,6 +81,7 @@ src/
 ```text
 src/application/stylistics/
   run-stylistic-correction.ts
+  run-stylistic-correction.constants.ts
   run-stylistic-correction.schemas.ts
   run-stylistic-correction.types.ts
   run-stylistic-correction.helpers.ts
@@ -98,7 +99,8 @@ src/application/stylistics/
 | `feature-name.ts` | Main use case, orchestration-independent application logic, exported public API, light composition of helpers/schemas/types | Big schema declarations, internal utility clutter, unrelated helper functions |
 | `feature-name.schemas.ts` | Zod schemas, validation contracts, DTO parsing/shape definitions | Runtime side effects, business flow, provider-specific branching |
 | `feature-name.types.ts` | Shared TypeScript types inferred from schemas, explicit ports/interfaces, result shapes | Duplicate schema definitions, hidden runtime constants, logic-heavy helpers |
-| `feature-name.helpers.ts` | Pure helper functions, parsing helpers, prompt builders, mappers, provider-option builders | Main use-case flow, logging orchestration, stateful IO |
+| `feature-name.constants.ts` | Static values, configuration literals, magic strings, provider-specific settings, enum-like objects | Logic, side effects, anything that imports from the main entry or helpers |
+| `feature-name.helpers.ts` | Pure helper functions, parsing helpers, prompt builders, mappers, provider-option builders | Main use-case flow, logging orchestration, stateful IO, inline constants |
 
 ### When To Use This Convention
 
