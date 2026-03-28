@@ -1,12 +1,26 @@
 import { z } from "zod";
 
-export const stylisticSuggestionSchema = z.object({
+export const stylisticTrackChangeSuggestionSchema = z.object({
+  type: z.literal("track-change"),
   originalText: z.string(),
   suggestedText: z.string(),
   justification: z.string(),
   category: z.string(),
   severity: z.enum(["high", "medium", "low"]),
 });
+
+export const stylisticCommentOnlySuggestionSchema = z.object({
+  type: z.literal("comment-only"),
+  originalText: z.string(),
+  justification: z.string(),
+  category: z.string(),
+  severity: z.enum(["high", "medium", "low"]),
+});
+
+export const stylisticSuggestionSchema = z.discriminatedUnion("type", [
+  stylisticTrackChangeSuggestionSchema,
+  stylisticCommentOnlySuggestionSchema,
+]);
 
 export const stylisticWorkflowOutputSchema = z.object({
   suggestions: z

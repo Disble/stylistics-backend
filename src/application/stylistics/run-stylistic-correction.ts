@@ -4,6 +4,7 @@ import {
   getGoogleSafetyBlock,
   getModelIds,
   hasGoogleModel,
+  normalizeSuggestions,
 } from "./run-stylistic-correction.helpers";
 import {
   stylisticCorrectionStepSchema,
@@ -116,7 +117,7 @@ export async function runStylisticCorrection({
   );
 
   return {
-    suggestions: result.object.suggestions,
+    suggestions: normalizeSuggestions(result.object.suggestions),
     cleanPatterns: result.object.cleanPatterns,
     autorSlug: input.autorSlug,
   };

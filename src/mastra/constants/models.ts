@@ -3,9 +3,9 @@ import type { AgentConfig } from "@mastra/core/agent";
 export const modelPool = {
   "editorial-agent": "google/gemini-3.1-flash-lite-preview",
   "stylistic-agent": [
-    {
-      model: "google/gemini-3.1-pro-preview",
-    },
+    // {
+    //   model: "google/gemini-3.1-pro-preview",
+    // },
     {
       model: "google/gemini-3.1-flash-lite-preview",
     },

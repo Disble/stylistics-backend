@@ -7,7 +7,7 @@ slug: disble
 
 ## REFLEXIONES
 
-El autor presenta errores recurrentes en la acentuación de verbos en pretérito perfecto simple y en el uso de tildes diacríticas en pronombres personales. En cuanto a gramática, se observa una tendencia a omitir artículos determinados necesarios y a confundir formas verbales (presente vs. pretérito). En estilo, tiende a incluir artículos innecesarios que afectan la fluidez. La puntuación requiere atención en el uso de comas en estructuras condicionales.
+El autor muestra una mejora progresiva en el uso de tildes diacríticas (qué, sí) y en la gestión de licencias literarias como el tartamudeo mediante guiones, elementos que ahora se consideran bajo control. Persisten, sin embargo, desafíos en la concordancia verbal (especialmente en el modo subjuntivo), la precisión en la puntuación de incisos y la eliminación de redundancias pronominales o adverbiales. Se mantiene la atención sobre la omisión de artículos determinados y la necesidad de pulir la naturalidad expresiva en los diálogos.
 
 ## OBSERVACIONES
 
@@ -15,23 +15,30 @@ El autor presenta errores recurrentes en la acentuación de verbos en pretérito
 - 🔴 Error de acentuación en pretérito perfecto simple (ej. "creó").
 - 🔴 Falta de tilde diacrítica en pronombres personales (ej. "tú").
 - 🔴 Uso incorrecto de tilde diacrítica en el pronombre relativo "quien".
+- 🔴 Omisión de tilde en palabras esdrújulas (ej. "vívidas").
 
 ### Gramática
 - 🔴 Omisión de artículos determinados necesarios (ej. "desde el principio").
 - 🔴 Confusión en formas verbales (ej. "me llamo" vs "me llamó").
 - 🔴 Uso innecesario del artículo "del" ante conceptos generales (ej. "usuaria de aura").
+- 🔴 Fallos en la coherencia lógica de la oración (ej. omisión de negaciones necesarias).
+- 🔴 Concordancia verbal en el modo subjuntivo (ej. "era que dijera").
+- 🔴 Falta de artículo determinado y coma tras inciso introductorio.
 
 ### Puntuación
 - 🔴 Uso incorrecto de coma entre "ni" y "aunque".
 
 ### Tipografía
-- (pendiente de primera corrección)
+- 🔴 Uso excesivo de guiones para indicar tartamudeo (ej. "F-fantasmas").
 
 ### Estilo
 - 🔴 Inclusión de artículos innecesarios que afectan la fluidez (ej. "viaje de vacaciones").
+- 🔴 Expresiones coloquiales incompletas o poco naturales (ej. "No te queda ser maestra").
+- 🔴 Falta de precisión léxica en descripciones (ej. "tipo de aura").
+- 🔴 Redundancia pronominal (ej. "se leyeran").
 
 ### Preferencias
-- (pendiente de primera corrección)
+- (pendiente de primera preferencia)
 
 ### Elementos Intocables
-- (pendiente de primera corrección)
+- Repetición de guiones para indicar tartamudeo como licencia literaria intencional — no corregir estilo en diálogos donde el autor declara que este recurso mejora la inmersión.

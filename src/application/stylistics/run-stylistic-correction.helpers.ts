@@ -8,6 +8,7 @@ import type {
   StylisticGenerateOptions,
   StylisticModelConfig,
   StylisticWorkflowInput,
+  WorkflowSuggestion,
 } from "./run-stylistic-correction.types";
 
 /**
@@ -84,8 +85,33 @@ export function buildPrompt(input: StylisticWorkflowInput) {
         "La presencia de violencia, conflicto, lenguaje adulto o temas oscuros puede ser material editorial legitimo del genero.\n\n"
       : "";
 
+  const suggestionTypes =
+    "## TIPOS DE SUGERENCIA\n" +
+    "Cada item en `suggestions` DEBE incluir un campo `type` con uno de estos dos valores:\n\n" +
+    '### type: "track-change"\n' +
+    "Usalo cuando quieras proponer un reemplazo concreto de texto. El LLM proporciona tanto `originalText` como `suggestedText`.\n" +
+    "El texto original sera reemplazado por el sugerido.\n" +
+    "Campos requeridos: `type`, `originalText`, `suggestedText`, `justification`, `category`, `severity`.\n\n" +
+    "Ejemplo:\n" +
+    "```json\n" +
+    '{ "type": "track-change", "originalText": "El chico corrio rapido.", "suggestedText": "El chico corrio rapidamente.", "justification": "Adverbio de modo require forma adverbial, no adjetival.", "category": "gramatica", "severity": "high" }\n' +
+    "```\n\n" +
+    '### type: "comment-only"\n' +
+    "Usalo cuando quieras hacer una observacion editorial SIN proponer un cambio de texto. El texto original NO se toca.\n" +
+    "Usa este tipo en lugar de duplicar `originalText` en `suggestedText` (eso estaba mal — ya no se acepta).\n" +
+    "Casos de uso tipicos: senalar una eleccion estilistica discutible, advertir sobre un patron recurrente, " +
+    "elogiar un uso correcto que vale la pena reforzar, o dejar una nota de contexto.\n" +
+    "Campos requeridos: `type`, `originalText`, `justification`, `category`, `severity`.\n\n" +
+    "Ejemplo:\n" +
+    "```json\n" +
+    '{ "type": "comment-only", "originalText": "La oscuridad lo envolvio como un manto.", "justification": "Simil convencional. Evaluar si la voz autoral del perfil prefiere imagenes mas originales.", "category": "estilo", "severity": "low" }\n' +
+    "```\n\n" +
+    'REGLA CRITICA: NUNCA uses `type: "track-change"` con `originalText === suggestedText`. ' +
+    'Si no hay cambio de texto que proponer, usa `type: "comment-only"`.\n\n';
+
   return (
     fictionFrame +
+    suggestionTypes +
     `Lee primero el perfil del autor en autores/${input.autorSlug}.md. Si no existe, segui sin contexto previo.\n\n` +
     `Genero del texto: ${input.genero}\n\n` +
     `Texto a corregir:\n${input.text}\n\n` +
@@ -140,6 +166,23 @@ export function getGoogleSafetyBlock(
   }
 
   return undefined;
+}
+
+/**
+ * Post-processes Zod-validated suggestions and converts any track-change entry
+ * where suggestedText equals originalText into a comment-only suggestion.
+ * This prevents no-op replacements from reaching downstream consumers.
+ */
+export function normalizeSuggestions(
+  suggestions: WorkflowSuggestion[],
+): WorkflowSuggestion[] {
+  return suggestions.map((s) => {
+    if (s.type === "track-change" && s.suggestedText === s.originalText) {
+      const { suggestedText: _, ...rest } = s;
+      return { ...rest, type: "comment-only" as const };
+    }
+    return s;
+  });
 }
 
 /**
