@@ -5,3 +5,5 @@ pre-commit:
       stage_fixed: true
     filenames:
       run: bun run check:filenames
+    typecheck:
+      run: bun run typecheck

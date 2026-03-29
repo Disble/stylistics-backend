@@ -16,12 +16,13 @@ describe("normalizeSuggestions", () => {
     ];
 
     const result = normalizeSuggestions(suggestions);
+    const item = result[0]!;
 
     expect(result).toHaveLength(1);
-    expect(result[0].type).toBe("comment-only");
-    expect("suggestedText" in result[0]).toBe(false);
-    expect(result[0].originalText).toBe("el texto");
-    expect(result[0].justification).toBe("Observación sin cambio");
+    expect(item.type).toBe("comment-only");
+    expect("suggestedText" in item).toBe(false);
+    expect(item.originalText).toBe("el texto");
+    expect(item.justification).toBe("Observación sin cambio");
   });
 
   it("leaves track-change unchanged when suggestedText !== originalText", () => {
@@ -37,10 +38,11 @@ describe("normalizeSuggestions", () => {
     ];
 
     const result = normalizeSuggestions(suggestions);
+    const item = result[0]!;
 
     expect(result).toHaveLength(1);
-    expect(result[0].type).toBe("track-change");
-    expect((result[0] as { suggestedText: string }).suggestedText).toBe(
+    expect(item.type).toBe("track-change");
+    expect((item as { suggestedText: string }).suggestedText).toBe(
       "el chico corre",
     );
   });
@@ -57,10 +59,11 @@ describe("normalizeSuggestions", () => {
     ];
 
     const result = normalizeSuggestions(suggestions);
+    const item = result[0]!;
 
     expect(result).toHaveLength(1);
-    expect(result[0].type).toBe("comment-only");
-    expect("suggestedText" in result[0]).toBe(false);
+    expect(item.type).toBe("comment-only");
+    expect("suggestedText" in item).toBe(false);
   });
 
   it("returns empty array when given empty array", () => {
