@@ -13,9 +13,10 @@ export const modelPool = {
       model: "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
     },
     {
-      model: "lmstudio/qwopus3.5-9b-v3",
+      model: "lmstudio/qwen3.5-9b-claude-4.6-opus-reasoning-distilled-v2",
     },
   ],
+  "stylistic-agent-output": "lmstudio/qwen/qwen3-vl-8b",
   "profile-agent": [
     {
       model: "google/gemini-3.1-flash-lite-preview",
@@ -23,6 +24,10 @@ export const modelPool = {
     {
       model: "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
     },
+    {
+      model: "lmstudio/qwen3.5-9b-claude-4.6-opus-reasoning-distilled-v2",
+    },
   ],
-  "feedback-agent": "lmstudio/qwopus3.5-9b-v3",
+  "feedback-agent":
+    "lmstudio/qwen3.5-9b-claude-4.6-opus-reasoning-distilled-v2",
 } as const satisfies Record<string, AgentConfig["model"]>;

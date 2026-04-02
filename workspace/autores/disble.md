@@ -7,17 +7,17 @@ slug: disble
 
 ## REFLEXIONES
 
-El autor muestra una base sólida en el uso de rayas de diálogo y el uso de 'sí' de afirmación, patrones que han sido confirmados como superados. Persisten desafíos significativos en la precisión sintáctica y léxica, con una tendencia marcada a realizar calcos del inglés (especialmente en colocaciones léxicas y verbos de estado), redundancias pronominales y el uso innecesario de posesivos con partes del cuerpo. Se observa también una necesidad de mejorar la concordancia temporal y el uso de tiempos verbales (pluscuamperfecto, condicionales). La intervención se centra en eliminar calcos, corregir la concordancia temporal, ajustar la puntuación en oraciones de relativo y asegurar la naturalidad en la expresión, evitando el uso de posesivos innecesarios y redundancias.
+El autor muestra una tendencia persistente a la fragmentación sintáctica y errores de correlación temporal, especialmente en relatos en pasado. Se observa una dificultad recurrente con la puntuación (coma criminal, uso de signos de interrogación y exclamación) y una tendencia a calcos lingüísticos o regionalismos que afectan la naturalidad. Aunque se han detectado mejoras en la concordancia de pronombres y el uso de tildes en conjunciones, la precisión en la estructura de diálogos y la coherencia deíctica siguen siendo áreas críticas que requieren atención constante.
 
 ## OBSERVACIONES
 
 ### Ortografía
+
 - 🔴 Error de acentuación en pretérito perfecto simple (ej. "creó", "ordenó").
 - 🔴 Omisión de tilde en palabras esdrújulas (ej. "vívidas").
 - 🔴 Omisión de signo de apertura de interrogación.
 - 🟡 Uso de tilde diacrítica en "Sólo" (adverbio): se recomienda para evitar ambigüedad.
 - 🔴 Error en la escritura de "reemplazo" (con 'e' inicial).
-- 🔴 Uso incorrecto de tilde en conjunciones (ej. "que" vs "qué").
 - 🔴 Mayúscula inicial en nombres propios (ej. "Schrödinger").
 - 🔴 Plural normativo en extranjerismos (ej. "sándwiches").
 - 🟡 Error de tilde diacrítica en pronombre personal "tú".
@@ -26,6 +26,7 @@ El autor muestra una base sólida en el uso de rayas de diálogo y el uso de 's�
 - 🟡 Error de tilde diacrítica en relativo "quien" (ej. "quién").
 
 ### Gramática
+
 - 🟡 Omisión de artículos determinados necesarios (ej. "desde el principio").
 - 🔴 Confusión en formas verbales (ej. "me llamo" vs "me llamó").
 - 🔴 Fallos en la coherencia lógica de la oración (ej. omisión de negaciones necesarias).
@@ -37,7 +38,7 @@ El autor muestra una base sólida en el uso de rayas de diálogo y el uso de 's�
 - 🔴 Uso innecesario de conectores redundantes (ej. "entonces").
 - 🔴 Error de correlación en la estructura distributiva (cuanto... tanto).
 - 🔴 Omisión de posesivos necesarios para la cohesión.
-- 🟡 Incoherencia temporal: uso de pretérito perfecto compuesto en relatos en pasado.
+- 🔴 Incoherencia temporal: uso de pretérito perfecto compuesto en relatos en pasado (ej. "ha visto" por "había visto").
 - 🔴 Concordancia en estructuras interrogativas (ej. "¿por qué llevaron a Mei?").
 - 🔴 Uso incorrecto de preposiciones (ej. "a tarde").
 - 🔴 Uso incorrecto de preposiciones con verbos (ej. "necesitar en" vs "necesitar a").
@@ -49,21 +50,28 @@ El autor muestra una base sólida en el uso de rayas de diálogo y el uso de 's�
 - 🟡 Falta de preposición para introducir complemento del nombre.
 - 🔴 Anteposición de artículo determinado a nombres propios de persona (ej. "la Jing").
 - 🔴 Uso incorrecto de 'quién' como relativo (debe ser 'que').
+- 🔴 Error de correlación temporal: uso de presente en subordinadas de relatos en pasado (ej. "inicien" por "iniciaran", "tiene" por "tenía").
+- 🔴 Uso incorrecto de tiempos verbales en subordinadas (ej. "era" + presente -> "era" + pasado).
 
 ### Puntuación
+
 - 🟡 Uso incorrecto de coma entre "ni" y "aunque".
 - 🟡 Falta de coma antes de conjunción adversativa/distributiva.
-- 🟡 Puntuación incorrecta en incisos tras raya de diálogo (minúscula tras inciso).
 - 🔴 Falta de mayúscula tras signo de exclamación de cierre que funciona como punto.
 - 🟡 Falta de coma para delimitar complementos circunstanciales extensos.
 - 🟡 Falta de coma para separar oraciones subordinadas causales antepuestas.
 - 🔴 Uso incorrecto de comas en oraciones de relativo especificativas.
 - 🔴 Falta de coma para delimitar incisos explicativos.
+- 🔴 Error en la colocación de signos de interrogación/exclamación con preposiciones (ej. "A ¿qué...").
+- 🔴 Encadenamiento de oraciones sin nexo (coma criminal).
+- 🔴 Falta de dos puntos para introducir cita directa.
 
 ### Tipografía
+
 - 🔴 Uso excesivo de guiones para indicar tartamudeo (ej. "F-fantasmas").
 
 ### Estilo
+
 - 🟡 Inclusión de artículos innecesarios que afectan la fluidez (ej. "viaje de vacaciones").
 - 🔴 Expresiones coloquiales incompletas o poco naturales (ej. "No te queda ser maestra").
 - 🔴 Falta de precisión léxica en descripciones (ej. "tipo de aura").
@@ -78,8 +86,7 @@ El autor muestra una base sólida en el uso de rayas de diálogo y el uso de 's�
 - 🔴 Simplificación de estructuras interrogativas (ej. "¿Qué hiciste?" vs "¿Qué fue lo que hiciste?").
 - 🟡 Repetición de adjetivos o sustantivos en la misma oración.
 - 🔴 Ambigüedad en la referencia del sujeto en oraciones coordinadas.
-- 🔴 Uso de colocaciones léxicas poco naturales (ej. "asegurar palabras" por "pronunciar palabras").
-- 🔴 Uso de verbos de estado aplicados a situaciones inanimadas (calco del inglés).
 
 ### Elementos Intocables
 - Repetición de guiones para indicar tartamudeo como licencia literaria intencional — no corregir estilo en diálogos donde el autor declara que este recurso mejora la inmersión.
+- Minúscula tras signos de exclamación e interrogación de cierre para reflejar habla fluida del personaje — no corregir puntuación cuando el autor declara intencionalmente este recurso narrativo

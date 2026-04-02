@@ -8,7 +8,7 @@ import {
 import { modelPool } from "../constants/models";
 import { logger } from "../utils/logger";
 
-const STRUCTURED_OUTPUT_MODEL = modelPool["stylistic-agent"];
+const STRUCTURED_OUTPUT_MODEL = modelPool["stylistic-agent-output"];
 
 // Step 1 produces the structured correction payload. The stylistic agent can
 // read the author's profile for context, but profile mutations stay out of this step.
@@ -98,14 +98,15 @@ const updateProfile = createStep({
 
 // Keep the workflow thin: application logic lives in src/application and the
 // workflow only orchestrates correction first, then profile maintenance.
-const stylisticWorkflow = createWorkflow({
+const workflowBuilder = createWorkflow({
   id: "stylistic-workflow",
   inputSchema: stylisticWorkflowInputSchema,
   outputSchema: stylisticWorkflowOutputSchema,
-})
-  .then(correctText)
-  .then(updateProfile);
+});
+const workflowWithCorrection = workflowBuilder["then"](correctText);
+const stylisticWorkflow = workflowWithCorrection["then"](updateProfile);
 
 stylisticWorkflow.commit();
 
-export { stylisticWorkflow, stylisticWorkflowInputSchema };
+export { stylisticWorkflowInputSchema } from "../../application/stylistics/run-stylistic-correction";
+export { stylisticWorkflow };
