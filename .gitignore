@@ -48,3 +48,4 @@ dist
 workspace/dlexa
 workspace/dlexa.exe
 workspace/output.json
+.ignore/*
