@@ -98,13 +98,13 @@ const updateProfile = createStep({
 
 // Keep the workflow thin: application logic lives in src/application and the
 // workflow only orchestrates correction first, then profile maintenance.
-const workflowBuilder = createWorkflow({
+const stylisticWorkflow = createWorkflow({
   id: "stylistic-workflow",
   inputSchema: stylisticWorkflowInputSchema,
   outputSchema: stylisticWorkflowOutputSchema,
-});
-const workflowWithCorrection = workflowBuilder["then"](correctText);
-const stylisticWorkflow = workflowWithCorrection["then"](updateProfile);
+})
+  .then(correctText)
+  .then(updateProfile); // NOSONAR - Mastra DSL chaining, not Promise chaining
 
 stylisticWorkflow.commit();
 

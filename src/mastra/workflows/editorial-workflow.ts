@@ -79,7 +79,7 @@ const editorialWorkflow = createWorkflow({
   id: "editorial-workflow",
   inputSchema: editorialWorkflowInputSchema,
   outputSchema: editorialWorkflowOutputSchema,
-}).then(analyzeText);
+}).then(analyzeText); // NOSONAR - Mastra workflow DSL chaining, not Promise chaining
 
 editorialWorkflow.commit();
 
