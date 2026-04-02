@@ -7,8 +7,9 @@ import {
 
 const validTrackChange = {
   type: "track-change" as const,
-  originalText: "el niño corre",
-  suggestedText: "el chico corre",
+  context: "El chico corrio rapido por el pasillo.",
+  anchor: "rapido",
+  suggestedText: "rapidamente",
   justification: "Más preciso",
   category: "lexicon",
   severity: "medium" as const,
@@ -16,7 +17,8 @@ const validTrackChange = {
 
 const validCommentOnly = {
   type: "comment-only" as const,
-  originalText: "el niño corre",
+  context: "El niño corre por el parque todos los días.",
+  anchor: "el niño corre",
   justification: "Estilo correcto",
   category: "style",
   severity: "low" as const,

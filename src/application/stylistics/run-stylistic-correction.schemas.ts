@@ -2,8 +2,19 @@ import { z } from "zod";
 
 export const stylisticTrackChangeSuggestionSchema = z.object({
   type: z.literal("track-change"),
-  originalText: z.string(),
-  suggestedText: z.string(),
+  context: z
+    .string()
+    .describe(
+      "Fragmento suficientemente largo para localizar la corrección de forma inequívoca en el documento.",
+    ),
+  anchor: z
+    .string()
+    .describe(
+      "Parte exacta del texto que se resalta y reemplaza. Puede ser un solo carácter, una palabra, o un párrafo completo.",
+    ),
+  suggestedText: z
+    .string()
+    .describe("Reemplazo exacto del anchor. Nunca igual al anchor."),
   justification: z.string(),
   category: z.string(),
   severity: z.enum(["high", "medium", "low"]),
@@ -11,7 +22,16 @@ export const stylisticTrackChangeSuggestionSchema = z.object({
 
 export const stylisticCommentOnlySuggestionSchema = z.object({
   type: z.literal("comment-only"),
-  originalText: z.string(),
+  context: z
+    .string()
+    .describe(
+      "Fragmento suficientemente largo para localizar el comentario de forma inequívoca en el documento.",
+    ),
+  anchor: z
+    .string()
+    .describe(
+      "Parte exacta del texto sobre la que recae el comentario. No se reemplaza.",
+    ),
   justification: z.string(),
   category: z.string(),
   severity: z.enum(["high", "medium", "low"]),

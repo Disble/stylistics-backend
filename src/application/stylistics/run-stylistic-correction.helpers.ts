@@ -89,24 +89,28 @@ export function buildPrompt(input: StylisticWorkflowInput) {
     "## TIPOS DE SUGERENCIA\n" +
     "Cada item en `suggestions` DEBE incluir un campo `type` con uno de estos dos valores:\n\n" +
     '### type: "track-change"\n' +
-    "Usalo cuando quieras proponer un reemplazo concreto de texto. El LLM proporciona tanto `originalText` como `suggestedText`.\n" +
-    "El texto original sera reemplazado por el sugerido.\n" +
-    "Campos requeridos: `type`, `originalText`, `suggestedText`, `justification`, `category`, `severity`.\n\n" +
+    "Usalo cuando quieras proponer un reemplazo concreto de texto.\n" +
+    "- `context`: fragmento suficientemente largo para localizar la correccion de forma inequivoca en el documento.\n" +
+    "- `anchor`: parte exacta que se resalta y reemplaza (puede ser un solo caracter, una palabra o un parrafo completo). Debe estar contenida literalmente dentro de `context`.\n" +
+    "- `suggestedText`: reemplazo exacto del anchor. NUNCA igual al anchor.\n" +
+    "Campos requeridos: `type`, `context`, `anchor`, `suggestedText`, `justification`, `category`, `severity`.\n\n" +
     "Ejemplo:\n" +
     "```json\n" +
-    '{ "type": "track-change", "originalText": "El chico corrio rapido.", "suggestedText": "El chico corrio rapidamente.", "justification": "Adverbio de modo require forma adverbial, no adjetival.", "category": "gramatica", "severity": "high" }\n' +
+    '{ "type": "track-change", "context": "El chico corrio rapido por el pasillo.", "anchor": "rapido", "suggestedText": "rapidamente", "justification": "Adverbio de modo requiere forma adverbial, no adjetival.", "category": "gramatica", "severity": "high" }\n' +
     "```\n\n" +
     '### type: "comment-only"\n' +
-    "Usalo cuando quieras hacer una observacion editorial SIN proponer un cambio de texto. El texto original NO se toca.\n" +
-    "Usa este tipo en lugar de duplicar `originalText` en `suggestedText` (eso estaba mal — ya no se acepta).\n" +
+    "Usalo cuando quieras hacer una observacion editorial SIN proponer un cambio de texto. El texto NO se toca.\n" +
+    "- `context`: fragmento suficientemente largo para localizar el comentario de forma inequivoca en el documento.\n" +
+    "- `anchor`: parte exacta sobre la que recae el comentario. Debe estar contenida literalmente dentro de `context`.\n" +
     "Casos de uso tipicos: senalar una eleccion estilistica discutible, advertir sobre un patron recurrente, " +
     "elogiar un uso correcto que vale la pena reforzar, o dejar una nota de contexto.\n" +
-    "Campos requeridos: `type`, `originalText`, `justification`, `category`, `severity`.\n\n" +
+    "Campos requeridos: `type`, `context`, `anchor`, `justification`, `category`, `severity`.\n\n" +
     "Ejemplo:\n" +
     "```json\n" +
-    '{ "type": "comment-only", "originalText": "La oscuridad lo envolvio como un manto.", "justification": "Simil convencional. Evaluar si la voz autoral del perfil prefiere imagenes mas originales.", "category": "estilo", "severity": "low" }\n' +
+    '{ "type": "comment-only", "context": "La oscuridad lo envolvio como un manto negro.", "anchor": "como un manto negro", "justification": "Simil convencional. Evaluar si la voz autoral del perfil prefiere imagenes mas originales.", "category": "estilo", "severity": "low" }\n' +
     "```\n\n" +
-    'REGLA CRITICA: NUNCA uses `type: "track-change"` con `originalText === suggestedText`. ' +
+    "REGLA CRITICA: `anchor` debe ser una subcadena literal de `context`. " +
+    'NUNCA uses `type: "track-change"` con `anchor === suggestedText`. ' +
     'Si no hay cambio de texto que proponer, usa `type: "comment-only"`.\n\n';
 
   return (
@@ -177,7 +181,7 @@ export function normalizeSuggestions(
   suggestions: WorkflowSuggestion[],
 ): WorkflowSuggestion[] {
   return suggestions.map((s) => {
-    if (s.type === "track-change" && s.suggestedText === s.originalText) {
+    if (s.type === "track-change" && s.suggestedText === s.anchor) {
       const { suggestedText: _, ...rest } = s;
       return { ...rest, type: "comment-only" as const };
     }

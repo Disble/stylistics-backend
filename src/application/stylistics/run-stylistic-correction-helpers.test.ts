@@ -3,11 +3,12 @@ import { normalizeSuggestions } from "./run-stylistic-correction.helpers";
 import type { WorkflowSuggestion } from "./run-stylistic-correction.types";
 
 describe("normalizeSuggestions", () => {
-  it("converts track-change to comment-only when suggestedText === originalText", () => {
+  it("converts track-change to comment-only when suggestedText === anchor", () => {
     const suggestions: WorkflowSuggestion[] = [
       {
         type: "track-change",
-        originalText: "el texto",
+        context: "Aquí está el texto completo de contexto.",
+        anchor: "el texto",
         suggestedText: "el texto",
         justification: "Observación sin cambio",
         category: "estilo",
@@ -21,15 +22,16 @@ describe("normalizeSuggestions", () => {
     expect(result).toHaveLength(1);
     expect(item.type).toBe("comment-only");
     expect("suggestedText" in item).toBe(false);
-    expect(item.originalText).toBe("el texto");
+    expect(item.anchor).toBe("el texto");
     expect(item.justification).toBe("Observación sin cambio");
   });
 
-  it("leaves track-change unchanged when suggestedText !== originalText", () => {
+  it("leaves track-change unchanged when suggestedText !== anchor", () => {
     const suggestions: WorkflowSuggestion[] = [
       {
         type: "track-change",
-        originalText: "el niño corre",
+        context: "El niño corre por el parque.",
+        anchor: "el niño corre",
         suggestedText: "el chico corre",
         justification: "Más preciso",
         category: "lexicon",
@@ -51,7 +53,8 @@ describe("normalizeSuggestions", () => {
     const suggestions: WorkflowSuggestion[] = [
       {
         type: "comment-only",
-        originalText: "La oscuridad lo envolvió.",
+        context: "La oscuridad lo envolvió como un manto.",
+        anchor: "La oscuridad lo envolvió.",
         justification: "Símil convencional.",
         category: "estilo",
         severity: "low",
