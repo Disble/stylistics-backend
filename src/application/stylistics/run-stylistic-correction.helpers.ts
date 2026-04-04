@@ -90,14 +90,20 @@ export function buildPrompt(input: StylisticWorkflowInput) {
     "Cada item en `suggestions` DEBE incluir un campo `type` con uno de estos dos valores:\n\n" +
     '### type: "track-change"\n' +
     "Usalo cuando quieras proponer un reemplazo concreto de texto.\n" +
+    "Este tipo SOLO sirve cuando el cambio puede expresarse como `replace(anchor) -> suggestedText`.\n" +
     "- `context`: fragmento suficientemente largo para localizar la correccion de forma inequivoca en el documento.\n" +
     "- `anchor`: parte exacta que se resalta y reemplaza (puede ser un solo caracter, una palabra o un parrafo completo). Debe estar contenida literalmente dentro de `context`.\n" +
-    "- `suggestedText`: reemplazo exacto del anchor. NUNCA igual al anchor.\n" +
+    "- `suggestedText`: reemplazo exacto del anchor. Debe reemplazar SOLO el anchor, nunca todo el context salvo que anchor sea ese context completo. NUNCA igual al anchor.\n" +
     "Campos requeridos: `type`, `context`, `anchor`, `suggestedText`, `justification`, `category`, `severity`.\n\n" +
-    "Ejemplo:\n" +
+    "Ejemplo valido:\n" +
     "```json\n" +
     '{ "type": "track-change", "context": "El chico corrio rapido por el pasillo.", "anchor": "rapido", "suggestedText": "rapidamente", "justification": "Adverbio de modo requiere forma adverbial, no adjetival.", "category": "gramatica", "severity": "high" }\n' +
     "```\n\n" +
+    "Ejemplo invalido:\n" +
+    "```json\n" +
+    '{ "type": "track-change", "context": "—¡¿Ah?! ¿Por que habria de estar interesada en…?", "anchor": "¡¿Ah?!", "suggestedText": "—¡Ah! ¿Por que habria de estar interesada en…?", "justification": "Normalizacion de signos.", "category": "tipografia", "severity": "high" }\n' +
+    "```\n" +
+    "Es invalido porque `anchor` cubre solo un fragmento, pero `suggestedText` reescribe todo `context`. Si la correccion real abarca una region mayor, agranda el `anchor` para cubrir todo el span de reemplazo o usa `comment-only`.\n\n" +
     '### type: "comment-only"\n' +
     "Usalo cuando quieras hacer una observacion editorial SIN proponer un cambio de texto. El texto NO se toca.\n" +
     "- `context`: fragmento suficientemente largo para localizar el comentario de forma inequivoca en el documento.\n" +
@@ -111,7 +117,12 @@ export function buildPrompt(input: StylisticWorkflowInput) {
     "```\n\n" +
     "REGLA CRITICA: `anchor` debe ser una subcadena literal de `context`. " +
     'NUNCA uses `type: "track-change"` con `anchor === suggestedText`. ' +
-    'Si no hay cambio de texto que proponer, usa `type: "comment-only"`.\n\n';
+    'Si no hay cambio de texto que proponer, usa `type: "comment-only"`.\n\n' +
+    "Checklist antes de emitir un `track-change`:\n" +
+    "1. `anchor` aparece literalmente dentro de `context`.\n" +
+    "2. `suggestedText !== anchor`.\n" +
+    "3. `suggestedText` reemplaza solo el `anchor`, no texto fuera de ese span.\n" +
+    "4. Si la correccion real requiere reescribir una region mayor, expandi el `anchor` al span exacto de reemplazo o usa `comment-only`.\n\n";
 
   return (
     fictionFrame +

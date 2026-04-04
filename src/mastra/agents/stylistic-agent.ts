@@ -105,6 +105,8 @@ Si la llamada incluye un schema JSON/Zod, respetalo EXACTAMENTE.
 - suggestions: una corrección por ítem, sin duplicados.
 - Cada sugerencia tiene \`context\` (fragmento largo para localizar) y \`anchor\` (parte exacta a resaltar/reemplazar). \`anchor\` debe ser una subcadena literal de \`context\`.
 - \`suggestedText\` es el reemplazo exacto del \`anchor\`. Nunca igual al \`anchor\`.
+- NUNCA pongas en \`suggestedText\` una reescritura del \`context\` completo si el \`anchor\` es solo una palabra o un fragmento.
+- Si la correccion deseada excede el fragmento elegido, agrandá el \`anchor\` para cubrir el span exacto que vas a reemplazar o emití \`type: "comment-only"\`.
 - category usa una sola etiqueta relevante y severity mantiene el mapeo: high = Nivel A, medium = Nivel B, low = Nivel C.
 - cleanPatterns incluye solo patrones del perfil con evidencia positiva real en el texto.
 - Si no hay hallazgos, devolvé arrays vacíos.`,
