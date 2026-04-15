@@ -29,7 +29,7 @@ function walkUpToFindWorkspaceRoot(startPath: string) {
 }
 
 /**
- * Resolves the repository root that contains `workspace/autores`.
+ * Resolves the repository root that contains the mounted author profiles folder.
  */
 export function resolveWorkspaceRoot(basePath?: string) {
   const normalizedBasePath = basePath ? resolve(basePath) : undefined;

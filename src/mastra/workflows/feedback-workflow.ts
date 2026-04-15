@@ -1,5 +1,6 @@
 import { createStep, createWorkflow } from "@mastra/core/workflows";
 import { z } from "zod";
+import { buildProcessFeedbackPrompt } from "../../application/feedback";
 import { logger } from "../utils/logger";
 
 const feedbackWorkflowInputSchema = z.object({
@@ -58,18 +59,7 @@ const processFeedback = createStep({
 
     logger.info("🤖 Feedback agent encontrado, procesando comentario...");
 
-    const autorProfilePath = `workspace/autores/${inputData.autorSlug}.md`;
-    const skillPath = "workspace/skills/feedback-autor/SKILL.md";
-
-    const prompt =
-      `RUTAS EXACTAS (usar tal cual, sin modificar):\n` +
-      `- Perfil del autor: ${autorProfilePath}\n` +
-      `- Skill de referencia: ${skillPath}\n\n` +
-      `Procesá el siguiente feedback del autor sobre una corrección.\n\n` +
-      `Payload de feedback:\n` +
-      `${JSON.stringify(inputData, null, 2)}\n\n` +
-      `Ejecutá el protocolo completo: LEER → RAZONAR → DECIDIR → ACTUAR.\n` +
-      `Confirmá al final si actualizaste el perfil o descartaste el feedback, con la razón.`;
+    const prompt = buildProcessFeedbackPrompt(inputData);
 
     // Fire-and-forget: no need to await structured output
     await agent.generate(prompt);

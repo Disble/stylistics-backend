@@ -4,12 +4,14 @@ import type { StylisticCorrectionStepOutput } from "../correct-text/correct-text
  * Builds the profile-update prompt from the latest correction payload.
  */
 export function buildUpdateProfilePrompt(input: StylisticCorrectionStepOutput) {
-  const autorProfilePath = `workspace/autores/${input.autorSlug}.md`;
+  const autorProfilePath = `autores/${input.autorSlug}.md`;
 
   return (
+    `Las rutas de este prompt son relativas a la raiz ya montada del workspace. ` +
+    `No antepongas \`workspace/\` ni crees una carpeta \`workspace\` dentro del workspace actual.\n\n` +
     `Actualizá el perfil del autor "${input.autorSlug}".\n\n` +
     `Perfil del autor: ${autorProfilePath}\n` +
-    `Skill de referencia: workspace/skills/perfil-autor/SKILL.md\n\n` +
+    `Skill de referencia: skills/perfil-autor/SKILL.md\n\n` +
     `Sugerencias de corrección de esta sesión:\n` +
     `${JSON.stringify(input.suggestions, null, 2)}\n\n` +
     `Patrones encontrados limpios (evidencia positiva):\n` +

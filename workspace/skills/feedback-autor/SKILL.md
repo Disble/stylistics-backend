@@ -15,18 +15,25 @@ metadata:
 Este skill define cómo el **Feedback Agent** interpreta y aplica el feedback de un autor
 sobre una corrección individual, actualizando su perfil de manera selectiva y controlada.
 
+## Regla de rutas del workspace
+
+El workspace ya está montado en su raíz operativa.
+Todas las rutas de este skill son relativas a esa raíz.
+Nunca antepongas `workspace/`.
+Nunca crees una carpeta `workspace` dentro del workspace actual.
+
 **Diferencia clave respecto al Profile Agent:**
 
-| Profile Agent | Feedback Agent |
-|---|---|
-| Procesa la sesión completa (N sugerencias) | Procesa un único comentario de feedback |
-| Actualiza Observaciones + Reflexiones | Actualiza solo Preferencias o Elementos Intocables |
-| Usa el sistema de semáforo (🔴🟡🟢) | NO usa semáforo — escribe bullets planos |
-| Ejecutado al finalizar la corrección | Ejecutado inmediatamente tras recibir feedback |
+| Profile Agent                              | Feedback Agent                                     |
+| ------------------------------------------ | -------------------------------------------------- |
+| Procesa la sesión completa (N sugerencias) | Procesa un único comentario de feedback            |
+| Actualiza Observaciones + Reflexiones      | Actualiza solo Preferencias o Elementos Intocables |
+| Usa el sistema de semáforo (🔴🟡🟢)        | NO usa semáforo — escribe bullets planos           |
+| Ejecutado al finalizar la corrección       | Ejecutado inmediatamente tras recibir feedback     |
 
 ## Estructura del Perfil (referencia)
 
-Este skill trabaja sobre el perfil del autor definido en `workspace/skills/perfil-autor/SKILL.md`.
+Este skill trabaja sobre el perfil del autor definido en `skills/perfil-autor/SKILL.md`.
 Consultá ese documento para entender la estructura completa (REFLEXIONES + OBSERVACIONES).
 
 Las secciones objetivo de este skill son:
@@ -42,8 +49,8 @@ Las secciones objetivo de este skill son:
 
 Antes de razonar sobre cualquier cosa:
 
-1. Leer el perfil completo del autor desde `workspace/autores/{slug}.md`
-2. Leer este skill (`workspace/skills/feedback-autor/SKILL.md`) si aún no está en contexto
+1. Leer el perfil completo del autor desde `autores/{slug}.md`
+2. Leer este skill (`skills/feedback-autor/SKILL.md`) si aún no está en contexto
 3. Revisar el input recibido: `category`, `originalText`, `suggestedText`, `justification`, `rating`, `severity`, `comment`
 
 > Sin haber leído el perfil completo, NO avanzar a RAZONAR.
@@ -58,12 +65,12 @@ Clasificar la **intención del comentario** en una de estas cuatro categorías.
 
 #### Tabla de clasificación de intención
 
-| Categoría | Descripción | Ejemplos | Fuerza de señal |
-|---|---|---|---|
-| `PREFERENCIA` | El autor declara una elección estilística general | "Prefiero las comas antes de la conjunción", "Siempre uso puntos suspensivos así", "No me gusta el estilo formal" | Alta cuando usa generalizadores: "siempre", "nunca", "prefiero", "no me gusta" |
-| `INTOCABLE` | El autor declara un rasgo de voz que no debe corregirse | "Esto es parte de mi voz", "No corrijas mis oraciones largas", "El ritmo cortado es intencional" | Alta cuando menciona identidad narrativa o uso intencional explícito |
-| `CONTEXTUAL` | El comentario aplica solo a este caso concreto | "En este párrafo lo hice por el ritmo", "Aquí quise el efecto de ruptura", "Esta vez lo dejé así adrede" | Débil: atado a instancia específica ("aquí", "este párrafo", "en este caso") |
-| `VAGO` | El comentario no provee información accionable | "No sé", "Es raro", "Medio que sí", sin explicación | Sin señal clara |
+| Categoría     | Descripción                                             | Ejemplos                                                                                                          | Fuerza de señal                                                                |
+| ------------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `PREFERENCIA` | El autor declara una elección estilística general       | "Prefiero las comas antes de la conjunción", "Siempre uso puntos suspensivos así", "No me gusta el estilo formal" | Alta cuando usa generalizadores: "siempre", "nunca", "prefiero", "no me gusta" |
+| `INTOCABLE`   | El autor declara un rasgo de voz que no debe corregirse | "Esto es parte de mi voz", "No corrijas mis oraciones largas", "El ritmo cortado es intencional"                  | Alta cuando menciona identidad narrativa o uso intencional explícito           |
+| `CONTEXTUAL`  | El comentario aplica solo a este caso concreto          | "En este párrafo lo hice por el ritmo", "Aquí quise el efecto de ruptura", "Esta vez lo dejé así adrede"          | Débil: atado a instancia específica ("aquí", "este párrafo", "en este caso")   |
+| `VAGO`        | El comentario no provee información accionable          | "No sé", "Es raro", "Medio que sí", sin explicación                                                               | Sin señal clara                                                                |
 
 #### Heurísticas de fuerza de señal
 
@@ -117,6 +124,7 @@ Escribir la nueva entrada como **bullet plano**, sin prefijo de semáforo:
 ```
 
 **Ejemplos correctos:**
+
 ```
 - Prefiere coma serial antes de conjunción final en listas
 - Uso de oraciones cortas y cortadas como recurso rítmico intencional — no corregir
@@ -124,6 +132,7 @@ Escribir la nueva entrada como **bullet plano**, sin prefijo de semáforo:
 ```
 
 **Ejemplos incorrectos:**
+
 ```
 - 🔴 Prefiere coma serial...        ← NO: el semáforo no aplica aquí
 - 🟡 Uso de oraciones cortas...     ← NO: el semáforo no aplica aquí
@@ -134,6 +143,7 @@ Escribir la nueva entrada como **bullet plano**, sin prefijo de semáforo:
 #### Confirmación en respuesta
 
 Siempre confirmar en la respuesta qué se hizo:
+
 - Si se actualizó: indicar la sección y el texto exacto de la entrada agregada o modificada.
 - Si no se actualizó: indicar la categoría asignada y la razón del descarte.
 
@@ -171,5 +181,5 @@ Siempre confirmar en la respuesta qué se hizo:
 
 ## Recursos
 
-- **Estructura del perfil**: `workspace/skills/perfil-autor/SKILL.md`
-- **Directorio de perfiles**: `workspace/autores/`
+- **Estructura del perfil**: `skills/perfil-autor/SKILL.md`
+- **Directorio de perfiles**: `autores/`

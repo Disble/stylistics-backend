@@ -16,17 +16,26 @@ metadata:
 - **Profile Agent**: al finalizar una corrección — ejecutar el protocolo de actualización completo (observar, transicionar, podar, reflejar)
 - Cuando no existe perfil del autor — crear el archivo inicial desde la plantilla incluida abajo
 
+## Regla de rutas del workspace
+
+El workspace ya está montado en su raíz operativa.
+Todas las rutas de este skill son relativas a esa raíz.
+Nunca antepongas `workspace/`.
+Nunca crees una carpeta `workspace` dentro del workspace actual.
+
 ## Estructura del Perfil (2 Capas)
 
 El perfil implementa un modelo destilado de Observational Memory con dos capas:
 
 ### Capa 1: REFLEXIONES (acotada)
+
 - Budget: ~500 tokens máximo
 - Contenido: síntesis ejecutiva del autor — patrones principales, preferencias clave, elementos intocables, nivel de intervención
 - Propósito: contexto rápido para el agente corrector. Es lo ÚNICO que el corrector necesita leer.
 - Se reescribe COMPLETA en cada actualización
 
 ### Capa 2: OBSERVACIONES (flexible)
+
 - Sin límite fijo de entradas
 - Organizada por CATEGORÍAS: Ortografía, Gramática, Puntuación, Tipografía, Estilo, Preferencias, Elementos Intocables
 - Cada entrada describe un PATRÓN, no un evento
@@ -39,6 +48,7 @@ El agente corrector NO actualiza el perfil. Solo lo lee.
 Este protocolo es ejecutado exclusivamente por el Profile Agent.
 
 ### Fase 1: OBSERVAR
+
 1. Recibir las sugerencias de corrección (suggestions) y los patrones limpios (cleanPatterns) de la sesión
 2. Comparar contra las observaciones existentes del perfil
 3. Para cada patrón en suggestions:
@@ -48,6 +58,7 @@ Este protocolo es ejecutado exclusivamente por el Profile Agent.
    - Mantener sin cambios (sin evidencia no se toca)
 
 ### Fase 2: TRANSICIONAR
+
 1. Para cada patrón en cleanPatterns:
    - Buscar semánticamente en las observaciones (no matching exacto)
    - Aplicar las reglas de transición del semáforo
@@ -55,15 +66,18 @@ Este protocolo es ejecutado exclusivamente por el Profile Agent.
 2. Si un patrón aparece en suggestions Y cleanPatterns: suggestions prevalece (fallback defensivo)
 
 ### Fase 3: PODAR
+
 1. Eliminar todas las observaciones en estado 🟢
 2. Estos patrones están confirmados como superados por el autor
 
 ### Fase 4: REFLEJAR
+
 1. Reescribir las REFLEXIONES completas basándose en las observaciones actualizadas
 2. Las reflexiones son una SÍNTESIS del perfil (~500 tokens máx cuando hay muchas observaciones)
 3. Se reescriben SIEMPRE, sin importar si hubo cambios significativos o no
 
 ### Prohibiciones absolutas
+
 - NO fechas
 - NO contadores de sesiones
 - NO "confirmado en N textos"
@@ -80,18 +94,19 @@ Cada observación tiene un estado representado por un emoji al inicio de la lín
 
 ### Reglas de transición
 
-| Estado actual | Evidencia en esta sesión | Nuevo estado |
-|---|---|---|
-| (nuevo) | Aparece en suggestions | 🔴 |
-| 🔴 | Aparece en cleanPatterns | 🟡 |
-| 🔴 | Aparece en suggestions | 🔴 (se mantiene) |
-| 🔴 | Sin evidencia | 🔴 (se mantiene) |
-| 🟡 | Aparece en cleanPatterns | 🟢 → se poda |
-| 🟡 | Aparece en suggestions | 🔴 (reset) |
-| 🟡 | Sin evidencia | 🟡 (se mantiene) |
-| Podado | Aparece en suggestions | 🔴 (nueva observación) |
+| Estado actual | Evidencia en esta sesión | Nuevo estado           |
+| ------------- | ------------------------ | ---------------------- |
+| (nuevo)       | Aparece en suggestions   | 🔴                     |
+| 🔴            | Aparece en cleanPatterns | 🟡                     |
+| 🔴            | Aparece en suggestions   | 🔴 (se mantiene)       |
+| 🔴            | Sin evidencia            | 🔴 (se mantiene)       |
+| 🟡            | Aparece en cleanPatterns | 🟢 → se poda           |
+| 🟡            | Aparece en suggestions   | 🔴 (reset)             |
+| 🟡            | Sin evidencia            | 🟡 (se mantiene)       |
+| Podado        | Aparece en suggestions   | 🔴 (nueva observación) |
 
 ### Reglas clave
+
 - Un patrón va en suggestions O en cleanPatterns, NUNCA en ambos
 - Si por error aparece en ambos: suggestions prevalece (fallback defensivo)
 - Un cleanPattern es SOLO cuando el corrector encontró la construcción en el texto y estaba correcta. "No encontré errores" NO es un cleanPattern.
@@ -101,6 +116,7 @@ Cada observación tiene un estado representado por un emoji al inicio de la lín
 ## Criterios de Relevancia
 
 Al sintetizar reflexiones, priorizar:
+
 1. Patrones que afectan COMPRENSIÓN (Nivel A) > calidad (Nivel B) > pulido (Nivel C)
 2. Patrones FRECUENTES > patrones ocasionales
 3. Patrones que el autor NO ha autocorregido > patrones en mejora
@@ -111,8 +127,8 @@ Usar esta plantilla al crear un perfil nuevo. No existe archivo de plantilla sep
 
 ```markdown
 ---
-autor: {nombre}
-slug: {slug}
+autor: { nombre }
+slug: { slug }
 ---
 
 # Perfil de Corrección: {nombre}
@@ -124,24 +140,31 @@ slug: {slug}
 ## OBSERVACIONES
 
 ### Ortografía
+
 - (pendiente de primera corrección)
 
 ### Gramática
+
 - (pendiente de primera corrección)
 
 ### Puntuación
+
 - (pendiente de primera corrección)
 
 ### Tipografía
+
 - (pendiente de primera corrección)
 
 ### Estilo
+
 - (pendiente de primera corrección)
 
 ### Preferencias
+
 - (pendiente de primera preferencia)
 
 ### Elementos Intocables
+
 - (pendiente de primer intocable)
 ```
 
@@ -150,11 +173,11 @@ Nota: Al crear observaciones, todas inician en estado 🔴. Ejemplo:
 
 ## Convención de Slug
 
-| Nombre del autor       | Slug correcto        |
-|------------------------|----------------------|
-| María García           | maria-garcia         |
-| Jorge Luis Borges      | jorge-luis-borges    |
-| Ana María López Ruiz   | ana-maria-lopez-ruiz |
+| Nombre del autor     | Slug correcto        |
+| -------------------- | -------------------- |
+| María García         | maria-garcia         |
+| Jorge Luis Borges    | jorge-luis-borges    |
+| Ana María López Ruiz | ana-maria-lopez-ruiz |
 
 - Minúsculas, sin tildes, guiones en lugar de espacios
 - Si tiene seudónimo: usar el identificador acordado en el proyecto
@@ -162,18 +185,20 @@ Nota: Al crear observaciones, todas inician en estado 🔴. Ejemplo:
 ## Workflow (2 agentes)
 
 ### Agente Corrector — CARGA (antes de corregir)
-1. Leer `workspace/autores/{slug}.md`
+
+1. Leer `autores/{slug}.md`
 2. Si existe → leer SOLO la sección REFLEXIONES como contexto de máxima prioridad
 3. Si no existe → proceder sin perfil (primera sesión)
 4. NO actualizar el perfil — eso lo hace el Profile Agent
 
 ### Profile Agent — ACTUALIZACIÓN (después de corregir)
+
 1. Leer el perfil COMPLETO (reflexiones + observaciones)
 2. Recibir las sugerencias (suggestions) y patrones limpios (cleanPatterns) de la sesión
 3. Ejecutar las 4 fases: OBSERVAR → TRANSICIONAR → PODAR → REFLEJAR
-4. Escribir el perfil reescrito en `workspace/autores/{slug}.md`
+4. Escribir el perfil reescrito en `autores/{slug}.md`
 5. Si es primera sesión → crear el archivo desde la plantilla con observaciones en 🔴
 
 ## Recursos
 
-- **Directorio de perfiles**: `workspace/autores/`
+- **Directorio de perfiles**: `autores/`

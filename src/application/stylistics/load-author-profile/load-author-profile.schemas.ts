@@ -6,7 +6,7 @@ export const stylisticWorkflowInputSchema = z.object({
     .string()
     .default("disble")
     .describe(
-      "Identificador del autor en kebab-case (ej: maria-garcia). Se usa para cargar el perfil desde workspace/autores/{autorSlug}.md",
+      "Identificador del autor en kebab-case (ej: maria-garcia). Se usa para cargar el perfil del autor correspondiente.",
     ),
   genero: z
     .enum([
