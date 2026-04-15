@@ -10,10 +10,10 @@ import { editorialAgent } from "./agents/editorial-agent";
 import { feedbackAgent } from "./agents/feedback-agent";
 import { profileAgent } from "./agents/profile-agent";
 import { stylisticAgent } from "./agents/stylistic-agent";
+import { stylisticConsultationAgent } from "./agents/stylistic-consultation-agent";
 import { weatherAgent } from "./agents/weather-agent";
 import { pgStore } from "./constants/db";
 import { pgVector, VECTOR_STORE } from "./constants/vector";
-import { workspace } from "./constants/workspaces";
 import {
   completenessScorer,
   toolCallAppropriatenessScorer,
@@ -35,6 +35,7 @@ export const mastra = new Mastra({
     weatherAgent,
     editorialAgent,
     stylisticAgent,
+    stylisticConsultationAgent,
     profileAgent,
     feedbackAgent,
   },
@@ -65,5 +66,4 @@ export const mastra = new Mastra({
       },
     },
   }),
-  workspace,
 });

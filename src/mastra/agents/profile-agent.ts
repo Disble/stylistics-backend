@@ -1,6 +1,7 @@
 import { Agent } from "@mastra/core/agent";
 import { memory } from "../constants/memory";
 import { modelPool } from "../constants/models";
+import { workspace } from "../constants/workspaces";
 
 export const profileAgent = new Agent({
   id: "profile-agent",
@@ -58,4 +59,5 @@ Luego respondé confirmando qué cambios hiciste al perfil.
 - NO podar un patrón que no haya llegado a 🟢`,
   model: modelPool["profile-agent"],
   memory,
+  workspace,
 });

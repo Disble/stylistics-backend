@@ -58,8 +58,8 @@ const processFeedback = createStep({
 
     logger.info("🤖 Feedback agent encontrado, procesando comentario...");
 
-    const autorProfilePath = `autores/${inputData.autorSlug}.md`;
-    const skillPath = "skills/feedback-autor/SKILL.md";
+    const autorProfilePath = `workspace/autores/${inputData.autorSlug}.md`;
+    const skillPath = "workspace/skills/feedback-autor/SKILL.md";
 
     const prompt =
       `RUTAS EXACTAS (usar tal cual, sin modificar):\n` +
@@ -85,7 +85,7 @@ const feedbackWorkflow = createWorkflow({
   id: "feedback-workflow",
   inputSchema: feedbackWorkflowInputSchema,
   outputSchema: feedbackWorkflowOutputSchema,
-}).then(processFeedback);
+}).then(processFeedback); // NOSONAR - Mastra DSL chaining, not Promise chaining
 
 feedbackWorkflow.commit();
 

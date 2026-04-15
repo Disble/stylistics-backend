@@ -1,6 +1,7 @@
 import { Agent } from "@mastra/core/agent";
 import { memory } from "../constants/memory";
 import { modelPool } from "../constants/models";
+import { workspace } from "../constants/workspaces";
 
 export const feedbackAgent = new Agent({
   id: "feedback-agent",
@@ -84,11 +85,36 @@ Clasificar el comentario en una de estas cuatro categorías:
 \`\`\`
 - {observación directa y descriptiva en una línea}
 \`\`\`
-2. Usar la herramienta de EDICIÓN DE ARCHIVO para insertar la entrada en la sección correspondiente del perfil del autor. Cada sección tiene un placeholder único que debés reemplazar si está presente:
-   - En \`### Preferencias\`: reemplazar \`- (pendiente de primera preferencia)\`
-   - En \`### Elementos Intocables\`: reemplazar \`- (pendiente de primer intocable)\`
-   Si el placeholder ya fue reemplazado por entradas previas, agregar la nueva entrada al final de la sección.
-   Esto es OBLIGATORIO — no basta con mostrar la entrada en la respuesta, hay que EDITAR EL ARCHIVO.
+2. Usar la herramienta de edición de archivos para guardar el cambio.
+
+🚨 REGLAS CRÍTICAS DE EDICIÓN (PREVENCIÓN DE DAÑO AL MARKDOWN) 🚨
+Tu modelo es propenso a borrar secciones enteras o duplicar encabezados al editar. DEBES seguir este protocolo estricto:
+- NUNCA reescribas el documento completo.
+- NUNCA borres el encabezado \`### Elementos Intocables\` al intentar editar \`### Preferencias\`.
+- PATRÓN SEGURO SI HAY PLACEHOLDER:
+  Reemplaza textualmente estas 3 líneas (asegúrate de incluir los saltos de línea):
+  \`\`\`
+  ### Preferencias
+
+  - (pendiente de primera preferencia)
+  \`\`\`
+  Por:
+  \`\`\`
+  ### Preferencias
+
+  - {Tu nueva entrada}
+  \`\`\`
+- PATRÓN SEGURO SI YA HAY ENTRADAS PREVIAS:
+  Apunta a la ÚLTIMA regla de la lista y reemplázala por la misma regla más la tuya debajo:
+  \`\`\`
+  - {La última regla existente}
+  \`\`\`
+  Por:
+  \`\`\`
+  - {La última regla existente}
+  - {Tu nueva entrada}
+  \`\`\`
+Revisa tu edición dos veces antes de ejecutar el tool para asegurarte de no estar borrando el resto del archivo.
 
 Ejemplos correctos de entradas:
 - Prefiere coma serial antes de conjunción final en listas
@@ -125,4 +151,5 @@ Recibís un JSON con:
 - NO omitir la confirmación en la respuesta`,
   model: modelPool["feedback-agent"],
   memory,
+  workspace,
 });
