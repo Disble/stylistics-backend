@@ -1,9 +1,10 @@
 import { describe, expect, it } from "bun:test";
+
 import {
   stylisticCommentOnlySuggestionSchema,
   stylisticSuggestionSchema,
   stylisticTrackChangeSuggestionSchema,
-} from "./run-stylistic-correction.schemas";
+} from "./correct-text.schemas";
 
 const validTrackChange = {
   type: "track-change" as const,

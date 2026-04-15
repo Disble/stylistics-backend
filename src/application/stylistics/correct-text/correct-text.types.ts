@@ -1,20 +1,16 @@
 import type { AgentConfig } from "@mastra/core/agent";
 import type { z } from "zod";
 
+import type { StylisticProfileContext } from "../load-author-profile/load-author-profile.types";
 import type {
   stylisticCommentOnlySuggestionSchema,
   stylisticCorrectionStepSchema,
   stylisticTrackChangeSuggestionSchema,
-  stylisticWorkflowInputSchema,
   stylisticWorkflowOutputSchema,
-} from "./run-stylistic-correction.schemas";
+} from "./correct-text.schemas";
 
 /** Matches the `model` parameter of Mastra's Agent constructor. */
 export type StylisticModelConfig = AgentConfig["model"];
-
-export type StylisticWorkflowInput = z.infer<
-  typeof stylisticWorkflowInputSchema
->;
 
 export type StylisticWorkflowOutput = z.infer<
   typeof stylisticWorkflowOutputSchema
@@ -38,7 +34,10 @@ export type CommentOnlySuggestion = z.infer<
 export type WorkflowSuggestion = TrackChangeSuggestion | CommentOnlySuggestion;
 
 export type StylisticGenerateOptions = {
-  structuredOutput: { schema: typeof stylisticWorkflowOutputSchema };
+  structuredOutput: {
+    schema: typeof stylisticWorkflowOutputSchema;
+    model?: StylisticModelConfig;
+  };
   modelSettings: { temperature: number };
   providerOptions?: {
     google?: {
@@ -80,3 +79,5 @@ export type GoogleSafetyBlock = {
   totalTokenCount?: number;
   safetyRatings?: unknown[];
 };
+
+export type CorrectTextStepInput = StylisticProfileContext;

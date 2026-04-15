@@ -55,26 +55,10 @@ export const stylisticWorkflowOutputSchema = z.object({
     ),
 });
 
-export const stylisticWorkflowInputSchema = z.object({
-  text: z.string().describe("Texto a corregir"),
-  autorSlug: z
-    .string()
-    .default("Disble")
-    .describe(
-      "Identificador del autor en kebab-case (ej: maria-garcia). Se usa para cargar el perfil desde workspace/autores/{autorSlug}.md",
-    ),
-  genero: z
-    .enum([
-      "narrativa-literaria",
-      "ensayo-academico",
-      "periodismo-cultural",
-      "general",
-    ])
-    .default("general")
-    .describe("Genero del texto, para aplicar criterios especificos"),
-});
-
 export const stylisticCorrectionStepSchema =
   stylisticWorkflowOutputSchema.extend({
     autorSlug: z.string(),
   });
+
+export const correctTextOutputSchema = stylisticCorrectionStepSchema;
+export { stylisticProfileContextSchema as correctTextInputSchema } from "../load-author-profile/load-author-profile.schemas";

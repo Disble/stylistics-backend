@@ -1,57 +1,87 @@
+import type {
+  StylisticProfileContext,
+  StylisticWorkflowInput,
+} from "../load-author-profile/load-author-profile.types";
 import {
   buildGenerateOptions,
-  buildPrompt,
   getGoogleSafetyBlock,
   getModelIds,
   hasGoogleModel,
   normalizeSuggestions,
-} from "./run-stylistic-correction.helpers";
-import {
-  stylisticCorrectionStepSchema,
-  stylisticWorkflowInputSchema,
-  stylisticWorkflowOutputSchema,
-} from "./run-stylistic-correction.schemas";
+} from "./correct-text.helpers";
+import { buildPrompt } from "./correct-text.prompt";
 import type {
   StylisticAgent,
   StylisticCorrectionLogger,
   StylisticCorrectionStepOutput,
   StylisticModelConfig,
-  StylisticWorkflowInput,
-} from "./run-stylistic-correction.types";
-
-export type { StylisticWorkflowInput };
-export {
-  stylisticCorrectionStepSchema,
-  stylisticWorkflowInputSchema,
-  stylisticWorkflowOutputSchema,
-};
+} from "./correct-text.types";
 
 type StylisticCorrectionResult = Awaited<
   ReturnType<StylisticAgent["generate"]>
 >;
 
+function toWorkflowInput(
+  context: StylisticProfileContext,
+): StylisticWorkflowInput {
+  return {
+    text: context.text,
+    autorSlug: context.autorSlug,
+    genero: context.genero,
+  };
+}
+
 /**
  * Runs the structured stylistic correction pass and normalizes provider-specific
  * failures into workflow-level errors that are easier to trace in logs.
  */
-export async function runStylisticCorrection({
+export async function executeCorrectTextStep({
   agent,
   logger,
   model,
   input,
 }: {
-  agent: StylisticAgent;
+  agent?: StylisticAgent;
   logger: StylisticCorrectionLogger;
   model: StylisticModelConfig;
-  input: StylisticWorkflowInput;
+  input: StylisticProfileContext;
 }): Promise<StylisticCorrectionStepOutput> {
-  const prompt = buildPrompt(input);
-  const options = buildGenerateOptions(model, input.genero);
+  logger.info(
+    {
+      autorSlug: input.autorSlug,
+      genero: input.genero,
+      textLength: input.text.length,
+    },
+    "✏️ Iniciando corrección estilística",
+  );
+
+  if (!agent) {
+    logger.error(
+      {
+        autorSlug: input.autorSlug,
+      },
+      "❌ Stylistic agent not found",
+    );
+    throw new Error("Stylistic agent not found");
+  }
+
+  logger.info(
+    {
+      autorSlug: input.autorSlug,
+      genero: input.genero,
+    },
+    "🤖 Stylistic agent encontrado, iniciando corrección...",
+  );
+
+  const workflowInput = toWorkflowInput(input);
+  const prompt = buildPrompt(workflowInput, input.authorProfile);
+  const options = buildGenerateOptions(model, workflowInput.genero);
 
   logger.debug(
     {
       autorSlug: input.autorSlug,
       genero: input.genero,
+      hasAuthorProfile: true,
       textLength: input.text.length,
       promptLength: prompt.length,
       fictionFrameActive: input.genero === "narrativa-literaria",
