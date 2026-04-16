@@ -17,11 +17,20 @@ export const VECTOR_STORE = {
    */
   DIMENSION: 768,
 };
+
+const connectionPostgresString = process.env.POSTGRES_URL;
+
+if (!connectionPostgresString) {
+  throw new Error("POSTGRES_URL environment variable is required");
+}
+
 /** * The pgVector instance configured for use in the Mastra memory system.
  * This vector store is backed by PostgreSQL and is used to store and retrieve vector embeddings.
  * It must be configured with the correct connection string to the PostgreSQL database.
  */
 export const pgVector = new PgVector({
   id: "mastra-pg-vector",
-  connectionString: process.env.POSTGRES_URL,
+  connectionString: connectionPostgresString,
 });
+
+export const CONNECTION_POSTGRES_STRING = connectionPostgresString;

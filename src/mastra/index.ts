@@ -20,8 +20,8 @@ import {
   translationScorer,
 } from "./scorers/weather-scorer";
 import { editorialWorkflow } from "./workflows/editorial-workflow";
-import { feedbackWorkflow } from "./workflows/feedback-workflow";
-import { stylisticWorkflow } from "./workflows/stylistic-workflow";
+import { feedbackWorkflow } from "./workflows/feedback/feedback-workflow";
+import { stylisticWorkflow } from "./workflows/stylistic/stylistic-workflow";
 import { weatherWorkflow } from "./workflows/weather-workflow";
 
 export const mastra = new Mastra({

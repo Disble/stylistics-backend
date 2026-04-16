@@ -1,7 +1,12 @@
+/**
+ * Defines a sample editorial workflow that requests structured editorial
+ * suggestions from the editorial agent.
+ */
 import { createStep, createWorkflow } from "@mastra/core/workflows";
 import { z } from "zod";
 import { logger } from "../utils/logger";
 
+/** Describes the structured editorial suggestions returned by the workflow. */
 const editorialWorkflowOutputSchema = z.object({
   suggestions: z.array(
     z.object({
@@ -14,12 +19,14 @@ const editorialWorkflowOutputSchema = z.object({
   ),
 });
 
+/** Validates the public input accepted by the editorial workflow. */
 const editorialWorkflowInputSchema = z.object({
   text: z.string(),
   profile: z.string(),
   language: z.string(),
 });
 
+/** Invokes the editorial agent and enforces the structured output contract. */
 const analyzeText = createStep({
   id: "analyze-text",
   description: "Analyzes text and returns editorial suggestions",
@@ -51,12 +58,12 @@ const analyzeText = createStep({
       structuredOutput: { schema: editorialWorkflowOutputSchema },
     });
 
-    // Stream with logging
+    // Stream with logging so prompt/debugging sessions retain intermediate text.
     for await (const chunk of stream.textStream) {
       logger.debug({ chunk }, "editorial-workflow stream chunk");
     }
 
-    // Get structured object from stream
+    // The stream must still resolve to one final structured object.
     const object = await stream.object;
 
     if (!object) {
@@ -75,6 +82,7 @@ const analyzeText = createStep({
   },
 });
 
+/** Keeps the workflow declarative by composing a single editorial-analysis step. */
 const editorialWorkflow = createWorkflow({
   id: "editorial-workflow",
   inputSchema: editorialWorkflowInputSchema,

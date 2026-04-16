@@ -1,6 +1,11 @@
+/**
+ * Defines the demo weather workflow that fetches a forecast and asks an agent
+ * to turn it into activity suggestions.
+ */
 import { createStep, createWorkflow } from "@mastra/core/workflows";
 import { z } from "zod";
 
+/** Describes the normalized forecast payload shared between weather steps. */
 const forecastSchema = z.object({
   date: z.string(),
   maxTemp: z.number(),
@@ -10,6 +15,7 @@ const forecastSchema = z.object({
   location: z.string(),
 });
 
+/** Maps Open-Meteo weather codes to short human-readable conditions. */
 function getWeatherCondition(code: number): string {
   const conditions: Record<number, string> = {
     0: "Clear sky",
@@ -32,6 +38,7 @@ function getWeatherCondition(code: number): string {
   return conditions[code] || "Unknown";
 }
 
+/** Fetches the forecast payload that downstream planning steps consume. */
 const fetchWeather = createStep({
   id: "fetch-weather",
   description: "Fetches weather forecast for a given city",
@@ -86,6 +93,7 @@ const fetchWeather = createStep({
   },
 });
 
+/** Uses the weather agent to transform forecast data into activity suggestions. */
 const planActivities = createStep({
   id: "plan-activities",
   description: "Suggests activities based on weather conditions",
@@ -167,6 +175,7 @@ const planActivities = createStep({
   },
 });
 
+/** Composes forecast fetching and activity planning as a simple two-step workflow. */
 const weatherWorkflow = createWorkflow({
   id: "weather-workflow",
   inputSchema: z.object({
@@ -177,7 +186,7 @@ const weatherWorkflow = createWorkflow({
   }),
 })
   .then(fetchWeather)
-  .then(planActivities);
+  .then(planActivities); // NOSONAR - Mastra workflow DSL chaining, not Promise chaining
 
 weatherWorkflow.commit();
 

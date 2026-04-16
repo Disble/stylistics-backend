@@ -19,7 +19,7 @@ export const modelPool = {
   "editorial-agent": "google/gemini-3.1-flash-lite-preview",
   "stylistic-agent": stylisticReasoningModels,
   "stylistic-consultation-agent": stylisticReasoningModels,
-  "stylistic-agent-output": "lmstudio/qwen/qwen3-vl-8b",
+  "stylistic-agent-output": "lmstudio/qwopus3.5-9b-v3", // NOTE: se usa para el output de correctText
   "profile-agent": [
     {
       model: "google/gemini-3.1-flash-lite-preview",
