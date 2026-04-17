@@ -12,6 +12,8 @@ See [Mastra Skills section](#mastra-skills) for loading instructions.
 
 This is a **Mastra** project written in TypeScript. Mastra is a framework for building AI-powered applications and agents with a modern TypeScript stack.
 
+For the repository architecture and system boundaries, see [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md).
+
 ## Commands
 
 Use these commands to interact with the project.
@@ -129,5 +131,6 @@ Run `node ~/.config/opencode/skills/kin/kin-score.mjs <lib1> <lib2> ...` to eval
 
 ## Resources
 
+- [Architecture Overview](./docs/ARCHITECTURE.md)
 - [Mastra Documentation](https://mastra.ai/llms.txt)
 - [Mastra .well-known skills discovery](https://mastra.ai/.well-known/skills/index.json)

@@ -10,3 +10,5 @@ For complete setup and usage instructions, see [AGENTS.md](./AGENTS.md), which i
 - Project structure details
 - Mastra skills usage
 - Links to relevant documentation
+
+For the repository architecture, runtime boundaries, and core flow overview, see [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md).

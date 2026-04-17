@@ -5,6 +5,7 @@
 import { describe, expect, it } from "bun:test";
 
 import type { StylisticProfileContext } from "../load-author-profile/load-author-profile.types";
+import { correctTextOutputSchema } from "./correct-text.schemas";
 import { correctText } from "./correct-text.step";
 import type { StylisticAgent } from "./correct-text.types";
 
@@ -45,7 +46,7 @@ function createStepParams(agent?: StylisticAgent) {
     suspend: async () => undefined as never,
     bail: () => undefined as never,
     abort: () => undefined,
-  } as Parameters<typeof correctText.execute>[0];
+  } as unknown as Parameters<typeof correctText.execute>[0];
 }
 
 describe("correctText step", () => {
@@ -70,13 +71,17 @@ describe("correctText step", () => {
       }),
     };
 
-    const result = await correctText.execute(createStepParams(agent));
+    const rawResult = await correctText.execute(createStepParams(agent));
+    const result = correctTextOutputSchema.parse(rawResult);
     const suggestion = result.suggestions[0];
 
     expect(result.autorSlug).toBe("disble");
     expect(result.cleanPatterns).toEqual(["frases-breves"]);
     expect(result.suggestions).toHaveLength(1);
     expect(suggestion).toBeDefined();
+    if (!suggestion) {
+      throw new Error("Expected one normalized suggestion");
+    }
     expect(suggestion.type).toBe("comment-only");
     expect("suggestedText" in suggestion).toBe(false);
   });
