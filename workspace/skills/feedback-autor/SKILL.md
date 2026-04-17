@@ -147,6 +147,27 @@ Siempre confirmar en la respuesta qué se hizo:
 - Si se actualizó: indicar la sección y el texto exacto de la entrada agregada o modificada.
 - Si no se actualizó: indicar la categoría asignada y la razón del descarte.
 
+#### Política de escritura segura (obligatoria)
+
+Este skill NO autoriza reescritura libre del perfil. El modo correcto es **PATCH CONSERVADOR** sobre la subsección objetivo.
+
+1. Identificar primero la subsección objetivo exacta: `### Preferencias` o `### Elementos Intocables`.
+2. Todo encabezado y toda viñeta fuera de la subsección objetivo debe sobrevivir **verbatim**.
+3. Si la subsección objetivo existe y contiene un placeholder, reemplazar SOLO la línea del placeholder.
+4. Si la subsección objetivo existe y contiene entradas reales, actualizar una viñeta concreta o agregar una nueva debajo de la última viñeta. No reemplazar la subsección completa.
+5. Si la subsección objetivo no existe, recrearla en el orden canónico de `OBSERVACIONES` sin tocar ni resumir las subsecciones vecinas:
+   - `### Preferencias` va antes de `### Elementos Intocables`.
+   - `### Elementos Intocables` va después de `### Preferencias` o al final de `OBSERVACIONES` si `Preferencias` tampoco existe.
+6. Borrados permitidos:
+   - el placeholder exacto de la subsección que pasa a tener contenido real;
+   - una viñeta exacta que se reemplaza in-place por una versión más rica de la misma idea.
+7. Borrados prohibidos:
+   - encabezados (`##`, `###`);
+   - subsecciones completas por omisión;
+   - viñetas existentes de otras subsecciones;
+   - contenido existente de `Preferencias` o `Elementos Intocables` sin una sustitución explícita uno a uno.
+8. Si no puedes anclar la edición sin riesgo de corrupción estructural, **NO escribas**. Falla en modo seguro y responde que abortaste la escritura.
+
 ---
 
 ## Prohibiciones absolutas

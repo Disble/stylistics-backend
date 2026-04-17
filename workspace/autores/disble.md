@@ -7,16 +7,16 @@ slug: disble
 
 ## REFLEXIONES
 
-El autor muestra una tendencia persistente a la fragmentación sintáctica y errores de correlación temporal, especialmente en relatos en pasado. Se observa una dificultad recurrente con la puntuación (coma criminal, uso de signos de interrogación y exclamación) y una tendencia a calcos lingüísticos o regionalismos que afectan la naturalidad. Aunque se han detectado mejoras en la concordancia de pronombres y el uso de tildes en conjunciones, la precisión en la estructura de diálogos y la coherencia deíctica siguen siendo áreas críticas que requieren atención constante.
+El autor presenta una tendencia persistente a la fragmentación oracional, separando con punto elementos que dependen sintácticamente de la oración principal (incisos, subordinadas, comparativas). Se observa una recurrencia en errores de concordancia verbal y correlación temporal, especialmente al mezclar tiempos en relatos narrados en pasado. Persisten calcos lingüísticos y errores en el régimen verbal. Se requiere atención en la puntuación de conectores y la estructura de las oraciones subordinadas. Se ha confirmado la superación de patrones relacionados con el uso de verbos intransitivos como transitivos y la correlación temporal en condiciones irreales y subordinadas de relatos en pasado.
 
 ## OBSERVACIONES
 
 ### Ortografía
 
 - 🔴 Error de acentuación en pretérito perfecto simple (ej. "creó", "ordenó").
-- 🔴 Omisión de tilde en palabras esdrújulas (ej. "vívidas").
+- 🔴 Omisión de tilde en palabras esdrújulas (ej. "vívidas", "árbitra").
 - 🔴 Omisión de signo de apertura de interrogación.
-- 🟡 Uso de tilde diacrítica en "Sólo" (adverbio): se recomienda para evitar ambigüedad.
+- 🟢 Uso de tilde diacrítica en 'sólo' (adverbio): se recomienda para evitar ambigüedad.
 - 🔴 Error en la escritura de "reemplazo" (con 'e' inicial).
 - 🔴 Mayúscula inicial en nombres propios (ej. "Schrödinger").
 - 🔴 Plural normativo en extranjerismos (ej. "sándwiches").
@@ -24,6 +24,11 @@ El autor muestra una tendencia persistente a la fragmentación sintáctica y err
 - 🟡 Error de tilde diacrítica en relativo "cual" (ej. "el cuál").
 - 🟡 Error tipográfico por duplicidad de palabra (ej. "quienquién").
 - 🟡 Error de tilde diacrítica en relativo "quien" (ej. "quién").
+- 🔴 Error de tilde diacrítica en relativo "que" (ej. "lo qué", "qué era").
+- 🔴 Error de escritura por duplicidad de palabra y falta de espacio (ej. "enteréde").
+- 🔴 Error ortográfico en locución adverbial "en serio" (escrito como "enserio").
+- 🔴 Uso de minúscula en "Dios" en expresiones lexicalizadas.
+- 🔴 Error tipográfico: "internar" por "intentar".
 
 ### Gramática
 
@@ -46,47 +51,61 @@ El autor muestra una tendencia persistente a la fragmentación sintáctica y err
 - 🔴 Laísmo (uso de 'la' por 'le' con verbos que rigen objeto indirecto).
 - 🔴 Falta de concordancia temporal en el uso de tiempos verbales (ej. imperfecto con pretérito perfecto simple).
 - 🔴 Uso innecesario del artículo "del" ante conceptos generales.
-- 🔴 Uso de posesivos innecesarios con partes del cuerpo o atributos inalienables.
+- 🔴 Uso de posesivos innecesarios con partes del cuerpo o atributos inalienables (ej. "su voz" por "la voz").
 - 🟡 Falta de preposición para introducir complemento del nombre.
 - 🔴 Anteposición de artículo determinado a nombres propios de persona (ej. "la Jing").
 - 🔴 Uso incorrecto de 'quién' como relativo (debe ser 'que').
 - 🔴 Error de correlación temporal: uso de presente en subordinadas de relatos en pasado (ej. "inicien" por "iniciaran", "tiene" por "tenía").
-- 🔴 Uso incorrecto de tiempos verbales en subordinadas (ej. "era" + presente -> "era" + pasado).
+- 🔴 Uso incorrecto de conjunciones en alternativas (ej. "y" por "o").
+- 🔴 Uso incorrecto de preposiciones en régimen verbal (ej. "enterarse algo" por "enterarse de algo").
+- 🟡 Uso incorrecto de pronombre 'le' con objeto directo (leísmo/redundancia).
+- 🔴 Error de concordancia verbal/pronominal (ej. uso de imperativo por infinitivo).
+- 🔴 Incoherencia temporal: uso de presente en verbos de estado/conocimiento en relatos en pasado (ej. "sabe" por "sabía", "significa" por "significaba", "parece" por "parecía").
+- 🔴 Uso incorrecto de preposiciones en régimen verbal (pensar en).
+- 🔴 Error de correlación temporal: uso de presente en condición irreal en el pasado (ej. "si lo supiera" por "si lo hubiera sabido").
+- 🔴 Galicismo: uso de "que" en lugar de "cuando" en expresiones temporales.
+- 🔴 Uso incorrecto de locución conjuntiva temporal "una vez" (debe ser "una vez que").
+- 🔴 Error de correlación temporal: uso de pretérito pluscuamperfecto en lugar de pretérito imperfecto.
+- 🔴 Error de correlación temporal: uso de pretérito imperfecto de subjuntivo en concesivas.
+- 🔴 Queísmo: omisión de preposición "de" en "darse cuenta de" o "qué es lo que".
+- 🔴 Error de correlación temporal: uso de presente en oraciones hipotéticas.
+- 🔴 Error de correlación temporal: uso de "habría de esperarse" (debe ser "era de esperarse").
+- 🔴 Uso incorrecto de pronombres reflexivos (ej. "a ella misma" por "a sí misma").
+- 🔴 Uso incorrecto de verbos de percepción con gerundio (ej. "sentir viniendo" por "sentir venir").
+- 🔴 Error de concordancia en relativos (ej. "quienes" con inanimados).
+- 🔴 Uso incorrecto de 'decir' (transitivo) sin objeto (ej. "no era quién para decir").
+- 🔴 Uso incorrecto de perífrasis terminativa (ej. "terminar de hacer").
+- 🔴 Gerundio de posterioridad.
+- 🔴 Falta de conjunción copulativa para unir elementos coordinados.
+- 🔴 Error de correlación temporal: uso de presente en verbos de acción en relatos en pasado.
+- 🔴 Error de concordancia verbal: sujeto plural con verbo singular.
+- 🔴 Uso incorrecto de calcos lingüísticos (ej. "dar daño" por "causar daño").
+- 🔴 Uso incorrecto de verbos intransitivos como transitivos (ej. "desprender" sin pronombre).
+- 🔴 Uso incorrecto de preposiciones en régimen verbal (ej. 'proyectar a' por 'proyectar sobre', 'esperar que' por 'esperar a que').
+- 🔴 Incoherencia temporal: uso de presente en verbos de estado/conocimiento en relatos en pasado (ej. 'significa' por 'significaba').
 
 ### Puntuación
 
-- 🟡 Uso incorrecto de coma entre "ni" y "aunque".
-- 🟡 Falta de coma antes de conjunción adversativa/distributiva.
-- 🔴 Falta de mayúscula tras signo de exclamación de cierre que funciona como punto.
-- 🟡 Falta de coma para delimitar complementos circunstanciales extensos.
-- 🟡 Falta de coma para separar oraciones subordinadas causales antepuestas.
-- 🔴 Uso incorrecto de comas en oraciones de relativo especificativas.
-- 🔴 Falta de coma para delimitar incisos explicativos.
-- 🔴 Error en la colocación de signos de interrogación/exclamación con preposiciones (ej. "A ¿qué...").
-- 🔴 Encadenamiento de oraciones sin nexo (coma criminal).
-- 🔴 Falta de dos puntos para introducir cita directa.
+- 🔴 Falta de coma en incisos explicativos.
+- 🔴 Uso incorrecto de punto y coma en enumeraciones complejas.
+- 🔴 Falta de mayúscula tras signo de exclamación de cierre en acotaciones de acción.
+- 🔴 Fragmentación oracional: uso de punto en lugar de coma o punto y coma para separar oraciones subordinadas o incisos.
+- 🔴 Uso incorrecto de coma en locuciones adverbiales.
+- 🔴 Falta de puntuación fuerte (punto y coma o punto) antes de conectores adversativos/concesivos.
+- 🔴 Fragmentación oracional: uso incorrecto de punto seguido para separar estructuras consecutivas o subordinadas que dependen de la oración principal.
 
 ### Tipografía
 
-- 🔴 Uso excesivo de guiones para indicar tartamudeo (ej. "F-fantasmas").
+- (pendiente de primera corrección)
 
 ### Estilo
 
-- 🟡 Inclusión de artículos innecesarios que afectan la fluidez (ej. "viaje de vacaciones").
-- 🔴 Expresiones coloquiales incompletas o poco naturales (ej. "No te queda ser maestra").
-- 🔴 Falta de precisión léxica en descripciones (ej. "tipo de aura").
-- 🔴 Redundancia pronominal (ej. "se leyeran", "se calló a ella misma", "a ella misma").
-- 🔴 Uso innecesariamente complejo del pluscuamperfecto de subjuntivo.
-- 🔴 Ambigüedad en la referencia de pronombres (ej. "utilizarla").
-- 🔴 Uso de términos excesivamente despectivos o coloquiales en diálogos (ej. "tipa", "esa").
-- 🔴 Uso de "es" en lugar de verbos más precisos (ej. "resulta").
-- 🔴 Orden sintáctico poco fluido.
-- 🔴 Uso de formas verbales compuestas en diálogos donde se espera una forma simple (ej. "¿Quién te has creído?").
-- 🔴 Uso de posesivos innecesarios (ej. "su pijamada").
-- 🔴 Simplificación de estructuras interrogativas (ej. "¿Qué hiciste?" vs "¿Qué fue lo que hiciste?").
-- 🟡 Repetición de adjetivos o sustantivos en la misma oración.
-- 🔴 Ambigüedad en la referencia del sujeto en oraciones coordinadas.
+- 🔴 Eco léxico: repetición innecesaria de palabras en contextos muy cercanos (ej. 'fuente de luz' / 'proyectaba su luz').
+
+### Preferencias
+
+- (pendiente de primera preferencia)
 
 ### Elementos Intocables
-- Repetición de guiones para indicar tartamudeo como licencia literaria intencional — no corregir estilo en diálogos donde el autor declara que este recurso mejora la inmersión.
-- Minúscula tras signos de exclamación e interrogación de cierre para reflejar habla fluida del personaje — no corregir puntuación cuando el autor declara intencionalmente este recurso narrativo
+
+- (pendiente de primer intocable)

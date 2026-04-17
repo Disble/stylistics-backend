@@ -32,7 +32,7 @@ El perfil implementa un modelo destilado de Observational Memory con dos capas:
 - Budget: ~500 tokens máximo
 - Contenido: síntesis ejecutiva del autor — patrones principales, preferencias clave, elementos intocables, nivel de intervención
 - Propósito: contexto rápido para el agente corrector. Es lo ÚNICO que el corrector necesita leer.
-- Se reescribe COMPLETA en cada actualización
+- Se regenera COMPLETA en cada actualización, pero reemplazando SOLO el bloque entre `## REFLEXIONES` y `## OBSERVACIONES`.
 
 ### Capa 2: OBSERVACIONES (flexible)
 
@@ -76,8 +76,26 @@ Este protocolo es ejecutado exclusivamente por el Profile Agent.
 2. Las reflexiones son una SÍNTESIS del perfil (~500 tokens máx cuando hay muchas observaciones)
 3. Se reescriben SIEMPRE, sin importar si hubo cambios significativos o no
 
+### Política de escritura segura (obligatoria)
+
+Este protocolo NO autoriza una reescritura libre del archivo entero. El modo correcto es **PATCH CONSERVADOR**.
+
+1. Antes de escribir, identificar la estructura actual completa del archivo: `## REFLEXIONES`, `## OBSERVACIONES` y cada subsección `### ...` existente.
+2. Todo encabezado y toda viñeta que no esté siendo modificada por evidencia directa de `suggestions` o `cleanPatterns` debe sobrevivir **verbatim**.
+3. La actualización de `REFLEXIONES` se hace reemplazando únicamente el bloque comprendido entre `## REFLEXIONES` y `## OBSERVACIONES`.
+4. La actualización de `OBSERVACIONES` se hace con cambios localizados sobre viñetas concretas dentro de su subsección. Nunca se debe sustituir una subsección completa por una versión abreviada si esa subsección ya tenía múltiples entradas válidas.
+5. Borrados permitidos:
+   - una viñeta exacta que llegó a 🟢 y debe podarse;
+   - un placeholder exacto como `- (pendiente de primera corrección)` o equivalentes, cuando la sección pasa a tener contenido real.
+6. Borrados prohibidos:
+   - encabezados (`##`, `###`);
+   - subsecciones completas por omisión;
+   - viñetas existentes solo porque no aparecieron en la sesión actual.
+7. Si no puedes preservar literalmente el resto del documento mientras aplicas los cambios, **NO escribas**. Falla en modo seguro: responde que abortaste la escritura por riesgo de corrupción estructural.
+
 ### Prohibiciones absolutas
 
+- NO borrar ni descartar las entradas existentes en las secciones `### Preferencias` y `### Elementos Intocables`. Puedes AGREGAR nuevos patrones a estas secciones si corresponden, pero si reescribes el archivo completo, DEBES conservar intactas las entradas que ya estaban.
 - NO fechas
 - NO contadores de sesiones
 - NO "confirmado en N textos"
@@ -196,7 +214,7 @@ Nota: Al crear observaciones, todas inician en estado 🔴. Ejemplo:
 1. Leer el perfil COMPLETO (reflexiones + observaciones)
 2. Recibir las sugerencias (suggestions) y patrones limpios (cleanPatterns) de la sesión
 3. Ejecutar las 4 fases: OBSERVAR → TRANSICIONAR → PODAR → REFLEJAR
-4. Escribir el perfil reescrito en `autores/{slug}.md`
+4. Aplicar un PATCH CONSERVADOR en `autores/{slug}.md`: reemplazar solo el bloque de `REFLEXIONES` y modificar solo las viñetas necesarias en `OBSERVACIONES`
 5. Si es primera sesión → crear el archivo desde la plantilla con observaciones en 🔴
 
 ## Recursos
