@@ -3,6 +3,7 @@ import {
   LocalFilesystem,
   LocalSandbox,
   Workspace,
+  WORKSPACE_TOOLS,
 } from "@mastra/core/workspace";
 
 console.log(resolve(import.meta.dirname, "../../workspace"));
@@ -16,4 +17,11 @@ export const workspace = new Workspace({
     isolation: "none",
   }),
   skills: ["skills"],
+  lsp: false,
+  tools: {
+    [WORKSPACE_TOOLS.FILESYSTEM.FILE_STAT]: { enabled: false },
+    [WORKSPACE_TOOLS.SANDBOX.GET_PROCESS_OUTPUT]: { enabled: false },
+    [WORKSPACE_TOOLS.LSP.LSP_INSPECT]: { enabled: false },
+    [WORKSPACE_TOOLS.FILESYSTEM.DELETE]: { enabled: false },
+  }
 });

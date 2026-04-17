@@ -24,6 +24,8 @@ describe("buildProcessFeedbackPrompt", () => {
       "Skill de referencia: skills/feedback-autor/SKILL.md",
     );
     expect(prompt).toContain("No antepongas `workspace/`");
+    expect(prompt).toContain("PATCH CONSERVADOR");
+    expect(prompt).toContain("NO escribas");
     expect(prompt).not.toContain("workspace/autores/");
     expect(prompt).not.toContain("workspace/skills/");
   });

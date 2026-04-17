@@ -21,6 +21,10 @@ export function buildProcessFeedbackPrompt(input: ProcessFeedbackPromptInput) {
     "Payload de feedback:\n" +
     `${JSON.stringify(input, null, 2)}\n\n` +
     "Ejecuta el protocolo completo: LEER -> RAZONAR -> DECIDIR -> ACTUAR.\n" +
+    "MODO DE ESCRITURA OBLIGATORIO: PATCH CONSERVADOR, nunca reescritura por omision.\n" +
+    "- Toca solo la subseccion objetivo (`### Preferencias` o `### Elementos Intocables`).\n" +
+    "- Conserva intacto todo encabezado y toda viñeta fuera de esa subseccion.\n" +
+    "- Si no puedes anclar la edicion de forma segura, NO escribas y reporta aborto por riesgo estructural.\n" +
     "Confirma al final si actualizaste el perfil o descartaste el feedback, con la razon."
   );
 }

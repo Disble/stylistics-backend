@@ -11,7 +11,7 @@ const stylisticReasoningModels = [
     model: "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
   },
   {
-    model: "lmstudio/qwen3.5-9b-claude-4.6-opus-reasoning-distilled-v2",
+    model: "lmstudio/qwen3.6-35b-a3b@q2_k_xl",
   },
 ] as const satisfies AgentConfig["model"];
 
@@ -19,7 +19,6 @@ export const modelPool = {
   "editorial-agent": "google/gemini-3.1-flash-lite-preview",
   "stylistic-agent": stylisticReasoningModels,
   "stylistic-consultation-agent": stylisticReasoningModels,
-  "stylistic-agent-output": "lmstudio/qwopus3.5-9b-v3", // NOTE: se usa para el output de correctText
   "profile-agent": [
     {
       model: "google/gemini-3.1-flash-lite-preview",
@@ -28,9 +27,9 @@ export const modelPool = {
       model: "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
     },
     {
-      model: "lmstudio/qwen3.5-9b-claude-4.6-opus-reasoning-distilled-v2",
+      model: "lmstudio/qwen3.6-35b-a3b@q2_k_xl",
     },
   ],
   "feedback-agent":
-    "lmstudio/qwen3.5-9b-claude-4.6-opus-reasoning-distilled-v2",
+    "lmstudio/qwen3.6-35b-a3b@q2_k_xl",
 } as const satisfies Record<string, AgentConfig["model"]>;

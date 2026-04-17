@@ -21,6 +21,12 @@ export function buildUpdateProfilePrompt(input: StylisticCorrectionStepOutput) {
     `Patrones encontrados limpios (evidencia positiva):\n` +
     `${JSON.stringify(input.cleanPatterns, null, 2)}\n\n` +
     `Ejecutá las 4 fases: OBSERVAR → TRANSICIONAR → PODAR → REFLEJAR.\n` +
-    `Escribí el perfil actualizado en ${autorProfilePath} usando la herramienta de escritura del workspace.`
+    `MODO DE ESCRITURA OBLIGATORIO: PATCH CONSERVADOR, nunca reescritura por omisión.\n` +
+    `- Conservá intacto todo encabezado y toda viñeta no afectada por evidencia directa de suggestions/cleanPatterns.\n` +
+    `- Reemplazá solo el bloque entre ## REFLEXIONES y ## OBSERVACIONES.\n` +
+    `- En OBSERVACIONES, modificá solo las viñetas necesarias dentro de su subsección.\n` +
+    `- Solo podés borrar una viñeta cuando la skill lo autoriza explícitamente (poda de 🟢) o cuando reemplazás un placeholder exacto.\n` +
+    `- Si no podés preservar el resto del archivo literalmente, NO escribas. Abortá por riesgo estructural.\n` +
+    `Escribí el perfil actualizado en ${autorProfilePath} usando la herramienta de escritura del workspace solo si podés hacerlo con seguridad.`
   );
 }
