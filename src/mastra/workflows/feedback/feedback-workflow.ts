@@ -10,17 +10,19 @@ import { buildProcessFeedbackPrompt } from "./steps";
 /** Validates the payload received from the frontend feedback form. */
 const feedbackWorkflowInputSchema = z.object({
   category: z.string(),
-  originalText: z.string(),
-  suggestedText: z.string(),
+  context: z.string(),
+  anchor: z.string(),
+  suggestedText: z.string().optional(),
   justification: z
     .string()
     .describe(
       "Justificación original del corrector. Permite al agente distinguir entre errores normativos y decisiones estilísticas intencionales.",
     ),
-  rating: z.enum(["positive", "negative"]),
+  action: z.enum(["accept", "reject"]),
   severity: z.enum(["high", "medium", "low"]),
+  suggestionType: z.enum(["track-change", "comment-only"]),
   comment: z.string().optional(),
-  autorSlug: z.string().default("disble"),
+  autorSlug: z.string(),
 });
 
 /** Describes the acknowledgement payload returned by the feedback workflow. */
@@ -40,8 +42,9 @@ const processFeedback = createStep({
     logger.info(
       {
         category: inputData.category,
-        rating: inputData.rating,
+        action: inputData.action,
         severity: inputData.severity,
+        suggestionType: inputData.suggestionType,
         hasComment: !!inputData.comment,
       },
       "💬 Procesando feedback del autor",
@@ -50,7 +53,7 @@ const processFeedback = createStep({
     // Guard: no comment -> skip agent, return early.
     if (!inputData.comment) {
       logger.info(
-        { category: inputData.category, rating: inputData.rating },
+        { category: inputData.category, action: inputData.action },
         "💬 Feedback sin comentario, ignorado",
       );
       return { received: true, receivedAt: new Date().toISOString() };

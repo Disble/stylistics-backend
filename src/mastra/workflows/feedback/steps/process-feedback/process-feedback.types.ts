@@ -5,10 +5,12 @@
 export interface ProcessFeedbackPromptInput {
   autorSlug: string;
   category: string;
-  originalText: string;
-  suggestedText: string;
+  context: string;
+  anchor: string;
+  suggestedText?: string;
   justification: string;
-  rating: "positive" | "negative";
+  action: "accept" | "reject";
   severity: "high" | "medium" | "low";
+  suggestionType: "track-change" | "comment-only";
   comment?: string;
 }

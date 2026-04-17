@@ -51,7 +51,7 @@ Antes de razonar sobre cualquier cosa:
 
 1. Leer el perfil completo del autor desde `autores/{slug}.md`
 2. Leer este skill (`skills/feedback-autor/SKILL.md`) si aún no está en contexto
-3. Revisar el input recibido: `category`, `originalText`, `suggestedText`, `justification`, `rating`, `severity`, `comment`
+3. Revisar el input recibido: `category`, `context`, `anchor`, `suggestedText`, `justification`, `action`, `severity`, `suggestionType`, `comment`
 
 > Sin haber leído el perfil completo, NO avanzar a RAZONAR.
 
@@ -187,11 +187,13 @@ Este skill NO autoriza reescritura libre del perfil. El modo correcto es **PATCH
 ```typescript
 {
   category: string,        // categoría de la corrección original
-  originalText: string,    // texto original antes de la corrección
-  suggestedText: string,   // texto sugerido por el corrector
+  context: string,         // contexto/parrafo completo donde vive la sugerencia
+  anchor: string,          // fragmento exacto dentro de `context` al que apunta la sugerencia
+  suggestedText?: string,  // texto sugerido por el corrector; ausente en `comment-only`
   justification: string,   // justificación que generó el corrector — contexto clave para RAZONAR
-  rating: "positive" | "negative",
+  action: "accept" | "reject",
   severity: "high" | "medium" | "low",
+  suggestionType: "track-change" | "comment-only",
   comment?: string,        // comentario libre del autor (puede estar vacío)
 }
 ```

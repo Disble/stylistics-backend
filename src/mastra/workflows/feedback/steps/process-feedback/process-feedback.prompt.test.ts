@@ -11,11 +11,13 @@ describe("buildProcessFeedbackPrompt", () => {
     const prompt = buildProcessFeedbackPrompt({
       autorSlug: "disble",
       category: "estilo",
-      originalText: "Texto original",
+      context: "Párrafo completo con Texto original.",
+      anchor: "Texto original",
       suggestedText: "Texto sugerido",
       justification: "Justificacion breve",
-      rating: "negative",
+      action: "reject",
       severity: "medium",
+      suggestionType: "track-change",
       comment: "Prefiero esta construccion.",
     });
 
