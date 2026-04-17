@@ -1,4 +1,3 @@
-import { ModelRouterEmbeddingModel } from "@mastra/core/llm";
 import { ollama } from "ai-sdk-ollama";
 import { VECTOR_STORE } from "./vector";
 

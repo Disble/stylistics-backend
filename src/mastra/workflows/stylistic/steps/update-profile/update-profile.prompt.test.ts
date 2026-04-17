@@ -20,9 +20,13 @@ describe("buildUpdateProfilePrompt", () => {
     });
 
     expect(prompt).toContain("Perfil del autor: autores/disble.md");
-    expect(prompt).toContain("Skill de referencia: skills/perfil-autor/SKILL.md");
+    expect(prompt).toContain(
+      "Skill de referencia: skills/perfil-autor/SKILL.md",
+    );
     expect(prompt).toContain("PATCH CONSERVADOR");
-    expect(prompt).toContain("Reemplazá solo el bloque entre ## REFLEXIONES y ## OBSERVACIONES");
+    expect(prompt).toContain(
+      "Reemplazá solo el bloque entre ## REFLEXIONES y ## OBSERVACIONES",
+    );
     expect(prompt).toContain("NO escribas");
     expect(prompt).not.toContain("workspace/autores/");
     expect(prompt).not.toContain("workspace/skills/");

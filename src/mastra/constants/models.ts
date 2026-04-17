@@ -30,6 +30,5 @@ export const modelPool = {
       model: "lmstudio/qwen3.6-35b-a3b@q2_k_xl",
     },
   ],
-  "feedback-agent":
-    "lmstudio/qwen3.6-35b-a3b@q2_k_xl",
+  "feedback-agent": "lmstudio/qwen3.6-35b-a3b@q2_k_xl",
 } as const satisfies Record<string, AgentConfig["model"]>;
