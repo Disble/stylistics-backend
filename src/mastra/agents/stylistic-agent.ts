@@ -1,7 +1,11 @@
+/**
+ * Registers the main stylistic-correction agent used by the stylistic workflow.
+ */
 import { Agent } from "@mastra/core/agent";
 import { memory } from "../constants/memory";
 import { modelPool } from "../constants/models";
 
+/** Produces structured orthotypographic and stylistic correction suggestions. */
 export const stylisticAgent = new Agent({
   id: "stylistic-agent",
   name: "Stylistic Agent",

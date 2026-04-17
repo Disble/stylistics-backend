@@ -1,6 +1,11 @@
+/**
+ * Defines the demo weather tool that resolves a city into current Open-Meteo
+ * conditions for the weather agent and workflow.
+ */
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 
+/** Represents the subset of the geocoding response required by this tool. */
 interface GeocodingResponse {
   results: {
     latitude: number;
@@ -8,6 +13,8 @@ interface GeocodingResponse {
     name: string;
   }[];
 }
+
+/** Represents the subset of the weather response required by this tool. */
 interface WeatherResponse {
   current: {
     time: string;
@@ -20,6 +27,7 @@ interface WeatherResponse {
   };
 }
 
+/** Fetches current weather metrics for one city name. */
 export const weatherTool = createTool({
   id: "get-weather",
   description: "Get current weather for a location",
@@ -40,6 +48,7 @@ export const weatherTool = createTool({
   },
 });
 
+/** Resolves one city and returns normalized current-weather data for agents. */
 const getWeather = async (location: string) => {
   const geocodingUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1`;
   const geocodingResponse = await fetch(geocodingUrl);
@@ -67,6 +76,7 @@ const getWeather = async (location: string) => {
   };
 };
 
+/** Maps Open-Meteo weather codes to short human-readable conditions. */
 function getWeatherCondition(code: number): string {
   const conditions: Record<number, string> = {
     0: "Clear sky",

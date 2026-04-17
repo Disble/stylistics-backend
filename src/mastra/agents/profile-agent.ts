@@ -1,8 +1,13 @@
+/**
+ * Registers the agent responsible for maintaining author profile files from
+ * structured correction-session evidence.
+ */
 import { Agent } from "@mastra/core/agent";
 import { memory } from "../constants/memory";
 import { modelPool } from "../constants/models";
 import { workspace } from "../constants/workspaces";
 
+/** Updates persisted author profiles from correction suggestions and clean patterns. */
 export const profileAgent = new Agent({
   id: "profile-agent",
   name: "Profile Agent",

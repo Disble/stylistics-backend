@@ -1,8 +1,12 @@
+/**
+ * Registers the sample weather agent used by the demo weather workflow.
+ */
 import { Agent } from "@mastra/core/agent";
 import { Memory } from "@mastra/memory";
 import { scorers } from "../scorers/weather-scorer";
 import { weatherTool } from "../tools/weather-tool";
 
+/** Provides weather-aware activity suggestions by combining tool output and scoring. */
 export const weatherAgent = new Agent({
   id: "weather-agent",
   name: "Weather Agent",

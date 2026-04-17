@@ -1,3 +1,7 @@
+/**
+ * Assembles the Mastra runtime for this backend, wiring registered agents,
+ * workflows, storage, vectors, logging, and observability.
+ */
 import { Mastra } from "@mastra/core/mastra";
 import { PinoLogger } from "@mastra/loggers";
 import {
@@ -24,6 +28,7 @@ import { feedbackWorkflow } from "./workflows/feedback/feedback-workflow";
 import { stylisticWorkflow } from "./workflows/stylistic/stylistic-workflow";
 import { weatherWorkflow } from "./workflows/weather-workflow";
 
+/** Exposes the configured Mastra application instance consumed by the runtime. */
 export const mastra = new Mastra({
   workflows: {
     weatherWorkflow,

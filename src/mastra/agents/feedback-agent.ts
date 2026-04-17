@@ -1,8 +1,13 @@
+/**
+ * Registers the agent that interprets one author-feedback comment and updates
+ * the persisted author profile when the feedback reveals a reusable pattern.
+ */
 import { Agent } from "@mastra/core/agent";
 import { memory } from "../constants/memory";
 import { modelPool } from "../constants/models";
 import { workspace } from "../constants/workspaces";
 
+/** Processes author feedback using the mounted workspace-relative skill protocol. */
 export const feedbackAgent = new Agent({
   id: "feedback-agent",
   name: "Feedback Author Agent",

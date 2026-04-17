@@ -1,8 +1,13 @@
+/**
+ * Registers the consultation agent that explains corrections and resolves
+ * stylistic or normative questions with workspace-backed evidence.
+ */
 import { Agent } from "@mastra/core/agent";
 import { memory } from "../constants/memory";
 import { modelPool } from "../constants/models";
 import { workspace } from "../constants/workspaces";
 
+/** Explains prior corrections and general style questions without re-correcting by default. */
 export const stylisticConsultationAgent = new Agent({
   id: "stylistic-consultation-agent",
   name: "Stylistic Consultation Agent",

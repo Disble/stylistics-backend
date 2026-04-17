@@ -1,7 +1,11 @@
+/**
+ * Registers the editorial-analysis agent used by the sample editorial workflow.
+ */
 import { Agent } from "@mastra/core/agent";
 import { memory } from "../constants/memory";
 import { modelPool } from "../constants/models";
 
+/** Produces structured editorial suggestions for a text in Spanish. */
 export const editorialAgent = new Agent({
   id: "editorial-agent",
   name: "Editorial Agent",
