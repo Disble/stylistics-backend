@@ -26,8 +26,15 @@ describe("buildProcessFeedbackPrompt", () => {
       "Skill de referencia: skills/feedback-autor/SKILL.md",
     );
     expect(prompt).toContain("No antepongas `workspace/`");
-    expect(prompt).toContain("PATCH CONSERVADOR");
-    expect(prompt).toContain("NO escribas");
+    expect(prompt).toContain(
+      "política de escritura segura definida en skills/feedback-autor/SKILL.md",
+    );
+    expect(prompt).toContain(
+      "la sección objetivo, reglas de edición, borrado y aborto están en la skill",
+    );
+    expect(prompt).not.toContain("PATCH CONSERVADOR");
+    expect(prompt).not.toContain("### Preferencias");
+    expect(prompt).not.toContain("### Elementos Intocables");
     expect(prompt).not.toContain("workspace/autores/");
     expect(prompt).not.toContain("workspace/skills/");
   });

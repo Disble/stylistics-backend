@@ -16,7 +16,7 @@ const validTrackChange = {
   anchor: "rapido",
   suggestedText: "rapidamente",
   justification: "Más preciso",
-  category: "lexicon",
+  category: "lexico",
   severity: "medium" as const,
 };
 
@@ -26,7 +26,7 @@ const validCommentOnly = {
   context: "El niño corre por el parque todos los días.",
   anchor: "el niño corre",
   justification: "Estilo correcto",
-  category: "style",
+  category: "estilo",
   severity: "low" as const,
 };
 

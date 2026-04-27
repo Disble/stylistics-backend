@@ -4,6 +4,16 @@
  */
 import { z } from "zod";
 
+/** Canonical correction categories shared by the stylistic agent and author profiles. */
+export const stylisticCorrectionCategorySchema = z.enum([
+  "ortografia",
+  "gramatica",
+  "puntuacion",
+  "tipografia",
+  "lexico",
+  "estilo",
+]);
+
 /** Validates one replacement-oriented suggestion emitted by the correction agent. */
 export const stylisticTrackChangeSuggestionSchema = z.object({
   type: z.literal("track-change"),
@@ -21,7 +31,7 @@ export const stylisticTrackChangeSuggestionSchema = z.object({
     .string()
     .describe("Reemplazo exacto del anchor. Nunca igual al anchor."),
   justification: z.string(),
-  category: z.string(),
+  category: stylisticCorrectionCategorySchema,
   severity: z.enum(["high", "medium", "low"]),
 });
 
@@ -39,7 +49,7 @@ export const stylisticCommentOnlySuggestionSchema = z.object({
       "Parte exacta del texto sobre la que recae el comentario. No se reemplaza.",
     ),
   justification: z.string(),
-  category: z.string(),
+  category: stylisticCorrectionCategorySchema,
   severity: z.enum(["high", "medium", "low"]),
 });
 
@@ -72,12 +82,12 @@ export const stylisticCorrectionStepSchema =
       .describe(
         "Perfil del autor usado durante la corrección y reenviado para mantenimiento del perfil.",
       ),
-    authorProfileObservationsCharacterCount: z
+    authorProfileCorrectionPatternsWordCount: z
       .number()
       .int()
       .nonnegative()
       .describe(
-        "Conteo determinístico de caracteres de la sección ## OBSERVACIONES del perfil usado durante la corrección.",
+        "Conteo determinístico de palabras de la sección ## PATRONES VIVOS del perfil usado durante la corrección.",
       ),
   });
 

@@ -11,8 +11,9 @@ const MODULE_ROOT = resolve(
   fileURLToPath(new URL("../../../../", import.meta.url)),
 );
 
-const OBSERVATIONS_SECTION_HEADING = "## OBSERVACIONES";
+const CORRECTION_PATTERNS_SECTION_HEADING = "## PATRONES VIVOS";
 const TOP_LEVEL_SECTION_PATTERN = /^##\s+/gm;
+const WORD_PATTERN = /[\p{L}\p{N}]+(?:['’\u2019-][\p{L}\p{N}]+)*/gu;
 
 /**
  * Returns whether the candidate path exposes the workspace author-profile
@@ -121,21 +122,23 @@ export async function loadRequiredAuthorProfileText(autorSlug: string) {
 }
 
 /**
- * Extracts the markdown body that belongs to the author-profile observations
+ * Extracts the markdown body that belongs to the author-profile living patterns
  * section. The heading itself is excluded so the count reflects stored
- * observations, not structural markdown.
+ * correction patterns, not structural markdown.
  */
-export function extractAuthorProfileObservationsSection(authorProfile: string) {
-  const observationsHeadingIndex = authorProfile.indexOf(
-    OBSERVATIONS_SECTION_HEADING,
+export function extractAuthorProfileCorrectionPatternsSection(
+  authorProfile: string,
+) {
+  const correctionPatternsHeadingIndex = authorProfile.indexOf(
+    CORRECTION_PATTERNS_SECTION_HEADING,
   );
 
-  if (observationsHeadingIndex === -1) {
+  if (correctionPatternsHeadingIndex === -1) {
     return "";
   }
 
   const sectionBodyStartIndex =
-    observationsHeadingIndex + OBSERVATIONS_SECTION_HEADING.length;
+    correctionPatternsHeadingIndex + CORRECTION_PATTERNS_SECTION_HEADING.length;
   TOP_LEVEL_SECTION_PATTERN.lastIndex = sectionBodyStartIndex;
 
   const nextTopLevelSectionMatch =
@@ -146,9 +149,13 @@ export function extractAuthorProfileObservationsSection(authorProfile: string) {
   return authorProfile.slice(sectionBodyStartIndex, sectionBodyEndIndex).trim();
 }
 
-/** Counts characters in the persisted observations layer deterministically. */
-export function countAuthorProfileObservationsCharacters(
+/** Counts words in the persisted living correction-patterns layer deterministically. */
+export function countAuthorProfileCorrectionPatternsWords(
   authorProfile: string,
 ) {
-  return extractAuthorProfileObservationsSection(authorProfile).length;
+  return (
+    extractAuthorProfileCorrectionPatternsSection(authorProfile).match(
+      WORD_PATTERN,
+    )?.length ?? 0
+  );
 }

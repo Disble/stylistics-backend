@@ -49,7 +49,7 @@ describe("normalizeSuggestions", () => {
         anchor: "el niño corre",
         suggestedText: "el chico corre",
         justification: "Más preciso",
-        category: "lexicon",
+        category: "lexico",
         severity: "medium",
       },
     ];

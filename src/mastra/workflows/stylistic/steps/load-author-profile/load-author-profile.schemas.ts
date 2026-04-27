@@ -35,12 +35,12 @@ export const stylisticProfileContextSchema =
       .describe(
         "Perfil del autor ya resuelto por el workflow. Es obligatorio para continuar a la corrección.",
       ),
-    authorProfileObservationsCharacterCount: z
+    authorProfileCorrectionPatternsWordCount: z
       .number()
       .int()
       .nonnegative()
       .describe(
-        "Conteo determinístico de caracteres de la sección ## OBSERVACIONES del perfil.",
+        "Conteo determinístico de palabras de la sección ## PATRONES VIVOS del perfil.",
       ),
   });
 

@@ -18,7 +18,7 @@ describe("buildPrompt", () => {
   it("embeds the provided author profile instead of asking the agent to read files", () => {
     const prompt = buildPrompt(
       baseInput,
-      "### Preferencias\n- Prefiere frases cortas en escenas tensas.",
+      "## CRITERIOS DE INTERVENCIÓN\n- Prefiere frases cortas en escenas tensas.",
     );
 
     expect(prompt).toContain("## PERFIL DEL AUTOR");
@@ -36,5 +36,14 @@ describe("buildPrompt", () => {
     expect(prompt).toContain(
       "NO uses herramientas para leer archivos en esta tarea",
     );
+  });
+
+  it("does not duplicate the canonical category taxonomy from the agent", () => {
+    const prompt = buildPrompt(baseInput);
+
+    expect(prompt).toContain(
+      "categorías canónicas definidas en tus instrucciones de agente",
+    );
+    expect(prompt).not.toContain("## CATEGORÍAS CANÓNICAS");
   });
 });

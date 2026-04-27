@@ -8,8 +8,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import {
-  countAuthorProfileObservationsCharacters,
-  extractAuthorProfileObservationsSection,
+  countAuthorProfileCorrectionPatternsWords,
+  extractAuthorProfileCorrectionPatternsSection,
   loadAuthorProfileText,
   loadRequiredAuthorProfileText,
   resolveAuthorProfilePath,
@@ -40,7 +40,7 @@ describe("loadAuthorProfileText", () => {
     });
     await writeFile(
       join(tempDirectoryPath, "workspace", "autores", "disble.md"),
-      "### Preferencias\n- Usa frases cortas.",
+      "## CRITERIOS DE INTERVENCIÓN\n- Usa frases cortas.",
       "utf8",
     );
 
@@ -48,7 +48,7 @@ describe("loadAuthorProfileText", () => {
       loadAuthorProfileText("disble"),
     );
 
-    expect(profile).toContain("### Preferencias");
+    expect(profile).toContain("## CRITERIOS DE INTERVENCIÓN");
     expect(profile).toContain("Usa frases cortas.");
   });
 
@@ -87,7 +87,7 @@ describe("loadAuthorProfileText", () => {
     });
     await writeFile(
       join(backendRoot, "workspace", "autores", "disble.md"),
-      "### Preferencias\n- Perfil desde backend hijo.",
+      "## CRITERIOS DE INTERVENCIÓN\n- Perfil desde backend hijo.",
       "utf8",
     );
 
@@ -111,10 +111,10 @@ describe("loadAuthorProfileText", () => {
   });
 });
 
-describe("author profile observations metrics", () => {
-  it("extracts only the observations section body", () => {
-    const expectedObservationsSection = [
-      "### Lengua",
+describe("author profile correction-pattern metrics", () => {
+  it("extracts only the living correction-patterns section body", () => {
+    const expectedCorrectionPatternsSection = [
+      "### Gramática",
       "- 🔴 Concordancia: mantiene desajustes de número entre sujeto y verbo.",
       "",
       "### Estilo",
@@ -126,33 +126,30 @@ describe("author profile observations metrics", () => {
       "---",
       "# Perfil de Corrección: Disble",
       "",
-      "## SÍNTESIS DE OBSERVACIONES",
-      "- Síntesis compacta.",
+      "## PATRONES VIVOS",
+      expectedCorrectionPatternsSection,
       "",
-      "## OBSERVACIONES",
-      expectedObservationsSection,
-      "",
-      "## OTRA SECCIÓN",
+      "## CRITERIOS DE INTERVENCIÓN",
       "Este bloque no debe contar.",
     ].join("\n");
 
-    expect(extractAuthorProfileObservationsSection(authorProfile)).toBe(
-      expectedObservationsSection,
+    expect(extractAuthorProfileCorrectionPatternsSection(authorProfile)).toBe(
+      expectedCorrectionPatternsSection,
     );
-    expect(countAuthorProfileObservationsCharacters(authorProfile)).toBe(
-      expectedObservationsSection.length,
-    );
+    expect(countAuthorProfileCorrectionPatternsWords(authorProfile)).toBe(20);
   });
 
-  it("returns zero characters when observations section is missing", () => {
+  it("returns zero words when living correction-patterns section is missing", () => {
     const authorProfile = [
       "# Perfil de Corrección: Disble",
       "",
-      "## SÍNTESIS DE OBSERVACIONES",
-      "- Síntesis compacta.",
+      "## CRITERIOS DE INTERVENCIÓN",
+      "- No corregir un rasgo declarado.",
     ].join("\n");
 
-    expect(extractAuthorProfileObservationsSection(authorProfile)).toBe("");
-    expect(countAuthorProfileObservationsCharacters(authorProfile)).toBe(0);
+    expect(extractAuthorProfileCorrectionPatternsSection(authorProfile)).toBe(
+      "",
+    );
+    expect(countAuthorProfileCorrectionPatternsWords(authorProfile)).toBe(0);
   });
 });

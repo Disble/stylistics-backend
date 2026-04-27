@@ -4,48 +4,43 @@
  */
 import type { StylisticCorrectionStepOutput } from "../correct-text/correct-text.types";
 
-export const AUTHOR_PROFILE_OBSERVATIONS_CHARACTER_COUNT_MIN = 4_500;
-export const AUTHOR_PROFILE_OBSERVATIONS_CHARACTER_COUNT_MAX = 6_500;
+export const AUTHOR_PROFILE_CORRECTION_PATTERNS_WORD_COUNT_MIN = 550;
+export const AUTHOR_PROFILE_CORRECTION_PATTERNS_WORD_COUNT_MAX = 800;
 
-function buildObservationsCharacterCountInstructions(
-  observationsCharacterCount: number,
+function buildCorrectionPatternsWordCountInstructions(
+  correctionPatternsWordCount: number,
 ) {
   const metricsLine =
-    `Conteo determinístico de ## OBSERVACIONES: ${observationsCharacterCount} caracteres ` +
-    `(min=${AUTHOR_PROFILE_OBSERVATIONS_CHARACTER_COUNT_MIN}, max=${AUTHOR_PROFILE_OBSERVATIONS_CHARACTER_COUNT_MAX}).\n`;
+    `Conteo determinístico de ## PATRONES VIVOS: ${correctionPatternsWordCount} palabras ` +
+    `(min=${AUTHOR_PROFILE_CORRECTION_PATTERNS_WORD_COUNT_MIN}, max=${AUTHOR_PROFILE_CORRECTION_PATTERNS_WORD_COUNT_MAX}).\n`;
 
   if (
-    observationsCharacterCount > AUTHOR_PROFILE_OBSERVATIONS_CHARACTER_COUNT_MAX
+    correctionPatternsWordCount >
+    AUTHOR_PROFILE_CORRECTION_PATTERNS_WORD_COUNT_MAX
   ) {
     return (
       metricsLine +
-      `ESTADO: ZONA ROJA. Activá explícitamente el ciclo SÍNTESIS/REFLEXIÓN.\n` +
-      `- Ejecutá OBSERVAR → TRANSICIONAR → PODAR sobre ## OBSERVACIONES.\n` +
-      `- Además, actualizá ## SÍNTESIS DE OBSERVACIONES como capa compacta derivada de las observaciones persistidas.\n` +
-      `- La síntesis NO es resumen narrativo del autor: debe ser memoria operativa compacta para futuras correcciones.\n` +
-      `- Compactá familias redundantes dentro de ## OBSERVACIONES cuando haya duplicación semántica clara.\n` +
-      `- Conservá criterios de intervención y conocimiento vigente; eliminá solo redundancia, obsolescencia o patrones en 🟢 autorizados por la skill.\n`
+      `ESTADO: ZONA ROJA. Activá COMPACTACIÓN DEL PERFIL VIVO.\n` +
+      `- Ejecutá el modo de compactación definido en la skill de referencia.\n` +
+      `- Este prompt solo aporta la activación determinística por tamaño; el alcance concreto de compactación lo define la skill.\n`
     );
   }
 
   if (
-    observationsCharacterCount >=
-    AUTHOR_PROFILE_OBSERVATIONS_CHARACTER_COUNT_MIN
+    correctionPatternsWordCount >=
+    AUTHOR_PROFILE_CORRECTION_PATTERNS_WORD_COUNT_MIN
   ) {
     return (
       metricsLine +
-      `ESTADO: ZONA AMARILLA. No actives SÍNTESIS/REFLEXIÓN todavía.\n` +
-      `- Ejecutá solo OBSERVAR → TRANSICIONAR → PODAR.\n` +
-      `- No modifiques ## SÍNTESIS DE OBSERVACIONES.\n` +
-      `- Aplicá presión estricta contra duplicados: si una evidencia encaja en una familia existente, actualizá esa viñeta en lugar de crear otra.\n`
+      `ESTADO: ZONA AMARILLA. No actives compactación completa todavía.\n` +
+      `- Ejecutá actualización normal según la skill, con presión estricta contra duplicados.\n`
     );
   }
 
   return (
     metricsLine +
     `ESTADO: ZONA VERDE. Ejecutá actualización normal.\n` +
-    `- Ejecutá solo OBSERVAR → TRANSICIONAR → PODAR.\n` +
-    `- No modifiques ## SÍNTESIS DE OBSERVACIONES salvo instrucción explícita posterior.\n`
+    `- Aplicá el protocolo normal definido en la skill de referencia.\n`
   );
 }
 
@@ -54,9 +49,9 @@ function buildObservationsCharacterCountInstructions(
  */
 export function buildUpdateProfilePrompt(input: StylisticCorrectionStepOutput) {
   const autorProfilePath = `autores/${input.autorSlug}.md`;
-  const observationsCharacterCountInstructions =
-    buildObservationsCharacterCountInstructions(
-      input.authorProfileObservationsCharacterCount,
+  const correctionPatternsWordCountInstructions =
+    buildCorrectionPatternsWordCountInstructions(
+      input.authorProfileCorrectionPatternsWordCount,
     );
 
   return (
@@ -67,7 +62,7 @@ export function buildUpdateProfilePrompt(input: StylisticCorrectionStepOutput) {
     `Skill de referencia: skills/perfil-autor/SKILL.md\n\n` +
     `Perfil actual:\n` +
     `~~~markdown\n${input.authorProfile}\n~~~\n\n` +
-    `${observationsCharacterCountInstructions}\n` +
+    `${correctionPatternsWordCountInstructions}\n` +
     `Sugerencias de corrección de esta sesión:\n` +
     `${JSON.stringify(input.suggestions, null, 2)}\n\n` +
     `Patrones encontrados limpios (evidencia positiva):\n` +

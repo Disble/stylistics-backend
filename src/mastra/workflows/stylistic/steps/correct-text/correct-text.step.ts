@@ -136,8 +136,8 @@ export const correctText = createStep({
       cleanPatterns: result.object.cleanPatterns,
       autorSlug: inputData.autorSlug,
       authorProfile: inputData.authorProfile,
-      authorProfileObservationsCharacterCount:
-        inputData.authorProfileObservationsCharacterCount,
+      authorProfileCorrectionPatternsWordCount:
+        inputData.authorProfileCorrectionPatternsWordCount,
     };
   },
 });

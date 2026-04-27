@@ -1,32 +1,32 @@
 import { describe, expect, it } from "bun:test";
 
 import {
-  AUTHOR_PROFILE_OBSERVATIONS_CHARACTER_COUNT_MAX,
-  AUTHOR_PROFILE_OBSERVATIONS_CHARACTER_COUNT_MIN,
+  AUTHOR_PROFILE_CORRECTION_PATTERNS_WORD_COUNT_MAX,
+  AUTHOR_PROFILE_CORRECTION_PATTERNS_WORD_COUNT_MIN,
   buildUpdateProfilePrompt,
 } from "./update-profile.prompt";
 
-function createPromptInput(authorProfileObservationsCharacterCount: number) {
+function createPromptInput(authorProfileCorrectionPatternsWordCount: number) {
   return {
     autorSlug: "disble",
     authorProfile: [
       "# Perfil de Corrección: Disble",
       "",
-      "## SÍNTESIS DE OBSERVACIONES",
-      "- Memoria compacta vigente.",
-      "",
-      "## OBSERVACIONES",
-      "### Lengua",
+      "## PATRONES VIVOS",
+      "### Gramática",
       "- 🔴 Concordancia: mantiene desajustes de número.",
+      "",
+      "## CRITERIOS DE INTERVENCIÓN",
+      "- No corregir un rasgo declarado.",
     ].join("\n"),
-    authorProfileObservationsCharacterCount,
+    authorProfileCorrectionPatternsWordCount,
     suggestions: [
       {
         type: "comment-only" as const,
         context: "Texto con problema.",
         anchor: "problema",
         justification: "Comentario editorial.",
-        category: "estilo",
+        category: "estilo" as const,
         severity: "medium" as const,
       },
     ],
@@ -43,7 +43,7 @@ describe("buildUpdateProfilePrompt", () => {
       "Skill de referencia: skills/perfil-autor/SKILL.md",
     );
     expect(prompt).toContain("Perfil actual:");
-    expect(prompt).toContain("## SÍNTESIS DE OBSERVACIONES");
+    expect(prompt).toContain("## PATRONES VIVOS");
     expect(prompt).toContain(
       "Política de escritura segura definida en skills/perfil-autor/SKILL.md",
     );
@@ -58,36 +58,34 @@ describe("buildUpdateProfilePrompt", () => {
 
   it("keeps normal observation update below the minimum threshold", () => {
     const prompt = buildUpdateProfilePrompt(
-      createPromptInput(AUTHOR_PROFILE_OBSERVATIONS_CHARACTER_COUNT_MIN - 1),
+      createPromptInput(AUTHOR_PROFILE_CORRECTION_PATTERNS_WORD_COUNT_MIN - 1),
     );
 
     expect(prompt).toContain("ESTADO: ZONA VERDE");
-    expect(prompt).toContain("Ejecutá solo OBSERVAR → TRANSICIONAR → PODAR");
-    expect(prompt).not.toContain("Activá explícitamente el ciclo");
+    expect(prompt).toContain(
+      "Aplicá el protocolo normal definido en la skill de referencia",
+    );
+    expect(prompt).not.toContain("Activá COMPACTACIÓN");
   });
 
   it("tightens duplicate pressure between minimum and maximum thresholds", () => {
     const prompt = buildUpdateProfilePrompt(
-      createPromptInput(AUTHOR_PROFILE_OBSERVATIONS_CHARACTER_COUNT_MIN),
+      createPromptInput(AUTHOR_PROFILE_CORRECTION_PATTERNS_WORD_COUNT_MIN),
     );
 
     expect(prompt).toContain("ESTADO: ZONA AMARILLA");
-    expect(prompt).toContain("No actives SÍNTESIS/REFLEXIÓN todavía");
+    expect(prompt).toContain("No actives compactación completa todavía");
     expect(prompt).toContain("presión estricta contra duplicados");
   });
 
-  it("activates synthesis when observations exceed the maximum threshold", () => {
+  it("activates compaction when living patterns exceed the maximum threshold", () => {
     const prompt = buildUpdateProfilePrompt(
-      createPromptInput(AUTHOR_PROFILE_OBSERVATIONS_CHARACTER_COUNT_MAX + 1),
+      createPromptInput(AUTHOR_PROFILE_CORRECTION_PATTERNS_WORD_COUNT_MAX + 1),
     );
 
     expect(prompt).toContain("ESTADO: ZONA ROJA");
-    expect(prompt).toContain(
-      "Activá explícitamente el ciclo SÍNTESIS/REFLEXIÓN",
-    );
-    expect(prompt).toContain(
-      "actualizá ## SÍNTESIS DE OBSERVACIONES como capa compacta",
-    );
-    expect(prompt).toContain("Compactá familias redundantes");
+    expect(prompt).toContain("Activá COMPACTACIÓN DEL PERFIL VIVO");
+    expect(prompt).toContain("modo de compactación definido en la skill");
+    expect(prompt).not.toContain("No crees SÍNTESIS, REFLEXIONES");
   });
 });

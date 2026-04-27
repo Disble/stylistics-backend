@@ -30,6 +30,8 @@ const GENRE_RULES: Partial<Record<PromptGenre, string>> = {
 const SUGGESTION_TYPES_SECTION = `## TIPOS DE SUGERENCIA
 Cada item en \`suggestions\` DEBE incluir un campo \`type\` con uno de estos dos valores:
 
+Cada item en \`suggestions\` DEBE incluir \`category\` usando una de las categorías canónicas definidas en tus instrucciones de agente y validadas por el schema de salida.
+
 ### type: "track-change"
 Usalo cuando quieras proponer un reemplazo concreto de texto.
 Este tipo SOLO sirve cuando el cambio puede expresarse como \`replace(anchor) -> suggestedText\`.
@@ -40,7 +42,7 @@ Campos requeridos: \`type\`, \`context\`, \`anchor\`, \`suggestedText\`, \`justi
 
 Ejemplo valido:
 \`\`\`json
-{ "type": "track-change", "context": "El chico corrio rapido por el pasillo.", "anchor": "rapido", "suggestedText": "rapidamente", "justification": "Adverbio de modo requiere forma adverbial, no adjetival.", "category": "gramatica", "severity": "high" }
+{ "type": "track-change", "context": "El chico corrio rapido por el pasillo.", "anchor": "corrio", "suggestedText": "corrió", "justification": "Falta tilde en forma verbal aguda terminada en vocal.", "category": "ortografia", "severity": "high" }
 \`\`\`
 
 Ejemplo invalido:

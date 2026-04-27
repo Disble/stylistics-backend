@@ -21,10 +21,9 @@ export function buildProcessFeedbackPrompt(input: ProcessFeedbackPromptInput) {
     "Payload de feedback:\n" +
     `${JSON.stringify(input, null, 2)}\n\n` +
     "Ejecuta el protocolo completo: LEER -> RAZONAR -> DECIDIR -> ACTUAR.\n" +
-    "MODO DE ESCRITURA OBLIGATORIO: PATCH CONSERVADOR, nunca reescritura por omision.\n" +
-    "- Toca solo la subseccion objetivo (`### Preferencias` o `### Elementos Intocables`).\n" +
-    "- Conserva intacto todo encabezado y toda viñeta fuera de esa subseccion.\n" +
-    "- Si no puedes anclar la edicion de forma segura, NO escribas y reporta aborto por riesgo estructural.\n" +
+    "MODO DE ESCRITURA:\n" +
+    "- Aplicá estrictamente la política de escritura segura definida en skills/feedback-autor/SKILL.md.\n" +
+    "- Este prompt solo aporta rutas y payload; la sección objetivo, reglas de edición, borrado y aborto están en la skill.\n" +
     "Confirma al final si actualizaste el perfil o descartaste el feedback, con la razon."
   );
 }

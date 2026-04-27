@@ -16,7 +16,7 @@ const baseInput: StylisticProfileContext = {
   genero: "narrativa-literaria",
   authorProfilePath: "workspace/autores/disble.md",
   authorProfile: "Prefiere frases cortas y tensión progresiva.",
-  authorProfileObservationsCharacterCount: 42,
+  authorProfileCorrectionPatternsWordCount: 42,
 };
 
 /** Builds a Mastra step-parameter object with the minimum surface needed by the tests. */
@@ -78,8 +78,8 @@ describe("correctText step", () => {
 
     expect(result.autorSlug).toBe("disble");
     expect(result.authorProfile).toBe(baseInput.authorProfile);
-    expect(result.authorProfileObservationsCharacterCount).toBe(
-      baseInput.authorProfileObservationsCharacterCount,
+    expect(result.authorProfileCorrectionPatternsWordCount).toBe(
+      baseInput.authorProfileCorrectionPatternsWordCount,
     );
     expect(result.cleanPatterns).toEqual(["frases-breves"]);
     expect(result.suggestions).toHaveLength(1);

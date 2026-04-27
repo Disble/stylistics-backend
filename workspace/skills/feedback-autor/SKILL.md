@@ -7,7 +7,7 @@ description: >
 license: Apache-2.0
 metadata:
   author: gentleman-programming
-  version: "1.3"
+  version: "1.4"
 ---
 
 ## Propósito
@@ -24,21 +24,21 @@ Nunca crees una carpeta `workspace` dentro del workspace actual.
 
 **Diferencia clave respecto al Profile Agent:**
 
-| Profile Agent                              | Feedback Agent                                     |
-| ------------------------------------------ | -------------------------------------------------- |
-| Procesa la sesión completa (N sugerencias) | Procesa un único comentario de feedback            |
-| Actualiza Observaciones mediante semáforo  | Actualiza solo Criterios de intervención           |
-| Usa el sistema de semáforo (🔴🟡🟢)        | NO usa semáforo — escribe bullets planos           |
-| Ejecutado al finalizar la corrección       | Ejecutado inmediatamente tras recibir feedback     |
+| Profile Agent                                | Feedback Agent                                 |
+| -------------------------------------------- | ---------------------------------------------- |
+| Procesa la sesión completa (N sugerencias)   | Procesa un único comentario de feedback        |
+| Actualiza `PATRONES VIVOS` mediante semáforo | Actualiza solo `CRITERIOS DE INTERVENCIÓN`     |
+| Usa el sistema de semáforo (🔴🟡🟢)          | NO usa semáforo — escribe bullets planos       |
+| Ejecutado al finalizar la corrección         | Ejecutado inmediatamente tras recibir feedback |
 
 ## Estructura del Perfil (referencia)
 
 Este skill trabaja sobre el perfil del autor definido en `skills/perfil-autor/SKILL.md`.
-Consultá ese documento para entender la estructura completa (`SÍNTESIS DE OBSERVACIONES` + `OBSERVACIONES`).
+Consultá ese documento para entender la estructura completa (`PATRONES VIVOS` + `CRITERIOS DE INTERVENCIÓN`).
 
 La sección objetivo de este skill es:
 
-- **`### Criterios de intervención`** — preferencias explícitas, rasgos intocables, límites de corrección, preservación de voz y grado de intervención permitido
+- **`## CRITERIOS DE INTERVENCIÓN`** — preferencias explícitas, rasgos intocables, límites de corrección, preservación de voz y grado de intervención permitido
 
 > Compatibilidad: si un perfil legacy todavía contiene `### Preferencias` y `### Elementos Intocables`, NO las borres ni las fusiones desde este skill. La fusión pertenece a una compactación/migración explícita del perfil completo.
 
@@ -88,16 +88,16 @@ Clasificar la **intención del comentario** en una de estas tres categorías.
 
 #### Si la categoría es `CRITERIO`:
 
-1. Determinar la sección objetivo: `### Criterios de intervención`.
+1. Determinar la sección objetivo: `## CRITERIOS DE INTERVENCIÓN`.
 
 2. Verificar duplicados semánticamente (no por texto exacto):
    - ¿Ya existe una entrada que exprese la misma idea?
    - Si **sí** → NO agregar. Actualizar la entrada existente solo si el nuevo comentario la enriquece.
    - Si **no** → agregar nueva entrada.
 
-3. NO actualizar `## SÍNTESIS DE OBSERVACIONES` desde este skill.
-   - Este skill procesa un evento puntual; la síntesis tiene ciclo de vida propio y no se mantiene desde feedback aislado.
-   - Un criterio agregado aquí queda persistido en `### Criterios de intervención`; cualquier impacto en síntesis pertenece a un ciclo separado de síntesis/reflexión.
+3. NO actualizar `## PATRONES VIVOS` desde este skill.
+   - Este skill procesa un evento puntual de preferencia/límite, no evidencia de patrón correctivo.
+   - Un criterio agregado aquí queda persistido en `## CRITERIOS DE INTERVENCIÓN` y no participa del semáforo.
 
 #### Si la categoría es `CONTEXTUAL` o `VAGO`:
 
@@ -145,15 +145,15 @@ Siempre confirmar en la respuesta qué se hizo:
 
 #### Política de escritura segura (obligatoria)
 
-Este skill NO autoriza reescritura libre del perfil. El modo correcto es **PATCH CONSERVADOR** sobre la subsección objetivo.
+Este skill NO autoriza reescritura libre del perfil. El modo correcto es **PATCH CONSERVADOR** sobre la sección objetivo.
 
-1. Identificar primero la subsección objetivo exacta: `### Criterios de intervención`.
-2. Todo encabezado y toda viñeta fuera de la subsección objetivo debe sobrevivir **verbatim**.
-3. Si la subsección objetivo existe y contiene un placeholder, reemplazar SOLO la línea del placeholder.
-4. Si la subsección objetivo existe y contiene entradas reales, actualizar una viñeta concreta o agregar una nueva debajo de la última viñeta. No reemplazar la subsección completa.
-5. Si la subsección objetivo no existe, crear `### Criterios de intervención` al final de `OBSERVACIONES` sin tocar ni resumir las subsecciones vecinas.
+1. Identificar primero la sección objetivo exacta: `## CRITERIOS DE INTERVENCIÓN`.
+2. Todo encabezado y toda viñeta fuera de la sección objetivo debe sobrevivir **verbatim**.
+3. Si la sección objetivo existe y contiene un placeholder, reemplazar SOLO la línea del placeholder.
+4. Si la sección objetivo existe y contiene entradas reales, actualizar una viñeta concreta o agregar una nueva debajo de la última viñeta. No reemplazar la sección completa.
+5. Si la sección objetivo no existe, crear `## CRITERIOS DE INTERVENCIÓN` después de `## PATRONES VIVOS` sin tocar ni resumir las subsecciones vecinas.
 6. Borrados permitidos:
-   - el placeholder exacto de la subsección que pasa a tener contenido real;
+   - el placeholder exacto de la sección que pasa a tener contenido real;
    - una viñeta exacta que se reemplaza in-place por una versión más rica de la misma idea.
 7. Borrados prohibidos:
    - encabezados (`##`, `###`);
@@ -166,11 +166,11 @@ Este skill NO autoriza reescritura libre del perfil. El modo correcto es **PATCH
 
 ## Prohibiciones absolutas
 
-- **NO** usar prefijos de semáforo (🔴🟡🟢) en entradas de `Criterios de intervención`
+- **NO** usar prefijos de semáforo (🔴🟡🟢) en entradas de `CRITERIOS DE INTERVENCIÓN`
 - **NO** inventar patrones — solo lo que el autor declaró explícitamente en el comentario
 - **NO** inferir más allá del texto del comentario
 - **NO** duplicar entradas — verificar semánticamente antes de escribir
-- **NO** actualizar `SÍNTESIS DE OBSERVACIONES`; este skill solo modifica `Criterios de intervención`
+- **NO** actualizar `PATRONES VIVOS`; este skill solo modifica `CRITERIOS DE INTERVENCIÓN`
 - **NO** actualizar el perfil para comentarios `CONTEXTUAL` o `VAGO`
 - **NO** omitir la confirmación en la respuesta
 

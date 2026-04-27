@@ -40,6 +40,15 @@ Tu revisión debe ser integral, abarcando todos los aspectos gramaticales, ortot
 - **Saltos temporales**: cambios bruscos e injustificados de tiempo verbal que desorienten al lector.
 - **Abuso de puntuación**: exceso de comas (coma asfixiante, coma criminal), textos excesivamente entrecortados por punto seguido, y sobreuso recurrente de signos de exclamación/interrogación.
 
+## TIPOS CANÓNICOS DE PATRÓN
+Cuando emitas \`category\` en una sugerencia, usa exactamente una de estas etiquetas. Estas mismas etiquetas sincronizan tus sugerencias con el perfil vivo del autor:
+- \`ortografia\`: tildes, grafías, mayúsculas/minúsculas, palabras mal escritas, homófonos.
+- \`gramatica\`: concordancia, régimen preposicional, pronombres, correlación temporal, subordinación, artículos, queísmo/dequeísmo, gerundios gramaticales.
+- \`puntuacion\`: coma criminal, coma de empalme, incisos, conectores, diálogos, punto seguido mal usado, signos que organizan sintaxis.
+- \`tipografia\`: rayas, comillas, cursivas, espacios ortotipográficos, ellipsis, signos combinados, convenciones editoriales.
+- \`lexico\`: precisión léxica, calcos, locuciones deformadas, término cercano pero incorrecto, dialectalismo no intencional.
+- \`estilo\`: eco léxico, ritmo, claridad, economía expresiva, fluidez, naturalidad, voz pasiva no justificada.
+
 ## NIVELES DE SEVERIDAD
 - **Nivel A — high** (obligatorio): errores ortográficos/gramaticales, sintaxis confusa, puntuación ambigua, concordancias rotas.
 - **Nivel B — medium** (recomendado): cacofonías, conectores inadecuados, inconsistencias de registro, tipografía menor.

@@ -1,22 +1,21 @@
 ---
 name: perfil-autor
 description: >
-  Fuente única de verdad para perfiles de corrección de autores.
-  Arquitectura operativa inspirada en Observational Memory: Síntesis de Observaciones
-  y Observaciones compactas por familias.
-  El corrector lee solo la Síntesis de Observaciones; el Profile Agent ejecuta la actualización completa.
+  Fuente única de verdad para perfiles vivos de corrección de autores.
+  Define patrones activos, semáforo, compactación y criterios de intervención.
 license: Apache-2.0
 metadata:
   author: gentleman-programming
-  version: "3.4"
+  version: "4.0"
 ---
 
 ## Cuándo Usar
 
-- **Agente Corrector**: al iniciar una corrección — leer SOLO `SÍNTESIS DE OBSERVACIONES` como contexto rápido
-- **Profile Agent**: al finalizar una corrección — ejecutar el protocolo de actualización de observaciones (observar, transicionar, podar)
-- **Ciclo de síntesis/reflexión**: cuando se solicite explícitamente o el protocolo lo active — mantener la capa compacta `SÍNTESIS DE OBSERVACIONES`
-- Cuando no existe perfil del autor — crear el archivo inicial desde la plantilla incluida abajo
+- **Agente Corrector**: al iniciar una corrección — leer el perfil como checklist activo de patrones vivos.
+- **Profile Agent**: al finalizar una corrección — actualizar patrones vivos mediante `OBSERVAR → TRANSICIONAR → PODAR`.
+- **Compactación**: cuando el prompt lo active por presión determinística de tamaño — compactar el mismo perfil vivo, no crear una capa nueva.
+- **Feedback Agent**: usar `skills/feedback-autor/SKILL.md` para comentarios puntuales del autor sobre criterios de intervención.
+- Cuando no existe perfil del autor — crear el archivo inicial desde la plantilla incluida abajo.
 
 ## Regla de rutas del workspace
 
@@ -25,177 +24,20 @@ Todas las rutas de este skill son relativas a esa raíz.
 Nunca antepongas `workspace/`.
 Nunca crees una carpeta `workspace` dentro del workspace actual.
 
-### Sección 1: SÍNTESIS DE OBSERVACIONES (acotada)
+## Modelo conceptual
 
-- Extensión breve y operativa; evitar precisión falsa de tokens salvo que exista medición determinística externa
-- Contenido: capa compacta de memoria derivada del ciclo de síntesis/reflexión
-- Propósito: aliviar lectura del corrector sin reemplazar ni duplicar `OBSERVACIONES`
-- Ciclo de vida propio: NO se actualiza automáticamente en cada actualización normal de observaciones
-- No es un resumen narrativo del autor ni un resumen obligatorio de todas las observaciones actuales
-- No debe sonar como “lo que un profesor diría del estudiante”; debe sonar como memoria compacta de corrección accionable.
+El perfil de autor NO es memoria histórica acumulativa ni una capa de reflexión.
+Es un **estado vivo de corrección**: lo que el corrector necesita saber hoy para corregir mejor sin arrastrar historia muerta.
 
-### Sección 2: OBSERVACIONES (catálogo compacto)
+Implicaciones:
 
-- Sin límite fijo de entradas
-- Organizada por categorías amplias: `Lengua`, `Estilo`, `Criterios de intervención`
-- Cada entrada describe una FAMILIA DE PATRONES, no un evento aislado
-- Los patrones se actualizan in-place (refuerzan), no se duplican
-- Los patrones superados se PODAN
-- No conoce ni anticipa el formato de `SÍNTESIS DE OBSERVACIONES`: se actualiza por su propia evidencia (`suggestions`/`cleanPatterns`) y por el estado ya persistido en el perfil
+- No existe `SÍNTESIS DE OBSERVACIONES`.
+- No existe `REFLEXIONES`.
+- No existe ciclo de síntesis/reflexión.
+- El crecimiento del archivo se controla compactando `PATRONES VIVOS`, no agregando otra capa de memoria.
+- El semáforo codifica estado longitudinal dentro del Markdown porque el Profile Agent es stateless entre ejecuciones.
 
-### Categorías canónicas de OBSERVACIONES
-
-| Categoría | Incluye | No incluye |
-| --------- | ------- | ---------- |
-| `Lengua` | ortografía, acentuación, puntuación, concordancia, régimen preposicional, correlación verbal, sintaxis normativa | preferencias de voz o decisiones estilísticas deliberadas |
-| `Estilo` | repeticiones, formulaciones débiles, ritmo, fluidez, gerundios problemáticos, redundancias, claridad expresiva | errores normativos puros |
-| `Criterios de intervención` | preferencias explícitas, rasgos intocables, límites de corrección, preservación de voz, grado de intervención permitido | errores del autor tratados con semáforo |
-
-`Puntuación` y `Tipografía` NO son categorías principales. La puntuación vive en `Lengua`; lo tipográfico solo se registra si afecta realmente la intervención y, en ese caso, se integra en la categoría correspondiente.
-
-## Protocolo de Actualización (solo Profile Agent)
-
-El agente corrector NO actualiza el perfil. Solo lo lee.
-Este protocolo es ejecutado exclusivamente por el Profile Agent.
-
-El Profile Agent es stateless entre ejecuciones. Su única memoria longitudinal es el perfil Markdown que lee en ese momento.
-
-Entrada disponible en una actualización normal:
-
-- perfil actual (`SÍNTESIS DE OBSERVACIONES` + `OBSERVACIONES`)
-- skill `skills/perfil-autor/SKILL.md`
-- `suggestions` de la sesión actual
-- `cleanPatterns` de la sesión actual
-- metadata determinística de la ejecución cuando el prompt la provea (por ejemplo, conteo de caracteres de `## OBSERVACIONES` y zona de activación)
-
-Por eso el semáforo es parte funcional del sistema: codifica el estado longitudinal dentro del archivo, no en la memoria del agente.
-
-### Fase 1: OBSERVAR
-
-1. Recibir las sugerencias de corrección (suggestions) y los patrones limpios (cleanPatterns) de la sesión
-2. Comparar contra las observaciones existentes del perfil
-3. Para cada patrón en suggestions:
-   - Si ya existe en observaciones → reforzar descripción, estado se mantiene o vuelve a 🔴 si era 🟡
-   - Si es variante de una familia existente → integrar el matiz en esa familia sin crear duplicado semántico
-   - Si es nuevo y tiene suficiente evidencia en la sesión actual o impacto estructural alto → agregar como nueva observación 🔴 en la categoría correspondiente
-   - Si es aislado, puramente accidental y no revela patrón estable → NO persistir
-4. Para patrones existentes NO mencionados en suggestions ni en cleanPatterns:
-   - Mantener sin cambios (sin evidencia no se toca)
-
-### Formato de observación correctiva
-
-Usar una sola línea por observación correctiva:
-
-```markdown
-- 🔴 {Familia}: {patrón accionable y semánticamente matcheable}.
-```
-
-Reglas:
-
-- NO agregar campos obligatorios como `Evidencia:` o `Señales:`.
-- NO usar sub-bullets por defecto.
-- Si el patrón necesita ejemplos para entenderse, la observación está mal formulada: integrar lo necesario en la descripción principal.
-- La observación debe poder compararse semánticamente contra futuras `suggestions` y `cleanPatterns`.
-- Las categorías recibidas desde el corrector (`gramatica`, `puntuacion`, `ortografia`, `estilo`) son pistas, no verdad estructural: mapearlas a `Lengua`, `Estilo` o `Criterios de intervención` según el patrón real.
-
-### Fase 2: TRANSICIONAR
-
-1. Para cada patrón en cleanPatterns:
-   - Buscar semánticamente en las observaciones (no matching exacto)
-   - Aplicar las reglas de transición del semáforo
-   - 🔴 → 🟡, 🟡 → 🟢
-2. Si un patrón aparece en suggestions Y cleanPatterns: suggestions prevalece (fallback defensivo)
-
-### Fase 3: PODAR
-
-1. Eliminar todas las observaciones en estado 🟢
-2. Estos patrones están confirmados como superados por el autor
-
-### Fuera de la actualización normal: SÍNTESIS/REFLEXIÓN
-
-La `SÍNTESIS DE OBSERVACIONES` tiene ciclo de vida propio.
-
-- NO se actualiza por obligación en cada sesión.
-- NO es un resumen mecánico de las observaciones actuales.
-- NO debe condicionar cómo se agregan o actualizan `OBSERVACIONES`.
-- Se mantiene mediante un ciclo separado de síntesis/reflexión, inspirado en las reflections de Observational Memory.
-- Su activación puede venir del prompt de tarea mediante metadata determinística; la skill gobierna cómo escribir con seguridad, no los umbrales runtime.
-
-### Política de escritura segura (obligatoria)
-
-Este protocolo NO autoriza una reescritura libre del archivo entero. El modo correcto es **PATCH CONSERVADOR**.
-
-1. Antes de escribir, identificar la estructura actual completa del archivo: `## SÍNTESIS DE OBSERVACIONES`, `## OBSERVACIONES` y cada subsección `### ...` existente.
-2. Todo encabezado y toda viñeta que no esté siendo modificada por evidencia directa de `suggestions` o `cleanPatterns` debe sobrevivir **verbatim**.
-3. En actualización normal, NO modificar el bloque `## SÍNTESIS DE OBSERVACIONES` salvo que el prompt haya activado explícitamente el ciclo de síntesis/reflexión.
-4. La actualización de `OBSERVACIONES` se hace con cambios localizados sobre viñetas concretas dentro de su subsección. Nunca se debe sustituir una subsección completa por una versión abreviada si esa subsección ya tenía múltiples entradas válidas.
-5. Borrados permitidos:
-   - una viñeta exacta que llegó a 🟢 y debe podarse;
-   - un placeholder exacto como `- (pendiente de primera corrección)` o equivalentes, cuando la sección pasa a tener contenido real.
-6. Borrados prohibidos:
-   - encabezados (`##`, `###`);
-   - subsecciones completas por omisión;
-   - viñetas existentes solo porque no aparecieron en la sesión actual.
-7. Si no puedes preservar literalmente el resto del documento mientras aplicas los cambios, **NO escribas**. Falla en modo seguro: responde que abortaste la escritura por riesgo de corrupción estructural.
-
-### Prohibiciones absolutas
-
-- NO borrar ni descartar entradas existentes de criterios/preferencias/intocables. En la estructura canónica viven en `### Criterios de intervención`; si el perfil todavía usa `### Preferencias` y `### Elementos Intocables`, deben conservarse intactas hasta una compactación/migración explícita.
-- NO fechas
-- NO contadores de sesiones
-- NO "confirmado en N textos"
-- NO sección de historial
-- NO sección de deprecados
-
-## Sistema de Semáforo
-
-Cada observación tiene un estado representado por un emoji al inicio de la línea:
-
-- 🔴 **RED** — Error activo. El autor comete este error.
-- 🟡 **YELLOW** — Primer reporte limpio. Fue RED, pero en la última sesión el corrector encontró la construcción usada correctamente. Necesita confirmación.
-- 🟢 **GREEN** — Confirmado limpio. Segundo reporte limpio consecutivo. Se poda inmediatamente.
-
-### Reglas de transición
-
-| Estado actual | Evidencia en esta sesión | Nuevo estado           |
-| ------------- | ------------------------ | ---------------------- |
-| (nuevo)       | Aparece en suggestions   | 🔴                     |
-| 🔴            | Aparece en cleanPatterns | 🟡                     |
-| 🔴            | Aparece en suggestions   | 🔴 (se mantiene)       |
-| 🔴            | Sin evidencia            | 🔴 (se mantiene)       |
-| 🟡            | Aparece en cleanPatterns | 🟢 → se poda           |
-| 🟡            | Aparece en suggestions   | 🔴 (reset)             |
-| 🟡            | Sin evidencia            | 🟡 (se mantiene)       |
-| Podado        | Aparece en suggestions   | 🔴 (nueva observación) |
-
-### Reglas clave
-
-- Un patrón va en suggestions O en cleanPatterns, NUNCA en ambos
-- Si por error aparece en ambos: suggestions prevalece (fallback defensivo)
-- Un cleanPattern es SOLO cuando el corrector encontró la construcción en el texto y estaba correcta. "No encontré errores" NO es un cleanPattern.
-- GREEN se poda inmediatamente — no se mantiene una sesión más
-- La poda de un 🟢 NO obliga por sí sola a modificar `SÍNTESIS DE OBSERVACIONES` durante una actualización normal
-
-## Criterios de Relevancia para Observaciones
-
-Al decidir qué observaciones crear o reforzar, priorizar:
-
-1. Patrones que afectan COMPRENSIÓN (Nivel A) > calidad (Nivel B) > pulido (Nivel C)
-2. Patrones FRECUENTES > patrones ocasionales
-3. Patrones que el autor NO ha autocorregido > patrones en mejora
-
-## Criterios de intervención
-
-Las entradas de `### Criterios de intervención` NO usan semáforo porque no representan errores del autor.
-
-- Se escriben como bullets planos.
-- Deben provenir de feedback explícito del autor o de una migración/compactación validada.
-- Pueden modificarse o eliminarse solo ante feedback posterior que contradiga, limite o reemplace el criterio.
-- No se transicionan mediante `cleanPatterns`.
-
-## Plantilla del Perfil
-
-Usar esta plantilla al crear un perfil nuevo. No existe archivo de plantilla separado — esta es la referencia canónica.
+## Estructura canónica
 
 ```markdown
 ---
@@ -205,13 +47,25 @@ slug: { slug }
 
 # Perfil de Corrección: {nombre}
 
-## SÍNTESIS DE OBSERVACIONES
+## PATRONES VIVOS
 
-(Pendiente de primera corrección)
+### Ortografía
 
-## OBSERVACIONES
+- (pendiente de primera corrección)
 
-### Lengua
+### Gramática
+
+- (pendiente de primera corrección)
+
+### Puntuación
+
+- (pendiente de primera corrección)
+
+### Tipografía
+
+- (pendiente de primera corrección)
+
+### Léxico
 
 - (pendiente de primera corrección)
 
@@ -219,41 +73,183 @@ slug: { slug }
 
 - (pendiente de primera corrección)
 
-### Criterios de intervención
+## CRITERIOS DE INTERVENCIÓN
 
 - (pendiente de primer criterio)
 ```
 
-Nota: Al crear observaciones correctivas, todas inician en estado 🔴. Ejemplo:
-`- 🔴 Gerundio de posterioridad/percepción: usa gerundios donde corresponde coordinación verbal o infinitivo con verbos de percepción.`
+## Taxonomía canónica de patrones
+
+Las etiquetas del perfil deben sincronizarse con el `category` del agente corrector.
+En JSON se usan valores estables sin tildes; en Markdown se usan encabezados legibles.
+
+| JSON `category` | Encabezado Markdown | Incluye |
+| --- | --- | --- |
+| `ortografia` | `### Ortografía` | tildes, grafías, mayúsculas/minúsculas, palabras mal escritas, homófonos |
+| `gramatica` | `### Gramática` | concordancia, régimen preposicional, pronombres, correlación temporal, subordinación, artículos, queísmo/dequeísmo, gerundios gramaticales |
+| `puntuacion` | `### Puntuación` | coma criminal, coma de empalme, incisos, conectores, diálogos, punto seguido mal usado, signos que organizan sintaxis |
+| `tipografia` | `### Tipografía` | rayas, comillas, cursivas, espacios ortotipográficos, ellipsis, signos combinados, convenciones editoriales |
+| `lexico` | `### Léxico` | precisión léxica, calcos, locuciones deformadas, término cercano pero incorrecto, dialectalismo no intencional |
+| `estilo` | `### Estilo` | eco léxico, ritmo, claridad, economía expresiva, fluidez, naturalidad, voz pasiva no justificada |
+
+## Entrada disponible para el Profile Agent
+
+- Perfil actual completo.
+- Skill `skills/perfil-autor/SKILL.md`.
+- `suggestions` de la sesión actual.
+- `cleanPatterns` de la sesión actual.
+- Metadata determinística del prompt cuando exista, por ejemplo conteo de palabras de `## PATRONES VIVOS` y zona de activación.
+
+## Protocolo de actualización normal
+
+### Fase 1: OBSERVAR
+
+1. Recibir `suggestions` y `cleanPatterns` de la sesión.
+2. Comparar cada `suggestion` contra los patrones vivos existentes.
+3. Para cada patrón en `suggestions`:
+   - Si ya existe → reforzar descripción, mantener o resetear a 🔴 si estaba 🟡.
+   - Si es variante de una familia existente → integrar el matiz en esa familia sin duplicar.
+   - Si es nuevo y tiene evidencia suficiente o impacto alto → agregar como 🔴 en la categoría canónica correspondiente.
+   - Si es aislado, accidental o no revela patrón estable → NO persistir.
+4. Para patrones existentes no mencionados en `suggestions` ni `cleanPatterns`: mantener sin cambios.
+
+### Fase 2: TRANSICIONAR
+
+1. Para cada patrón en `cleanPatterns`, buscar semánticamente en `PATRONES VIVOS`.
+2. Aplicar semáforo: 🔴 → 🟡, 🟡 → 🟢.
+3. Si un patrón aparece en `suggestions` y `cleanPatterns`, prevalece `suggestions`.
+
+### Fase 3: PODAR
+
+1. Eliminar inmediatamente todo patrón en 🟢.
+2. El patrón podado representa estado superado; no se mantiene como historial.
+
+## Compactación del perfil vivo
+
+La compactación se activa solo cuando el prompt de tarea lo indique, normalmente por presión determinística de tamaño sobre `## PATRONES VIVOS`.
+
+Compactar significa mejorar el MISMO estado vivo:
+
+- Fusionar patrones semánticamente redundantes dentro de la categoría correcta.
+- Reubicar patrones mal categorizados según la taxonomía canónica.
+- Eliminar placeholders reemplazados por contenido real.
+- Podar 🟢 según reglas normales.
+- Mantener criterios de intervención intactos salvo migración explícita o feedback posterior.
+
+Compactar NO significa:
+
+- Crear `SÍNTESIS`, `REFLEXIONES`, historial o deprecados.
+- Resumir todo el perfil en un párrafo.
+- Borrar patrones solo porque no aparecieron en la sesión actual.
+- Convertir criterios de intervención en patrones con semáforo.
+
+## Formato de patrón vivo
+
+Usar una sola línea por patrón correctivo:
+
+```markdown
+- 🔴 {Familia}: {patrón accionable y semánticamente matcheable}.
+```
+
+Reglas:
+
+- NO agregar campos obligatorios como `Evidencia:` o `Señales:`.
+- NO usar sub-bullets por defecto.
+- Si el patrón necesita ejemplos para entenderse, está mal formulado: integrar la señal semántica en la línea principal.
+- La línea debe poder compararse semánticamente contra futuras `suggestions` y `cleanPatterns`.
+
+## Sistema de Semáforo
+
+Cada patrón correctivo tiene un estado al inicio de la línea:
+
+- 🔴 **RED** — Patrón activo.
+- 🟡 **YELLOW** — Primer reporte limpio; necesita confirmación.
+- 🟢 **GREEN** — Confirmado limpio; se poda inmediatamente.
+
+| Estado actual | Evidencia en esta sesión | Nuevo estado |
+| --- | --- | --- |
+| (nuevo) | Aparece en `suggestions` | 🔴 |
+| 🔴 | Aparece en `cleanPatterns` | 🟡 |
+| 🔴 | Aparece en `suggestions` | 🔴 |
+| 🔴 | Sin evidencia | 🔴 |
+| 🟡 | Aparece en `cleanPatterns` | 🟢 → se poda |
+| 🟡 | Aparece en `suggestions` | 🔴 |
+| 🟡 | Sin evidencia | 🟡 |
+| Podado | Aparece en `suggestions` | 🔴 nuevo |
+
+Reglas clave:
+
+- Un patrón va en `suggestions` O en `cleanPatterns`, nunca en ambos.
+- Un `cleanPattern` requiere evidencia positiva: la construcción apareció y estuvo correcta.
+- “No encontré errores” NO es `cleanPattern`.
+- La poda no produce historial.
+
+## Criterios de intervención
+
+`## CRITERIOS DE INTERVENCIÓN` contiene preferencias explícitas, límites de corrección y rasgos intocables.
+
+- No usa semáforo.
+- Se escribe con bullets planos.
+- Proviene de feedback explícito del autor o de migración/compactación validada.
+- Puede modificarse o eliminarse solo ante feedback posterior que contradiga, limite o reemplace el criterio.
+- No se transiciona mediante `cleanPatterns`.
+
+## Política de escritura segura (obligatoria)
+
+Este protocolo NO autoriza reescritura libre en actualización normal. El modo correcto es **PATCH CONSERVADOR**.
+
+1. Antes de escribir, identificar la estructura actual completa del archivo: `## PATRONES VIVOS`, sus subsecciones `### ...`, y `## CRITERIOS DE INTERVENCIÓN`.
+2. Todo encabezado y toda viñeta que no esté siendo modificada por evidencia directa o compactación explícita debe sobrevivir **verbatim**.
+3. En actualización normal, modificar solo viñetas concretas dentro de `## PATRONES VIVOS`.
+4. En compactación explícita, se pueden fusionar/reubicar patrones dentro de `## PATRONES VIVOS`, pero no borrar criterios ni inventar categorías.
+5. Borrados permitidos:
+   - una viñeta exacta que llegó a 🟢;
+   - placeholders exactos cuando la sección pasa a tener contenido real;
+   - redundancias claras durante compactación explícita.
+6. Borrados prohibidos:
+   - encabezados canónicos;
+   - subsecciones completas por omisión;
+   - criterios de intervención sin feedback/migración explícita;
+   - viñetas existentes solo porque no aparecieron en la sesión actual.
+7. Si no puedes preservar la estructura mientras aplicás cambios seguros, **NO escribas**. Abortá por riesgo de corrupción estructural.
+
+## Prohibiciones absolutas
+
+- NO `SÍNTESIS DE OBSERVACIONES`.
+- NO `REFLEXIONES`.
+- NO fechas.
+- NO contadores de sesiones.
+- NO “confirmado en N textos”.
+- NO sección de historial.
+- NO sección de deprecados.
+- NO categorías fuera de la taxonomía canónica sin cambiar primero este skill y el contrato del corrector.
 
 ## Convención de Slug
 
-| Nombre del autor     | Slug correcto        |
-| -------------------- | -------------------- |
-| María García         | maria-garcia         |
-| Jorge Luis Borges    | jorge-luis-borges    |
+| Nombre del autor | Slug correcto |
+| --- | --- |
+| María García | maria-garcia |
+| Jorge Luis Borges | jorge-luis-borges |
 | Ana María López Ruiz | ana-maria-lopez-ruiz |
 
-- Minúsculas, sin tildes, guiones en lugar de espacios
-- Si tiene seudónimo: usar el identificador acordado en el proyecto
+- Minúsculas, sin tildes, guiones en lugar de espacios.
+- Si tiene seudónimo: usar el identificador acordado en el proyecto.
 
 ## Workflow (2 agentes)
 
-### Agente Corrector — CARGA (antes de corregir)
+### Agente Corrector — CARGA
 
-1. Leer `autores/{slug}.md`
-2. Si existe → leer SOLO la sección `SÍNTESIS DE OBSERVACIONES` como contexto de máxima prioridad
-3. Si no existe → proceder sin perfil (primera sesión)
-4. NO actualizar el perfil — eso lo hace el Profile Agent
+1. Recibe el perfil ya incluido en el prompt.
+2. Lee `## PATRONES VIVOS` como checklist activo.
+3. Lee `## CRITERIOS DE INTERVENCIÓN` como contrato de límites/preferencias.
+4. No actualiza el perfil.
 
-### Profile Agent — ACTUALIZACIÓN (después de corregir)
+### Profile Agent — ACTUALIZACIÓN
 
-1. Leer el perfil COMPLETO (`SÍNTESIS DE OBSERVACIONES` + `OBSERVACIONES`)
-2. Recibir las sugerencias (suggestions) y patrones limpios (cleanPatterns) de la sesión
-3. Ejecutar las fases de actualización normal: OBSERVAR → TRANSICIONAR → PODAR
-4. Aplicar un PATCH CONSERVADOR en `autores/{slug}.md`: modificar solo las viñetas necesarias en `OBSERVACIONES`; no tocar `SÍNTESIS DE OBSERVACIONES` salvo activación explícita del ciclo de síntesis/reflexión
-5. Si es primera sesión → crear el archivo desde la plantilla con observaciones en 🔴
+1. Lee el perfil completo.
+2. Recibe `suggestions`, `cleanPatterns` y metadata determinística.
+3. Ejecuta actualización normal o compactación si el prompt la activa.
+4. Aplica escritura segura según este skill.
 
 ## Recursos
 
