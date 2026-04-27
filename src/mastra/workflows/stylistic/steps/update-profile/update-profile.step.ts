@@ -19,10 +19,14 @@ export const updateProfile = createStep({
   inputSchema: updateProfileInputSchema,
   outputSchema: updateProfileOutputSchema,
   execute: async ({ inputData, mastra }) => {
+    const { authorProfile, authorProfileObservationsCharacterCount } =
+      inputData;
+
     logger.info(
       {
         autorSlug: inputData.autorSlug,
         suggestionsCount: inputData.suggestions.length,
+        authorProfileObservationsCharacterCount,
       },
       "📋 Iniciando actualización de perfil",
     );
@@ -44,6 +48,8 @@ export const updateProfile = createStep({
     logger.debug(
       {
         autorSlug: inputData.autorSlug,
+        authorProfileLength: authorProfile.length,
+        authorProfileObservationsCharacterCount,
         prompt,
       },
       "profile-update prompt",

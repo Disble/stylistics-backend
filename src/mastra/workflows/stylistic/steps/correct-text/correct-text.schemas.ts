@@ -67,6 +67,18 @@ export const stylisticWorkflowOutputSchema = z.object({
 export const stylisticCorrectionStepSchema =
   stylisticWorkflowOutputSchema.extend({
     autorSlug: z.string(),
+    authorProfile: z
+      .string()
+      .describe(
+        "Perfil del autor usado durante la corrección y reenviado para mantenimiento del perfil.",
+      ),
+    authorProfileObservationsCharacterCount: z
+      .number()
+      .int()
+      .nonnegative()
+      .describe(
+        "Conteo determinístico de caracteres de la sección ## OBSERVACIONES del perfil usado durante la corrección.",
+      ),
   });
 
 /** Reuses the correction-step schema as the step output contract. */

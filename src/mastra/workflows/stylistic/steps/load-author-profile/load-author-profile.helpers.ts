@@ -11,6 +11,9 @@ const MODULE_ROOT = resolve(
   fileURLToPath(new URL("../../../../", import.meta.url)),
 );
 
+const OBSERVATIONS_SECTION_HEADING = "## OBSERVACIONES";
+const TOP_LEVEL_SECTION_PATTERN = /^##\s+/gm;
+
 /**
  * Returns whether the candidate path exposes the workspace author-profile
  * directory expected by the stylistic workflow.
@@ -115,4 +118,37 @@ export async function loadRequiredAuthorProfileText(autorSlug: string) {
     authorProfile,
     authorProfilePath: profilePath,
   };
+}
+
+/**
+ * Extracts the markdown body that belongs to the author-profile observations
+ * section. The heading itself is excluded so the count reflects stored
+ * observations, not structural markdown.
+ */
+export function extractAuthorProfileObservationsSection(authorProfile: string) {
+  const observationsHeadingIndex = authorProfile.indexOf(
+    OBSERVATIONS_SECTION_HEADING,
+  );
+
+  if (observationsHeadingIndex === -1) {
+    return "";
+  }
+
+  const sectionBodyStartIndex =
+    observationsHeadingIndex + OBSERVATIONS_SECTION_HEADING.length;
+  TOP_LEVEL_SECTION_PATTERN.lastIndex = sectionBodyStartIndex;
+
+  const nextTopLevelSectionMatch =
+    TOP_LEVEL_SECTION_PATTERN.exec(authorProfile);
+  const sectionBodyEndIndex =
+    nextTopLevelSectionMatch?.index ?? authorProfile.length;
+
+  return authorProfile.slice(sectionBodyStartIndex, sectionBodyEndIndex).trim();
+}
+
+/** Counts characters in the persisted observations layer deterministically. */
+export function countAuthorProfileObservationsCharacters(
+  authorProfile: string,
+) {
+  return extractAuthorProfileObservationsSection(authorProfile).length;
 }

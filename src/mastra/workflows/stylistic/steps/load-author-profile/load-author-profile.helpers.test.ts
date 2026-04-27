@@ -8,6 +8,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import {
+  countAuthorProfileObservationsCharacters,
+  extractAuthorProfileObservationsSection,
   loadAuthorProfileText,
   loadRequiredAuthorProfileText,
   resolveAuthorProfilePath,
@@ -106,5 +108,51 @@ describe("loadAuthorProfileText", () => {
       join(backendRoot, "workspace", "autores", "disble.md"),
     );
     expect(profile).toContain("Perfil desde backend hijo.");
+  });
+});
+
+describe("author profile observations metrics", () => {
+  it("extracts only the observations section body", () => {
+    const expectedObservationsSection = [
+      "### Lengua",
+      "- 🔴 Concordancia: mantiene desajustes de número entre sujeto y verbo.",
+      "",
+      "### Estilo",
+      "- 🟡 Ritmo: sostiene frases extensas donde la escena pide respiración.",
+    ].join("\n");
+    const authorProfile = [
+      "---",
+      "autor: Disble",
+      "---",
+      "# Perfil de Corrección: Disble",
+      "",
+      "## SÍNTESIS DE OBSERVACIONES",
+      "- Síntesis compacta.",
+      "",
+      "## OBSERVACIONES",
+      expectedObservationsSection,
+      "",
+      "## OTRA SECCIÓN",
+      "Este bloque no debe contar.",
+    ].join("\n");
+
+    expect(extractAuthorProfileObservationsSection(authorProfile)).toBe(
+      expectedObservationsSection,
+    );
+    expect(countAuthorProfileObservationsCharacters(authorProfile)).toBe(
+      expectedObservationsSection.length,
+    );
+  });
+
+  it("returns zero characters when observations section is missing", () => {
+    const authorProfile = [
+      "# Perfil de Corrección: Disble",
+      "",
+      "## SÍNTESIS DE OBSERVACIONES",
+      "- Síntesis compacta.",
+    ].join("\n");
+
+    expect(extractAuthorProfileObservationsSection(authorProfile)).toBe("");
+    expect(countAuthorProfileObservationsCharacters(authorProfile)).toBe(0);
   });
 });

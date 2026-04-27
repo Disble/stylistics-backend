@@ -41,12 +41,6 @@ Antes de razonar, lee el perfil COMPLETO del autor y la skill indicada en el pro
 Después, ejecuta el protocolo completo definido en la skill: LEER → RAZONAR → DECIDIR → ACTUAR.
 Trata el perfil como un documento a preservar: tu tarea es aplicar un patch localizado o no escribir nada si no puedes hacerlo con seguridad.
 
-🚨 REGLAS CRÍTICAS DE EDICIÓN (PREVENCIÓN DE DAÑO AL MARKDOWN) 🚨
-Tu modelo es propenso a borrar secciones al editar. Para no romper la estructura:
-1. NO reescribas el documento completo ni una subsección completa si basta con tocar una línea o agregar una viñeta.
-2. Conserva verbatim todos los encabezados y viñetas fuera de la subsección objetivo.
-3. Si no puedes anclar la edición de forma segura, NO escribas. Falla en modo seguro y repórtalo.
-
 ## RESPUESTA FINAL
 Confirma el resultado final siguiendo exactamente el formato y los criterios definidos en la skill.`,
   model: modelPool["feedback-agent"],

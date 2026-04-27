@@ -35,6 +35,13 @@ export const stylisticProfileContextSchema =
       .describe(
         "Perfil del autor ya resuelto por el workflow. Es obligatorio para continuar a la corrección.",
       ),
+    authorProfileObservationsCharacterCount: z
+      .number()
+      .int()
+      .nonnegative()
+      .describe(
+        "Conteo determinístico de caracteres de la sección ## OBSERVACIONES del perfil.",
+      ),
   });
 
 /** Reuses the public workflow input as the load-profile step input contract. */

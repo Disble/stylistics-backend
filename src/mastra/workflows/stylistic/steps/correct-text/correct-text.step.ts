@@ -135,6 +135,9 @@ export const correctText = createStep({
       suggestions: normalizeSuggestions(result.object.suggestions),
       cleanPatterns: result.object.cleanPatterns,
       autorSlug: inputData.autorSlug,
+      authorProfile: inputData.authorProfile,
+      authorProfileObservationsCharacterCount:
+        inputData.authorProfileObservationsCharacterCount,
     };
   },
 });

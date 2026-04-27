@@ -3,7 +3,7 @@
  * parsing, and structured-output normalization in the correction step.
  */
 import { z } from "zod";
-
+import { GOOGLE_MODEL_THINKING_LEVELS } from "../../../../constants/models";
 import type { StylisticWorkflowInput } from "../load-author-profile/load-author-profile.types";
 import { GOOGLE_FICTION_SAFETY_SETTINGS } from "./correct-text.constants";
 import { stylisticWorkflowOutputSchema } from "./correct-text.schemas";
@@ -152,6 +152,9 @@ export function buildGenerateOptions(
   if (genero === "narrativa-literaria") {
     providerOptions = {
       google: {
+        thinkingConfig: {
+          thinkingLevel: GOOGLE_MODEL_THINKING_LEVELS.HIGH,
+        },
         safetySettings: GOOGLE_FICTION_SAFETY_SETTINGS.map((setting) => ({
           category: setting.category,
           threshold: setting.threshold,

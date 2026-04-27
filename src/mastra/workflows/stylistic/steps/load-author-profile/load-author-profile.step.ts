@@ -4,6 +4,7 @@
 import { createStep } from "@mastra/core/workflows";
 import { logger } from "../../../../utils/logger";
 import {
+  countAuthorProfileObservationsCharacters,
   loadRequiredAuthorProfileText,
   resolveAuthorProfilePath,
 } from "./load-author-profile.helpers";
@@ -52,10 +53,14 @@ export const loadAuthorProfile = createStep({
       throw error;
     }
 
+    const authorProfileObservationsCharacterCount =
+      countAuthorProfileObservationsCharacters(authorProfile);
+
     logger.info(
       {
         autorSlug: inputData.autorSlug,
         authorProfilePath,
+        authorProfileObservationsCharacterCount,
       },
       "✅ Perfil del autor resuelto",
     );
@@ -64,6 +69,7 @@ export const loadAuthorProfile = createStep({
       ...inputData,
       authorProfilePath,
       authorProfile,
+      authorProfileObservationsCharacterCount,
     };
   },
 });

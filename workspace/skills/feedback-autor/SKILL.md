@@ -7,7 +7,7 @@ description: >
 license: Apache-2.0
 metadata:
   author: gentleman-programming
-  version: "1.0"
+  version: "1.3"
 ---
 
 ## Propósito
@@ -27,19 +27,20 @@ Nunca crees una carpeta `workspace` dentro del workspace actual.
 | Profile Agent                              | Feedback Agent                                     |
 | ------------------------------------------ | -------------------------------------------------- |
 | Procesa la sesión completa (N sugerencias) | Procesa un único comentario de feedback            |
-| Actualiza Observaciones + Reflexiones      | Actualiza solo Preferencias o Elementos Intocables |
+| Actualiza Observaciones mediante semáforo  | Actualiza solo Criterios de intervención           |
 | Usa el sistema de semáforo (🔴🟡🟢)        | NO usa semáforo — escribe bullets planos           |
 | Ejecutado al finalizar la corrección       | Ejecutado inmediatamente tras recibir feedback     |
 
 ## Estructura del Perfil (referencia)
 
 Este skill trabaja sobre el perfil del autor definido en `skills/perfil-autor/SKILL.md`.
-Consultá ese documento para entender la estructura completa (REFLEXIONES + OBSERVACIONES).
+Consultá ese documento para entender la estructura completa (`SÍNTESIS DE OBSERVACIONES` + `OBSERVACIONES`).
 
-Las secciones objetivo de este skill son:
+La sección objetivo de este skill es:
 
-- **`### Preferencias`** — Elecciones estilísticas declaradas por el autor
-- **`### Elementos Intocables`** — Rasgos de voz que el autor prohíbe corregir
+- **`### Criterios de intervención`** — preferencias explícitas, rasgos intocables, límites de corrección, preservación de voz y grado de intervención permitido
+
+> Compatibilidad: si un perfil legacy todavía contiene `### Preferencias` y `### Elementos Intocables`, NO las borres ni las fusiones desde este skill. La fusión pertenece a una compactación/migración explícita del perfil completo.
 
 ---
 
@@ -59,56 +60,51 @@ Antes de razonar sobre cualquier cosa:
 
 ### FASE 2 — RAZONAR
 
-Clasificar la **intención del comentario** en una de estas cuatro categorías.
+Clasificar la **intención del comentario** en una de estas tres categorías.
 
-> **Usá `justification` como contexto activo durante el razonamiento.** La justificación del corrector te dice POR QUÉ se hizo esa sugerencia. Si el autor rechaza algo que el corrector marcó como "error normativo" (ortografía, gramática), el comentario del autor puede estar explicando el contexto narrativo (diálogo, personaje, dialecto) sin que eso implique una preferencia de estilo del autor en sí mismo. En ese caso, el comentario es probablemente `CONTEXTUAL` o `VAGO`, no `INTOCABLE`.
+> **Usá `justification` como contexto activo durante el razonamiento.** La justificación del corrector te dice POR QUÉ se hizo esa sugerencia. Si el autor rechaza algo que el corrector marcó como "error normativo" (ortografía, gramática), el comentario del autor puede estar explicando el contexto narrativo (diálogo, personaje, dialecto) sin que eso implique un criterio general de intervención. En ese caso, el comentario es probablemente `CONTEXTUAL` o `VAGO`, no `CRITERIO`.
 
 #### Tabla de clasificación de intención
 
 | Categoría     | Descripción                                             | Ejemplos                                                                                                          | Fuerza de señal                                                                |
 | ------------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `PREFERENCIA` | El autor declara una elección estilística general       | "Prefiero las comas antes de la conjunción", "Siempre uso puntos suspensivos así", "No me gusta el estilo formal" | Alta cuando usa generalizadores: "siempre", "nunca", "prefiero", "no me gusta" |
-| `INTOCABLE`   | El autor declara un rasgo de voz que no debe corregirse | "Esto es parte de mi voz", "No corrijas mis oraciones largas", "El ritmo cortado es intencional"                  | Alta cuando menciona identidad narrativa o uso intencional explícito           |
+| `CRITERIO`    | El autor declara una regla general de intervención: preferencia, límite, rasgo intocable o grado de corrección permitido | "Prefiero las comas antes de la conjunción", "No corrijas mis oraciones largas", "El ritmo cortado es intencional" | Alta cuando usa generalizadores, habla de voz/intención o define cómo quiere ser corregido |
 | `CONTEXTUAL`  | El comentario aplica solo a este caso concreto          | "En este párrafo lo hice por el ritmo", "Aquí quise el efecto de ruptura", "Esta vez lo dejé así adrede"          | Débil: atado a instancia específica ("aquí", "este párrafo", "en este caso")   |
 | `VAGO`        | El comentario no provee información accionable          | "No sé", "Es raro", "Medio que sí", sin explicación                                                               | Sin señal clara                                                                |
 
 #### Heurísticas de fuerza de señal
 
-- **Palabras generalizadoras** ("siempre", "nunca", "en general", "prefiero", "me gusta", "no me gusta") → señal **fuerte** → candidato a `PREFERENCIA` o `INTOCABLE`
+- **Palabras generalizadoras** ("siempre", "nunca", "en general", "prefiero", "me gusta", "no me gusta") → señal **fuerte** → candidato a `CRITERIO`
 - **Anclaje a instancia** ("en este párrafo", "aquí", "esta vez", "en este caso") → señal **débil** → candidato a `CONTEXTUAL`
-- **Referencia a voz o identidad narrativa** ("es parte de mi estilo", "así escribo yo", "mi voz es así") → señal **fuerte** → candidato a `INTOCABLE`
+- **Referencia a voz o identidad narrativa** ("es parte de mi estilo", "así escribo yo", "mi voz es así") → señal **fuerte** → candidato a `CRITERIO`
 - **Ausencia de explicación o contradicción interna** → señal **nula** → `VAGO`
 
-> Regla de oro: si el comentario podría aplicar a CUALQUIER texto futuro del autor → `PREFERENCIA` o `INTOCABLE`.
+> Regla de oro: si el comentario podría aplicar a CUALQUIER texto futuro del autor → `CRITERIO`.
 > Si solo aplica a ESTE texto → `CONTEXTUAL`. Si no se puede determinar → `VAGO`.
 
 ---
 
 ### FASE 3 — DECIDIR
 
-#### Si la categoría es `PREFERENCIA` o `INTOCABLE`:
+#### Si la categoría es `CRITERIO`:
 
-1. Determinar la sección objetivo:
-   - `PREFERENCIA` → `### Preferencias`
-   - `INTOCABLE` → `### Elementos Intocables`
+1. Determinar la sección objetivo: `### Criterios de intervención`.
 
 2. Verificar duplicados semánticamente (no por texto exacto):
    - ¿Ya existe una entrada que exprese la misma idea?
    - Si **sí** → NO agregar. Actualizar la entrada existente solo si el nuevo comentario la enriquece.
    - Si **no** → agregar nueva entrada.
 
-3. Evaluar si corresponde actualizar `## REFLEXIONES`:
-   - Solo si el comentario revela un **insight macro de voz** que no es capturable en Preferencias ni Elementos Intocables.
-   - Ejemplo válido: el feedback revela un principio narrativo fundamental que afecta múltiples dimensiones del estilo.
-   - Ejemplo inválido: cualquier preferencia puntual, por más importante que sea.
-   - **Umbral alto**: la duda debe resolverse NO actualizando REFLEXIONES.
+3. NO actualizar `## SÍNTESIS DE OBSERVACIONES` desde este skill.
+   - Este skill procesa un evento puntual; la síntesis tiene ciclo de vida propio y no se mantiene desde feedback aislado.
+   - Un criterio agregado aquí queda persistido en `### Criterios de intervención`; cualquier impacto en síntesis pertenece a un ciclo separado de síntesis/reflexión.
 
 #### Si la categoría es `CONTEXTUAL` o `VAGO`:
 
 1. **NO actualizar el perfil.**
 2. Registrar internamente la razón del descarte:
    - `CONTEXTUAL`: "Comentario atado a instancia específica — sin valor de patrón"
-   - `VAGO`: "Señal insuficiente — no se puede inferir preferencia"
+   - `VAGO`: "Señal insuficiente — no se puede inferir criterio accionable"
 3. Confirmar en la respuesta que no se actualizó y por qué.
 
 ---
@@ -151,13 +147,11 @@ Siempre confirmar en la respuesta qué se hizo:
 
 Este skill NO autoriza reescritura libre del perfil. El modo correcto es **PATCH CONSERVADOR** sobre la subsección objetivo.
 
-1. Identificar primero la subsección objetivo exacta: `### Preferencias` o `### Elementos Intocables`.
+1. Identificar primero la subsección objetivo exacta: `### Criterios de intervención`.
 2. Todo encabezado y toda viñeta fuera de la subsección objetivo debe sobrevivir **verbatim**.
 3. Si la subsección objetivo existe y contiene un placeholder, reemplazar SOLO la línea del placeholder.
 4. Si la subsección objetivo existe y contiene entradas reales, actualizar una viñeta concreta o agregar una nueva debajo de la última viñeta. No reemplazar la subsección completa.
-5. Si la subsección objetivo no existe, recrearla en el orden canónico de `OBSERVACIONES` sin tocar ni resumir las subsecciones vecinas:
-   - `### Preferencias` va antes de `### Elementos Intocables`.
-   - `### Elementos Intocables` va después de `### Preferencias` o al final de `OBSERVACIONES` si `Preferencias` tampoco existe.
+5. Si la subsección objetivo no existe, crear `### Criterios de intervención` al final de `OBSERVACIONES` sin tocar ni resumir las subsecciones vecinas.
 6. Borrados permitidos:
    - el placeholder exacto de la subsección que pasa a tener contenido real;
    - una viñeta exacta que se reemplaza in-place por una versión más rica de la misma idea.
@@ -165,18 +159,18 @@ Este skill NO autoriza reescritura libre del perfil. El modo correcto es **PATCH
    - encabezados (`##`, `###`);
    - subsecciones completas por omisión;
    - viñetas existentes de otras subsecciones;
-   - contenido existente de `Preferencias` o `Elementos Intocables` sin una sustitución explícita uno a uno.
+   - contenido existente de criterios, preferencias o intocables sin una sustitución explícita uno a uno.
 8. Si no puedes anclar la edición sin riesgo de corrupción estructural, **NO escribas**. Falla en modo seguro y responde que abortaste la escritura.
 
 ---
 
 ## Prohibiciones absolutas
 
-- **NO** usar prefijos de semáforo (🔴🟡🟢) en entradas de Preferencias ni Elementos Intocables
+- **NO** usar prefijos de semáforo (🔴🟡🟢) en entradas de `Criterios de intervención`
 - **NO** inventar patrones — solo lo que el autor declaró explícitamente en el comentario
 - **NO** inferir más allá del texto del comentario
 - **NO** duplicar entradas — verificar semánticamente antes de escribir
-- **NO** actualizar REFLEXIONES salvo que el insight sea macro y no capturable en las secciones de observaciones
+- **NO** actualizar `SÍNTESIS DE OBSERVACIONES`; este skill solo modifica `Criterios de intervención`
 - **NO** actualizar el perfil para comentarios `CONTEXTUAL` o `VAGO`
 - **NO** omitir la confirmación en la respuesta
 

@@ -1,6 +1,7 @@
 /**
  * Groups the inferred and helper types used by the stylistic correction step.
  */
+import type { AgentExecutionOptions } from "@mastra/core/agent";
 import type { z } from "zod";
 
 import type { StylisticProfileContext } from "../load-author-profile/load-author-profile.types";
@@ -39,21 +40,20 @@ export type CommentOnlySuggestion = z.infer<
 /** Discriminated union over all suggestion variants. Narrow with `suggestion.type`. */
 export type WorkflowSuggestion = TrackChangeSuggestion | CommentOnlySuggestion;
 
-/** Describes the generate options used by the stylistic correction step. */
-export type StylisticGenerateOptions = {
-  structuredOutput: {
+type StylisticAgentExecutionOptions =
+  AgentExecutionOptions<StylisticWorkflowOutput>;
+
+/**
+ * Describes the generate options used by the stylistic correction step.
+ * Derived from Mastra's execution options to avoid local drift.
+ */
+export interface StylisticGenerateOptions
+  extends StylisticAgentExecutionOptions {
+  structuredOutput: StylisticAgentExecutionOptions["structuredOutput"] & {
     schema: typeof stylisticWorkflowOutputSchema;
   };
-  modelSettings: { temperature: number };
-  providerOptions?: {
-    google?: {
-      safetySettings: {
-        category: string;
-        threshold: string;
-      }[];
-    };
-  };
-};
+  modelSettings: NonNullable<StylisticAgentExecutionOptions["modelSettings"]>;
+}
 
 /** Minimal agent surface required by the correction step and its tests. */
 export type StylisticAgent = {
