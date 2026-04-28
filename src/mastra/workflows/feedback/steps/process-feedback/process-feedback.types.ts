@@ -4,6 +4,7 @@
  */
 export interface ProcessFeedbackPromptInput {
   autorSlug: string;
+  authorProfile: string;
   category: string;
   context: string;
   anchor: string;

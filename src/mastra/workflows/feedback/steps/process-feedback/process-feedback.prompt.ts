@@ -9,21 +9,34 @@ import type { ProcessFeedbackPromptInput } from "./process-feedback.types";
  */
 export function buildProcessFeedbackPrompt(input: ProcessFeedbackPromptInput) {
   const autorProfilePath = `autores/${input.autorSlug}.md`;
-  const skillPath = "skills/feedback-autor/SKILL.md";
 
-  return (
-    "Las rutas de este prompt son relativas a la raiz ya montada del workspace. " +
-    "No antepongas `workspace/` ni crees una carpeta `workspace` dentro del workspace actual.\n\n" +
-    "RUTAS EXACTAS (usar tal cual, sin modificar):\n" +
-    `- Perfil del autor: ${autorProfilePath}\n` +
-    `- Skill de referencia: ${skillPath}\n\n` +
-    "Procesa el siguiente feedback del autor sobre una correccion.\n\n" +
-    "Payload de feedback:\n" +
-    `${JSON.stringify(input, null, 2)}\n\n` +
-    "Ejecuta el protocolo completo: LEER -> RAZONAR -> DECIDIR -> ACTUAR.\n" +
-    "MODO DE ESCRITURA:\n" +
-    "- Aplicá estrictamente la política de escritura segura definida en skills/feedback-autor/SKILL.md.\n" +
-    "- Este prompt solo aporta rutas y payload; la sección objetivo, reglas de edición, borrado y aborto están en la skill.\n" +
-    "Confirma al final si actualizaste el perfil o descartaste el feedback, con la razon."
-  );
+  return `<workspace>
+Las rutas de este prompt son relativas a la raiz ya montada del workspace.
+No antepongas \`workspace/\` ni crees una carpeta \`workspace\` dentro del workspace actual.
+</workspace>
+
+<contrato>
+Procesá UN comentario de feedback del autor sobre una corrección.
+Usá el perfil del autor indicado en este prompt como documento objetivo.
+Ejecutá el protocolo completo: RAZONAR -> DECIDIR -> ACTUAR.
+Aplicá estrictamente la política de escritura segura de tu protocolo canónico.
+Este prompt solo aporta perfil y payload; la sección objetivo, reglas de edición, borrado y aborto están en tu protocolo.
+</contrato>
+
+<perfil>
+Perfil del autor: ${autorProfilePath}
+
+Perfil actual:
+~~~markdown
+${input.authorProfile}
+~~~
+</perfil>
+
+<payload>
+${JSON.stringify(input, null, 2)}
+</payload>
+
+<respuesta-final>
+Confirmá si actualizaste el perfil o descartaste el feedback, con la razón.
+</respuesta-final>`;
 }
