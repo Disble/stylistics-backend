@@ -21,7 +21,15 @@ describe("buildPrompt", () => {
       "## CRITERIOS DE INTERVENCIÓN\n- Prefiere frases cortas en escenas tensas.",
     );
 
-    expect(prompt).toContain("## PERFIL DEL AUTOR");
+    expect(prompt).toContain("<perfil-autor>");
+    expect(prompt).toContain("<contrato>");
+    expect(prompt).toContain("</contrato>");
+    expect(prompt).toContain("<genero>");
+    expect(prompt).toContain("</genero>");
+    expect(prompt).toContain("<texto-corregir>");
+    expect(prompt).toContain("</texto-corregir>");
+    expect(prompt).toContain("<respuesta-final>");
+    expect(prompt).toContain("</respuesta-final>");
     expect(prompt).toContain("Prefiere frases cortas en escenas tensas.");
     expect(prompt).toContain(
       "NO uses herramientas para leer archivos en esta tarea",
@@ -33,6 +41,8 @@ describe("buildPrompt", () => {
     const prompt = buildPrompt(baseInput);
 
     expect(prompt).toContain("No hay perfil previo disponible para este autor");
+    expect(prompt).toContain("<perfil-autor>");
+    expect(prompt).toContain("</perfil-autor>");
     expect(prompt).toContain(
       "NO uses herramientas para leer archivos en esta tarea",
     );

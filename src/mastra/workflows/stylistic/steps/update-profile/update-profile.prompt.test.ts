@@ -35,20 +35,31 @@ function createPromptInput(authorProfileCorrectionPatternsWordCount: number) {
 }
 
 describe("buildUpdateProfilePrompt", () => {
-  it("delegates safe writing policy to the author-profile skill", () => {
+  it("keeps safe-writing instructions out of the prompt", () => {
     const prompt = buildUpdateProfilePrompt(createPromptInput(1_000));
 
     expect(prompt).toContain("Perfil del autor: autores/disble.md");
-    expect(prompt).toContain(
-      "Skill de referencia: skills/perfil-autor/SKILL.md",
-    );
+    expect(prompt).toContain("<workspace>");
+    expect(prompt).toContain("</workspace>");
+    expect(prompt).toContain("<contrato>");
+    expect(prompt).toContain("</contrato>");
+    expect(prompt).toContain("<perfil>");
+    expect(prompt).toContain("</perfil>");
+    expect(prompt).toContain("<metricas>");
+    expect(prompt).toContain("</metricas>");
+    expect(prompt).toContain("<datos>");
+    expect(prompt).toContain("</datos>");
+    expect(prompt).toContain("<respuesta-final>");
+    expect(prompt).toContain("</respuesta-final>");
+    expect(prompt).not.toContain("<instrucciones>");
+    expect(prompt).not.toContain("skills/perfil-autor/SKILL.md");
     expect(prompt).toContain("Perfil actual:");
     expect(prompt).toContain("## PATRONES VIVOS");
     expect(prompt).toContain(
-      "Política de escritura segura definida en skills/perfil-autor/SKILL.md",
+      "Política de escritura segura de tu protocolo canónico",
     );
     expect(prompt).toContain(
-      "las reglas de edición, preservación, borrado y aborto están en la skill",
+      "las reglas de edición, preservación, borrado y aborto están en tu protocolo",
     );
     expect(prompt).not.toContain("PATCH CONSERVADOR");
     expect(prompt).not.toContain("NO escribas");
@@ -62,9 +73,7 @@ describe("buildUpdateProfilePrompt", () => {
     );
 
     expect(prompt).toContain("ESTADO: ZONA VERDE");
-    expect(prompt).toContain(
-      "Aplicá el protocolo normal definido en la skill de referencia",
-    );
+    expect(prompt).toContain("Aplicá tu protocolo normal");
     expect(prompt).not.toContain("Activá COMPACTACIÓN");
   });
 
@@ -85,7 +94,7 @@ describe("buildUpdateProfilePrompt", () => {
 
     expect(prompt).toContain("ESTADO: ZONA ROJA");
     expect(prompt).toContain("Activá COMPACTACIÓN DEL PERFIL VIVO");
-    expect(prompt).toContain("modo de compactación definido en la skill");
+    expect(prompt).toContain("modo de compactación definido en tu protocolo");
     expect(prompt).not.toContain("No crees SÍNTESIS, REFLEXIONES");
   });
 });

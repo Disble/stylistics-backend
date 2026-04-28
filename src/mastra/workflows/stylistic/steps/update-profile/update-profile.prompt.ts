@@ -21,8 +21,8 @@ function buildCorrectionPatternsWordCountInstructions(
     return (
       metricsLine +
       `ESTADO: ZONA ROJA. Activá COMPACTACIÓN DEL PERFIL VIVO.\n` +
-      `- Ejecutá el modo de compactación definido en la skill de referencia.\n` +
-      `- Este prompt solo aporta la activación determinística por tamaño; el alcance concreto de compactación lo define la skill.\n`
+      `- Ejecutá el modo de compactación definido en tu protocolo canónico.\n` +
+      `- Este prompt solo aporta la activación determinística por tamaño; el alcance concreto de compactación lo define tu protocolo.\n`
     );
   }
 
@@ -33,14 +33,14 @@ function buildCorrectionPatternsWordCountInstructions(
     return (
       metricsLine +
       `ESTADO: ZONA AMARILLA. No actives compactación completa todavía.\n` +
-      `- Ejecutá actualización normal según la skill, con presión estricta contra duplicados.\n`
+      `- Ejecutá actualización normal según tu protocolo, con presión estricta contra duplicados.\n`
     );
   }
 
   return (
     metricsLine +
     `ESTADO: ZONA VERDE. Ejecutá actualización normal.\n` +
-    `- Aplicá el protocolo normal definido en la skill de referencia.\n`
+    `- Aplicá tu protocolo normal.\n`
   );
 }
 
@@ -54,22 +54,39 @@ export function buildUpdateProfilePrompt(input: StylisticCorrectionStepOutput) {
       input.authorProfileCorrectionPatternsWordCount,
     );
 
-  return (
-    `Las rutas de este prompt son relativas a la raiz ya montada del workspace. ` +
-    `No antepongas \`workspace/\` ni crees una carpeta \`workspace\` dentro del workspace actual.\n\n` +
-    `Actualizá el perfil del autor "${input.autorSlug}".\n\n` +
-    `Perfil del autor: ${autorProfilePath}\n` +
-    `Skill de referencia: skills/perfil-autor/SKILL.md\n\n` +
-    `Perfil actual:\n` +
-    `~~~markdown\n${input.authorProfile}\n~~~\n\n` +
-    `${correctionPatternsWordCountInstructions}\n` +
-    `Sugerencias de corrección de esta sesión:\n` +
-    `${JSON.stringify(input.suggestions, null, 2)}\n\n` +
-    `Patrones encontrados limpios (evidencia positiva):\n` +
-    `${JSON.stringify(input.cleanPatterns, null, 2)}\n\n` +
-    `MODO DE ESCRITURA:\n` +
-    `- Aplicá estrictamente la Política de escritura segura definida en skills/perfil-autor/SKILL.md.\n` +
-    `- Este prompt solo define el estado determinístico de la ejecución; las reglas de edición, preservación, borrado y aborto están en la skill.\n` +
-    `Escribí el perfil actualizado en ${autorProfilePath} usando la herramienta de escritura del workspace solo si podés hacerlo con seguridad.`
-  );
+  return `<workspace>
+Las rutas de este prompt son relativas a la raiz ya montada del workspace.
+No antepongas \`workspace/\` ni crees una carpeta \`workspace\` dentro del workspace actual.
+</workspace>
+
+<contrato>
+Actualizá el perfil del autor "${input.autorSlug}".
+Aplicá estrictamente la Política de escritura segura de tu protocolo canónico.
+Este prompt solo define el estado determinístico de la ejecución; las reglas de edición, preservación, borrado y aborto están en tu protocolo.
+Escribí el perfil actualizado en ${autorProfilePath} usando la herramienta de escritura del workspace solo si podés hacerlo con seguridad.
+</contrato>
+
+<perfil>
+Perfil del autor: ${autorProfilePath}
+
+Perfil actual:
+~~~markdown
+${input.authorProfile}
+~~~
+</perfil>
+
+<metricas>
+${correctionPatternsWordCountInstructions}</metricas>
+
+<datos>
+Sugerencias de corrección de esta sesión:
+${JSON.stringify(input.suggestions, null, 2)}
+
+Patrones encontrados limpios (evidencia positiva):
+${JSON.stringify(input.cleanPatterns, null, 2)}
+</datos>
+
+<respuesta-final>
+Confirmá de manera resumida qué cambios específicos lograste incorporar al perfil, o explicá por qué descartaste la actualización.
+</respuesta-final>`;
 }

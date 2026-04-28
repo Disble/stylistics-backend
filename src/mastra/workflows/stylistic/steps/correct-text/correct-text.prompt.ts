@@ -6,28 +6,32 @@ import type { StylisticWorkflowInput } from "../load-author-profile/load-author-
 type PromptGenre = StylisticWorkflowInput["genero"];
 
 /** Frames fiction requests as editorial analysis rather than content judgment. */
-const FICTION_EDITORIAL_FRAME = `## MARCO PROFESIONAL EDITORIAL
+const FICTION_EDITORIAL_FRAME = `<marco-editorial>
 Esta solicitud corresponde a una correccion ortotipografica y de estilo en una casa editorial.
 El texto es ficcion literaria y el analisis pedido es linguistico y estilistico, no de contenido.
-La presencia de violencia, conflicto, lenguaje adulto o temas oscuros puede ser material editorial legitimo del genero.`;
+La presencia de violencia, conflicto, lenguaje adulto o temas oscuros puede ser material editorial legitimo del genero.
+</marco-editorial>`;
 
 /** Adds genre-specific editorial constraints without duplicating workflow logic. */
 const GENRE_RULES: Partial<Record<PromptGenre, string>> = {
-  "narrativa-literaria": `## CRITERIOS DE GÊNERO: NARRATIVA LITERARIA
+  "narrativa-literaria": `<criterios-genero>
 - Distingue error gramatical de licencia literaria (sintaxis expresiva, fragmentos deliberados, puntuacion ritmica, repeticiones estilisticas).
 - Respeta convenciones del genero: dialogos con rayas, analepsis/prolepsis como recursos intencionales.
 - No apliques economia expresiva academica: la prosa de ficcion puede ser elaborada por eleccion estetica.
 - Dialectalismos, sociolectos y registros coloquiales de personajes son caracterizacion, no errores.
 - Respeta tiempos verbales como recurso narrativo (presente historico, alternancia intencional).
-- No corregir neologismos, arcaismos o terminos de epoca funcionales al mundo narrativo.`,
-  "ensayo-academico": `## CRITERIOS DE GÊNERO: ENSAYO ACADÊMICO
-- Prioriza la precision conceptual, el rigor argumentativo y el uso correcto de conectores logicos.`,
-  "periodismo-cultural": `## CRITERIOS DE GÊNERO: PERIODISMO CULTURAL
-- Busca el equilibrio entre accesibilidad y profundidad, preservando el gancho periodistico.`,
+- No corregir neologismos, arcaismos o terminos de epoca funcionales al mundo narrativo.
+</criterios-genero>`,
+  "ensayo-academico": `<criterios-genero>
+- Prioriza la precision conceptual, el rigor argumentativo y el uso correcto de conectores logicos.
+</criterios-genero>`,
+  "periodismo-cultural": `<criterios-genero>
+- Busca el equilibrio entre accesibilidad y profundidad, preservando el gancho periodistico.
+</criterios-genero>`,
 };
 
 /** Documents the structured-output contract that the agent must honor. */
-const SUGGESTION_TYPES_SECTION = `## TIPOS DE SUGERENCIA
+const SUGGESTION_TYPES_SECTION = `<tipos-sugerencia>
 Cada item en \`suggestions\` DEBE incluir un campo \`type\` con uno de estos dos valores:
 
 Cada item en \`suggestions\` DEBE incluir \`category\` usando una de las categorías canónicas definidas en tus instrucciones de agente y validadas por el schema de salida.
@@ -71,7 +75,8 @@ Checklist antes de emitir un \`track-change\`:
 1. \`anchor\` aparece literalmente dentro de \`context\`.
 2. \`suggestedText !== anchor\`.
 3. \`suggestedText\` reemplaza solo el \`anchor\`, no texto fuera de ese span.
-4. Si la correccion real requiere reescribir una region mayor, expandi el \`anchor\` al span exacto de reemplazo o usa \`comment-only\`.`;
+4. Si la correccion real requiere reescribir una region mayor, expandi el \`anchor\` al span exacto de reemplazo o usa \`comment-only\`.
+</tipos-sugerencia>`;
 
 /**
  * Builds the correction prompt from workflow input while keeping the genre-
@@ -89,12 +94,14 @@ export function buildPrompt(
   const genreRules = GENRE_RULES[input.genero];
   // Keep the profile inline so the agent never needs extra workspace reads.
   const authorProfileSection = authorProfile
-    ? `## PERFIL DEL AUTOR
+    ? `<perfil-autor>
 Usa este perfil como contexto de maxima prioridad y como checklist activo de patrones. NO uses herramientas para leer archivos en esta tarea; el perfil relevante ya esta incluido.
 
-${authorProfile}`
-    : `## PERFIL DEL AUTOR
-No hay perfil previo disponible para este autor. Corrige sin contexto previo y NO uses herramientas para leer archivos en esta tarea.`;
+${authorProfile}
+</perfil-autor>`
+    : `<perfil-autor>
+No hay perfil previo disponible para este autor. Corrige sin contexto previo y NO uses herramientas para leer archivos en esta tarea.
+</perfil-autor>`;
   const correctionInstruction =
     "Aplica correccion ortotipografica y de estilo integrada respetando la voz autoral y usando el perfil provisto solo si aparece en este prompt.";
 
@@ -106,5 +113,25 @@ No hay perfil previo disponible para este autor. Corrige sin contexto previo y N
     promptIntroduction += `${genreRules}\n\n`;
   }
 
-  return `${promptIntroduction}${SUGGESTION_TYPES_SECTION}\n\n${authorProfileSection}\n\nGenero del texto: ${input.genero}\n\nTexto a corregir:\n${input.text}\n\n${correctionInstruction}`;
+  return `${promptIntroduction}<contrato>
+${correctionInstruction}
+No leas archivos ni busques perfiles por tu cuenta durante esta tarea.
+Usá las instrucciones del agente como protocolo canónico y este prompt solo como payload de ejecución.
+</contrato>
+
+${SUGGESTION_TYPES_SECTION}
+
+${authorProfileSection}
+
+<genero>
+${input.genero}
+</genero>
+
+<texto-corregir>
+${input.text}
+</texto-corregir>
+
+<respuesta-final>
+Devolvé únicamente la salida estructurada solicitada por el workflow.
+</respuesta-final>`;
 }
