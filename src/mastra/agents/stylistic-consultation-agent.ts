@@ -5,7 +5,7 @@
 import { Agent } from "@mastra/core/agent";
 import { memory } from "../constants/memory";
 import { modelPool } from "../constants/models";
-import { workspace } from "../constants/workspaces";
+import { workspaceProfile } from "../constants/workspaces";
 
 /** Explains prior corrections and general style questions without re-correcting by default. */
 export const stylisticConsultationAgent = new Agent({
@@ -74,5 +74,5 @@ Si la llamada incluye un schema JSON/Zod, respétalo EXACTAMENTE.
 `,
   model: modelPool["stylistic-consultation-agent"],
   memory,
-  workspace,
+  workspace: workspaceProfile,
 });
