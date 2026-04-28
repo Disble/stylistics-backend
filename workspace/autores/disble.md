@@ -32,7 +32,7 @@ slug: disble
 ### Tipografía
 
 - 🔴 Convenciones ortotipográficas de signos: usa tres puntos en lugar del carácter de ellipsis (…), omite espacios exigidos o combina innecesariamente puntos suspensivos con otros signos de cierre.
-- 🔴 Rayas de diálogo: usa guion o puntuación de cierre como si fueran raya editorial en aperturas, cierres o acotaciones de diálogo.
+- 🟡 Rayas de diálogo: usa guion o puntuación de cierre como si fueran raya editorial en aperturas, cierres o acotaciones de diálogo.
 
 ### Léxico
 
@@ -50,3 +50,4 @@ slug: disble
 
 - No marcar como error la ausencia de tilde en el adverbio `solo`; seguir la recomendación RAE vigente salvo ambigüedad real.
 - Permitir permanentemente "enternado" como americanismo válido para hombre que usa traje; no corregir a "internado".
+- No usar la premisa de 'calco del inglés' como justificación correctiva; basar correcciones en reglas normativas del español.
