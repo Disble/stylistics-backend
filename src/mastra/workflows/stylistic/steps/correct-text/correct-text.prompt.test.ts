@@ -56,4 +56,20 @@ describe("buildPrompt", () => {
     );
     expect(prompt).not.toContain("## CATEGORÍAS CANÓNICAS");
   });
+
+  it("documents delete-only and typography track-change transports accepted by the frontend", () => {
+    const prompt = buildPrompt(baseInput);
+
+    expect(prompt).toContain('suggestedText": ""');
+    expect(prompt).toContain('suggestedText": "*post mortem*"');
+    expect(prompt).toContain('suggestedText": "**PRIME**"');
+    expect(prompt).toContain(
+      'Si queres borrar el `anchor`, usa `track-change` con `suggestedText: ""`',
+    );
+    expect(prompt).toContain("### Errores prohibidos");
+    expect(prompt).toContain(
+      "texto dentro del markdown debe coincidir exactamente",
+    );
+    expect(prompt).not.toContain("Ejemplo invalido");
+  });
 });

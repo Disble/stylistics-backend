@@ -32,34 +32,44 @@ const GENRE_RULES: Partial<Record<PromptGenre, string>> = {
 
 /** Documents the structured-output contract that the agent must honor. */
 const SUGGESTION_TYPES_SECTION = `<tipos-sugerencia>
-Cada item en \`suggestions\` DEBE incluir un campo \`type\` con uno de estos dos valores:
+Cada item en \`suggestions\` DEBE incluir \`type\` y \`category\`. Usa para \`category\` una de las categorías canónicas definidas en tus instrucciones de agente y validadas por el schema de salida.
 
-Cada item en \`suggestions\` DEBE incluir \`category\` usando una de las categorías canónicas definidas en tus instrucciones de agente y validadas por el schema de salida.
+### Reglas obligatorias
+- \`context\` debe ser un fragmento suficientemente largo para localizar la sugerencia de forma inequivoca en el documento.
+- \`anchor\` debe estar contenido literalmente dentro de \`context\`.
+- Usa \`type: "track-change"\` solo cuando el cambio pueda expresarse como \`replace(anchor) -> suggestedText\`.
+- Usa \`type: "comment-only"\` cuando quieras hacer una observacion editorial sin cambiar el texto.
 
 ### type: "track-change"
-Usalo cuando quieras proponer un reemplazo concreto de texto.
-Este tipo SOLO sirve cuando el cambio puede expresarse como \`replace(anchor) -> suggestedText\`.
-- \`context\`: fragmento suficientemente largo para localizar la correccion de forma inequivoca en el documento.
-- \`anchor\`: parte exacta que se resalta y reemplaza (puede ser un solo caracter, una palabra o un parrafo completo). Debe estar contenida literalmente dentro de \`context\`.
-- \`suggestedText\`: reemplazo exacto del anchor. Debe reemplazar SOLO el anchor, nunca todo el context salvo que anchor sea ese context completo. NUNCA igual al anchor.
 Campos requeridos: \`type\`, \`context\`, \`anchor\`, \`suggestedText\`, \`justification\`, \`category\`, \`severity\`.
 
-Ejemplo valido:
+\`suggestedText\` puede tomar solo una de estas formas validas:
+- Texto plano no vacio: reemplazo normal del \`anchor\`.
+- \`""\`: borrado puro del \`anchor\`.
+- \`*anchor*\`: aplicar cursiva exactamente al \`anchor\`.
+- \`**anchor**\`: aplicar negrita exactamente al \`anchor\`.
+
+Ejemplo valido de reemplazo normal:
 \`\`\`json
-{ "type": "track-change", "context": "El chico corrio rapido por el pasillo.", "anchor": "corrio", "suggestedText": "corrió", "justification": "Falta tilde en forma verbal aguda terminada en vocal.", "category": "ortografia", "severity": "high" }
+{ "type": "track-change", "context": "Se levantó rápido, yendo hacia la puerta.", "anchor": ", yendo", "suggestedText": " y fue", "justification": "Gerundio de posterioridad. La acción de ir a la puerta ocurre después de levantarse; es mejor coordinar los verbos.", "category": "gramatica", "severity": "high" }
 \`\`\`
 
-Ejemplo invalido:
+Ejemplo valido de borrado puro:
 \`\`\`json
-{ "type": "track-change", "context": "—¡¿Ah?! ¿Por que habria de estar interesada en…?", "anchor": "¡¿Ah?!", "suggestedText": "—¡Ah! ¿Por que habria de estar interesada en…?", "justification": "Normalizacion de signos.", "category": "tipografia", "severity": "high" }
+{ "type": "track-change", "context": "El resultado final, evidentemente, no fue el esperado.", "anchor": ", evidentemente,", "suggestedText": "", "justification": "Adverbio terminado en -mente que funciona como muletilla y entorpece la fluidez sin sumar valor semántico.", "category": "estilo", "severity": "medium" }
 \`\`\`
-Es invalido porque \`anchor\` cubre solo un fragmento, pero \`suggestedText\` reescribe todo \`context\`. Si la correccion real abarca una region mayor, agranda el \`anchor\` para cubrir todo el span de reemplazo o usa \`comment-only\`.
+
+Ejemplo valido de cursiva:
+\`\`\`json
+{ "type": "track-change", "context": "Ese era el inicio del post mortem reportado por PRIME.", "anchor": "post mortem", "suggestedText": "*post mortem*", "justification": "Locución latina que debe ir en cursiva.", "category": "tipografia", "severity": "medium" }
+\`\`\`
+
+Ejemplo valido de negrita:
+\`\`\`json
+{ "type": "track-change", "context": "El informe fue marcado por PRIME.", "anchor": "PRIME", "suggestedText": "**PRIME**", "justification": "Sigla editorial que debe destacarse en negrita.", "category": "tipografia", "severity": "low" }
+\`\`\`
 
 ### type: "comment-only"
-Usalo cuando quieras hacer una observacion editorial SIN proponer un cambio de texto. El texto NO se toca.
-- \`context\`: fragmento suficientemente largo para localizar el comentario de forma inequivoca en el documento.
-- \`anchor\`: parte exacta sobre la que recae el comentario. Debe estar contenida literalmente dentro de \`context\`.
-Casos de uso tipicos: senalar una eleccion estilistica discutible, advertir sobre un patron recurrente, elogiar un uso correcto que vale la pena reforzar, o dejar una nota de contexto.
 Campos requeridos: \`type\`, \`context\`, \`anchor\`, \`justification\`, \`category\`, \`severity\`.
 
 Ejemplo:
@@ -67,15 +77,17 @@ Ejemplo:
 { "type": "comment-only", "context": "La oscuridad lo envolvio como un manto negro.", "anchor": "como un manto negro", "justification": "Simil convencional. Evaluar si la voz autoral del perfil prefiere imagenes mas originales.", "category": "estilo", "severity": "low" }
 \`\`\`
 
-REGLA CRITICA: \`anchor\` debe ser una subcadena literal de \`context\`.
-NUNCA uses \`type: "track-change"\` con \`anchor === suggestedText\`.
-Si no hay cambio de texto que proponer, usa \`type: "comment-only"\`.
+### Errores prohibidos
+- Nunca uses \`type: "track-change"\` con \`anchor === suggestedText\`.
+- Nunca dejes que \`suggestedText\` modifique texto fuera del span exacto de \`anchor\`.
+- Si usas \`*anchor*\` o \`**anchor**\`, el texto dentro del markdown debe coincidir exactamente con \`anchor\`.
+- Si no hay cambio textual que proponer, usa \`comment-only\`. Si queres borrar el \`anchor\`, usa \`track-change\` con \`suggestedText: ""\`.
 
 Checklist antes de emitir un \`track-change\`:
 1. \`anchor\` aparece literalmente dentro de \`context\`.
 2. \`suggestedText !== anchor\`.
-3. \`suggestedText\` reemplaza solo el \`anchor\`, no texto fuera de ese span.
-4. Si la correccion real requiere reescribir una region mayor, expandi el \`anchor\` al span exacto de reemplazo o usa \`comment-only\`.
+3. Si \`suggestedText\` usa markdown tipografico, el texto interno coincide exactamente con \`anchor\`.
+4. \`suggestedText\` afecta solo el \`anchor\`; si la correccion requiere una region mayor, expandi el \`anchor\` o usa \`comment-only\`.
 </tipos-sugerencia>`;
 
 /**
