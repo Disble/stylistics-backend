@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@mastra/core": "^1.31.0",
+    "@mastra/duckdb": "^1.2.0",
     "@mastra/evals": "^1.2.2",
     "@mastra/libsql": "^1.9.1",
     "@mastra/loggers": "^1.1.1",

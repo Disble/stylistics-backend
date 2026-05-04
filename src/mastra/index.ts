@@ -15,41 +15,27 @@ import { feedbackAgent } from "./agents/feedback-agent";
 import { profileAgent } from "./agents/profile-agent";
 import { stylisticAgent } from "./agents/stylistic-agent";
 import { stylisticConsultationAgent } from "./agents/stylistic-consultation-agent";
-import { weatherAgent } from "./agents/weather-agent";
-import { pgStore } from "./constants/db";
+import { storageCompositeStore } from "./constants/storage";
 import { pgVector, VECTOR_STORE } from "./constants/vector";
-import {
-  completenessScorer,
-  toolCallAppropriatenessScorer,
-  translationScorer,
-} from "./scorers/weather-scorer";
 import { editorialWorkflow } from "./workflows/editorial-workflow";
 import { feedbackWorkflow } from "./workflows/feedback/feedback-workflow";
 import { stylisticWorkflow } from "./workflows/stylistic/stylistic-workflow";
-import { weatherWorkflow } from "./workflows/weather-workflow";
 
 /** Exposes the configured Mastra application instance consumed by the runtime. */
 export const mastra = new Mastra({
   workflows: {
-    weatherWorkflow,
     editorialWorkflow,
     stylisticWorkflow,
     feedbackWorkflow,
   },
   agents: {
-    weatherAgent,
     editorialAgent,
     stylisticAgent,
     stylisticConsultationAgent,
     profileAgent,
     feedbackAgent,
   },
-  scorers: {
-    toolCallAppropriatenessScorer,
-    completenessScorer,
-    translationScorer,
-  },
-  storage: pgStore,
+  storage: storageCompositeStore,
   vectors: {
     [VECTOR_STORE.VECTOR_NAME]: pgVector,
   },
