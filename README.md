@@ -4,6 +4,16 @@ Welcome to your new [Mastra](https://mastra.ai/) project! We're excited to see w
 
 ## Getting Started
 
+### Authentication setup
+
+This backend uses Better Auth with Google OAuth for the Word add-in. Before running the auth flow locally, configure `.env` and apply the Better Auth database schema:
+
+```shell
+bun run db:auth:apply
+```
+
+See [docs/auth.md](docs/auth.md) for the required environment variables, Google callback URL, database tables, and the `relation "verification" does not exist` migration error.
+
 Start the development server:
 
 ```shell

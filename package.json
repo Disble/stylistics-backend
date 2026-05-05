@@ -26,6 +26,7 @@
     "lint:write": "biome check --write .",
     "format": "biome format --write .",
     "lint:staged": "biome check --staged --write --no-errors-on-unmatched",
+    "db:auth:apply": "bun scripts/apply-auth-schema.mjs",
     "check:filenames": "node scripts/check-file-naming.mjs",
     "typecheck": "tsc --noEmit",
     "validate": "bun run lint && bun run check:filenames",
@@ -33,6 +34,7 @@
     "hooks:pre-commit": "lefthook run pre-commit"
   },
   "dependencies": {
+    "@mastra/auth-better-auth": "^1.0.2",
     "@mastra/core": "^1.31.0",
     "@mastra/duckdb": "^1.2.0",
     "@mastra/evals": "^1.2.2",
@@ -43,6 +45,7 @@
     "@mastra/pg": "^1.9.4",
     "@mastra/rag": "^2.2.1",
     "ai-sdk-ollama": "^3.8.0",
+    "better-auth": "^1.6.9",
     "drizzle-orm": "^0.45.2",
     "pg": "^8.20.0",
     "pino": "^10.3.1",
