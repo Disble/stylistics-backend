@@ -14,6 +14,8 @@ bun run db:auth:apply
 
 See [docs/auth.md](docs/auth.md) for the required environment variables, Google callback URL, database tables, and the `relation "verification" does not exist` migration error.
 
+The Word add-in authenticates with Google through Better Auth, then calls protected Mastra workflows with a Better Auth bearer session token. The Office Dialog redirect bridge is documented in [docs/auth.md](docs/auth.md#office-add-in-oauth-bridge).
+
 Start the development server:
 
 ```shell

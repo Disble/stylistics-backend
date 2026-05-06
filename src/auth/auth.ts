@@ -33,6 +33,10 @@ export const auth = betterAuth({
     expiresIn: THIRTY_DAYS_IN_SECONDS,
     updateAge: SEVEN_DAYS_IN_SECONDS,
   },
+  // Office Dialog runs OAuth across add-in/backend/provider runtimes. Better Auth
+  // still stores and validates OAuth state in Postgres, but the temporary signed
+  // state cookie is unreliable in that embedded cross-origin flow. Keep this
+  // pairing together unless the Office Dialog flow is redesigned end-to-end.
   account: {
     storeStateStrategy: "database",
     skipStateCookieCheck: true,

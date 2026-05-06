@@ -2,6 +2,17 @@
 
 Documento de referencia para el equipo frontend. Describe el input y output del workflow de corrección estilística.
 
+El frontend debe autenticarse antes de llamar workflows protegidos. El token de
+sesión de Better Auth se envía como bearer token:
+
+```http
+Authorization: Bearer <better-auth-session-token>
+```
+
+El login, logout y refresh de sesión pertenecen al contrato de autenticación y se
+documentan en [`auth.md`](./auth.md). Este documento cubre el contrato funcional
+del workflow una vez que la request ya está autenticada.
+
 ---
 
 ## Input

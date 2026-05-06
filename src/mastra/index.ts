@@ -26,7 +26,12 @@ import { editorialWorkflow } from "./workflows/editorial-workflow";
 import { feedbackWorkflow } from "./workflows/feedback/feedback-workflow";
 import { stylisticWorkflow } from "./workflows/stylistic/stylistic-workflow";
 
-/** Auth session payload passed from the backend callback bridge to the add-in dialog. */
+/**
+ * Auth session payload passed from the backend callback bridge to the add-in dialog.
+ *
+ * The add-in never receives Google provider tokens. It receives only the Better
+ * Auth session token, which is the bearer credential accepted by Mastra auth.
+ */
 type AuthBridgeSession = Readonly<{
   token: string;
   expiresAt: string | null;
@@ -40,6 +45,10 @@ type AuthBridgeSession = Readonly<{
 
 const AUTH_BRIDGE_SESSION_TTL_MS = 60_000;
 
+// In-memory is intentional for the local/MVP runtime: the code only needs to
+// survive the immediate redirect from `/auth-complete` back to the same dialog.
+// If the backend runs multiple instances, move this map to Postgres/Redis so the
+// callback instance and exchange instance share the same bridge-code store.
 const authBridgeSessions = new Map<
   string,
   Readonly<{
@@ -49,7 +58,13 @@ const authBridgeSessions = new Map<
   }>
 >();
 
-/** Creates the same-origin dialog page URL that will finish parent messaging. */
+/**
+ * Creates the same-origin dialog page URL that will finish parent messaging.
+ *
+ * Office Dialog messaging is most reliable when `messageParent` runs from the
+ * add-in origin. The backend therefore redirects the dialog back to the taskpane
+ * dev origin with a one-time code instead of posting directly from backend HTML.
+ */
 function createAuthDialogBridgeUrl(
   targetOrigin: string,
   bridgeCode: string,
@@ -59,7 +74,13 @@ function createAuthDialogBridgeUrl(
   return url.toString();
 }
 
-/** Serves the backend-origin bridge that redirects back to the taskpane origin. */
+/**
+ * Serves the backend-origin bridge that redirects back to the taskpane origin.
+ *
+ * Better Auth redirects here after Google finishes. At this point the backend can
+ * read the session cookie, but the taskpane cannot. The page does no messaging;
+ * it only navigates back to the add-in origin with a short-lived bridge code.
+ */
 function createAuthCompleteHtml(redirectUrl: string): string {
   return `<!doctype html>
 <html lang="es">
@@ -99,7 +120,12 @@ function resolveDialogTargetOrigin(request: Request): string | undefined {
   return undefined;
 }
 
-/** Persists a short-lived one-time bridge session for the taskpane dialog. */
+/**
+ * Persists a short-lived one-time bridge session for the taskpane dialog.
+ *
+ * The code is single-use and expires quickly, so browser history or a stale
+ * dialog URL cannot replay a login result later.
+ */
 function createAuthBridgeSession(
   session: AuthBridgeSession,
   targetOrigin: string,
@@ -134,7 +160,12 @@ function takeAuthBridgeSession(code: string):
   };
 }
 
-/** Converts Better Auth session payload into the add-in auth session contract. */
+/**
+ * Converts Better Auth session payload into the add-in auth session contract.
+ *
+ * Keep this shape aligned with `AuthSession` in the add-in. It is the explicit
+ * cross-project contract between backend auth and taskpane persistence.
+ */
 function toAuthBridgeSession(data: {
   session?: { token?: string; expiresAt?: Date | string | null } | null;
   user?: {

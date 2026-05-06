@@ -10,6 +10,7 @@ Authentication is wired in two layers:
 
 - `src/auth/auth.ts` configures Better Auth, Google OAuth, bearer sessions, session lifetime, and the Drizzle/Postgres adapter.
 - `src/auth/mastra-auth.ts` adapts Better Auth into Mastra through `@mastra/auth-better-auth`.
+- `src/mastra/index.ts` exposes the Better Auth routes and the Office add-in OAuth bridge routes.
 
 Better Auth is mounted at:
 
@@ -18,6 +19,55 @@ Better Auth is mounted at:
 ```
 
 Mastra built-in auth routes under `/api/auth/*` remain public so Mastra Studio/auth capability discovery does not get blocked accidentally.
+
+Business routes remain protected by Mastra auth. The Word add-in calls those
+routes through `@mastra/client-js` with:
+
+```http
+Authorization: Bearer <better-auth-session-token>
+```
+
+## Office add-in OAuth bridge
+
+The Word add-in cannot rely on a normal browser OAuth redirect flow because the
+taskpane and Office Dialog run in separate embedded runtimes. The confirmed MVP
+flow is:
+
+1. The taskpane opens `https://localhost:3000/auth-dialog.html?callbackUrl=...`.
+2. The dialog loads Office.js, waits for `Office.onReady()`, creates the Google
+   social sign-in URL through Better Auth, and redirects to Google.
+3. Google returns to Better Auth at `/auth/callback/google`.
+4. Better Auth creates the session and redirects to `/auth-complete`.
+5. `/auth-complete` reads the Better Auth session server-side, creates a
+   short-lived one-time bridge code, and redirects back to the add-in origin:
+
+   ```text
+   https://localhost:3000/auth-dialog.html?authBridgeCode=...
+   ```
+
+6. The dialog exchanges that code at `/auth-bridge-session` and sends the final
+   session to the parent taskpane with `Office.context.ui.messageParent`.
+
+The bridge code is intentionally in-memory for the local/MVP runtime and expires
+after 60 seconds. If the backend runs more than one instance, move that bridge
+store to Postgres or Redis before scaling horizontally.
+
+### Public auth routes
+
+These routes must stay public:
+
+| Route | Why it is public |
+| --- | --- |
+| `/auth/*` | Better Auth sign-in, callback, session, and logout endpoints. |
+| `/auth-complete` | OAuth callback bridge that creates the one-time code. |
+| `/auth-bridge-session` | Same-origin add-in exchange for the one-time code. |
+| `/api/auth/*` | Mastra Studio/auth capability discovery. |
+| `/health`, `/swagger-ui/*`, `/openapi/*` | Operational/dev tooling routes. |
+
+Do not replace this with a broad “protect all `/api/*`” rule without preserving
+the public list. Mastra protects unmatched runtime routes once auth is configured;
+blocking auth/capability routes breaks login before the user ever reaches the
+workflow.
 
 ## Required environment variables
 
@@ -115,3 +165,16 @@ For a clean local environment:
 ## Provider policy
 
 Microsoft OAuth is intentionally not part of the active MVP runtime because Azure/Entra access and licensing blocked validation. Keep the auth boundary provider-agnostic, but do not reintroduce Microsoft as an active provider until it can be configured and tested end-to-end.
+
+## Security notes
+
+- The add-in receives the Better Auth session token, not Google access or refresh
+  tokens.
+- `account.storeStateStrategy = "database"` and `skipStateCookieCheck = true` are
+  paired for the Office Dialog flow. Better Auth still validates OAuth state from
+  Postgres; the skipped check is the temporary signed state cookie that proved
+  unreliable across the embedded add-in/backend/provider redirects.
+- Keep `BETTER_AUTH_TRUSTED_ORIGINS` explicit. For local development it should
+  include `https://localhost:3000`.
+- Do not expose Mastra Studio publicly as an admin surface without validating the
+  Studio auth/licensing model separately from product API auth.
