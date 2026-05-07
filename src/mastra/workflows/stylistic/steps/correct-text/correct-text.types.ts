@@ -47,8 +47,7 @@ type StylisticAgentExecutionOptions =
  * Describes the generate options used by the stylistic correction step.
  * Derived from Mastra's execution options to avoid local drift.
  */
-export interface StylisticGenerateOptions
-  extends StylisticAgentExecutionOptions {
+export interface StylisticGenerateOptions extends StylisticAgentExecutionOptions {
   structuredOutput: StylisticAgentExecutionOptions["structuredOutput"] & {
     schema: typeof stylisticWorkflowOutputSchema;
   };
