@@ -99,7 +99,8 @@ Skills are automatically available to agents in your project once installed. Age
 | Skill | Description | Source |
 |-------|-------------|--------|
 | `diccionario` | Consultar el DLE usando el binario local `dlexa.exe` | [SKILL.md](workspace/skills/diccionario/SKILL.md) |
-| `perfil-autor` | Gestiona perfiles de corrección de autores en `workspace/autores/`; cargar siempre antes de corregir | [SKILL.md](workspace/skills/perfil-autor/SKILL.md) |
+
+> **Author profile protocol** is defined in [`docs/protocols/profile-agent-protocol.md`](docs/protocols/profile-agent-protocol.md) and loaded at runtime by `src/mastra/agents/profile-agent.skill.ts`. See also the feedback protocol at [`docs/protocols/feedback-agent-protocol.md`](docs/protocols/feedback-agent-protocol.md).
 
 ## KIN Docs Routing
 

@@ -118,17 +118,18 @@ src/application/stylistics/
 
 ## Linting And Naming Enforcement
 
-- Use Biome as the default formatter and linter for this backend. Keep tooling centralized and minimal instead of stacking ESLint + Prettier + custom formatter glue.
-- Enable Biome filename enforcement with `useFilenamingConvention` and keep source files in kebab-case.
-- Biome handles filename case, but project architecture also expects role-suffixed sibling files for split feature modules. Back that up with a tiny repository script that verifies `feature-name.helpers.ts`, `feature-name.schemas.ts`, and `feature-name.types.ts` only exist next to their base `feature-name.ts` file.
+- Use ESLint + Prettier for this backend. ESLint enforces file anatomy (content-first role suffixes, import hygiene, naming); Prettier handles formatting. See `docs/linting-and-file-anatomy.md` for the full rule table and enforcement details.
+- Filename contracts are enforced by `eslint-plugin-check-file`: kebab-case for files and folders under `src/`.
+- Role-suffix sibling files (`*.helpers.ts`, `*.schemas.ts`, `*.types.ts`, etc.) are detected via `no-restricted-syntax` AST selectors in the ESLint flat config.
 - Apply the sibling-file convention mainly in feature-oriented application/domain/infrastructure/shared modules. Do not force Mastra adapter files into artificial dot-suffix splits when a single `weather-agent.ts` or `editorial-workflow.ts` file is still cohesive.
 - Treat generic `utils.ts` names inside feature folders as an architecture smell. Prefer a specific feature filename or a `*.helpers.ts` sibling when the helper scope belongs to one feature.
+- Run the full pipeline with `bun run validate` (chains `lint`, `format:check`, `typecheck`). Use `bun run lint:write` and `bun run format` for autofixes.
 
 ## Git Hook Workflow
 
 - Use Lefthook for repository hooks; keep the workflow explicit and easy to run locally.
 - Install hooks through the package manager lifecycle (`prepare`) or an explicit hook script so every contributor can rehydrate hooks after install.
-- Keep `pre-commit` focused on fast safety rails only: staged Biome fixes/checks plus the lightweight file-naming validation.
+- Keep `pre-commit` focused on fast safety rails only: ESLint autofixes on staged files plus Prettier formatting — then re-stage the result.
 - Do not add builds or heavy integration checks to `pre-commit`; those belong to later validation stages.
 - If a hook auto-fixes files, stage the fixes and rerun the check until the commit input is clean.
 

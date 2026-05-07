@@ -119,10 +119,12 @@ This keeps the workflow deterministic while reserving interpretation of author i
 
 ## Author Profile Architecture
 
-Author profiles live under `workspace/autores/` and follow a two-layer structure defined by the local `perfil-autor` skill:
+Author profiles live under `workspace/autores/` and are maintained by the Profile Agent and the Feedback Agent. The canonical protocol is defined in `docs/protocols/profile-agent-protocol.md`.
 
-- `REFLEXIONES`: a short executive summary optimized for the corrector.
-- `OBSERVACIONES`: a larger pattern catalog that tracks active, improving, and resolved author behaviors.
+The profile follows a two-section structure:
+
+- `## PATRONES VIVOS`: active correctional patterns organized by category (Ortografía, Gramática, Puntuación, Tipografía, Léxico, Estilo). Each pattern carries a semaphore state.
+- `## CRITERIOS DE INTERVENCIÓN`: explicit author preferences, hard limits, and intervention scope. No semaphore — only flat bullets from direct author feedback.
 
 The profile lifecycle is semaphore-driven:
 
@@ -130,12 +132,13 @@ The profile lifecycle is semaphore-driven:
 - `🟡` first clean confirmation,
 - `🟢` confirmed and immediately pruned.
 
-The update protocol is:
+The update protocol runs in three phases:
 
-1. Observe new suggestions and clean patterns.
-2. Transition existing patterns based on fresh evidence.
-3. Prune resolved patterns.
-4. Rewrite reflections from the updated observation set.
+1. **Observe**: compare session `suggestions` and `cleanPatterns` against existing live patterns in `PATRONES VIVOS`.
+2. **Transition**: advance semaphore states based on fresh session evidence.
+3. **Prune**: immediately delete any pattern that reached `🟢`.
+
+`CRITERIOS DE INTERVENCIÓN` is not semaphore-driven. It changes only via explicit author feedback processed by the Feedback Agent, whose protocol is defined in `docs/protocols/feedback-agent-protocol.md`.
 
 This design keeps correction context compact for the main agent while preserving durable author learning over time.
 
@@ -201,10 +204,15 @@ workspace/
   skills/
 docs/
   ARCHITECTURE.md
+  auth.md
   frontend-contract.md
+  linting-and-file-anatomy.md
   observational-memory-config.md
   observational-memory-integration.md
   observational-memory-overview.md
+  protocols/
+    profile-agent-protocol.md
+    feedback-agent-protocol.md
 ```
 
 ## Shared Module Structure Template
@@ -389,7 +397,11 @@ That keeps Mastra stable as an orchestration shell while the actual business log
 
 - `AGENTS.md`
 - `CLAUDE.md`
+- `docs/auth.md`
 - `docs/frontend-contract.md`
+- `docs/linting-and-file-anatomy.md`
+- `docs/protocols/profile-agent-protocol.md`
+- `docs/protocols/feedback-agent-protocol.md`
 - `docs/observational-memory-overview.md`
 - `docs/observational-memory-config.md`
 - `docs/observational-memory-integration.md`
