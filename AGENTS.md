@@ -100,7 +100,7 @@ Skills are automatically available to agents in your project once installed. Age
 |-------|-------------|--------|
 | `diccionario` | Consultar el DLE usando el binario local `dlexa.exe` | [SKILL.md](workspace/skills/diccionario/SKILL.md) |
 
-> **Author profile protocol** is defined in [`docs/protocols/profile-agent-protocol.md`](docs/protocols/profile-agent-protocol.md) and loaded at runtime by `src/mastra/agents/profile-agent.skill.ts`. See also the feedback protocol at [`docs/protocols/feedback-agent-protocol.md`](docs/protocols/feedback-agent-protocol.md).
+> **Author profile protocols** are defined as bundleable TypeScript constants in `src/mastra/agents/profile-agent.skill.ts` and `src/mastra/agents/feedback-agent.skill.ts`, then composed by their sibling `*.prompt.ts` files.
 
 ## KIN Docs Routing
 

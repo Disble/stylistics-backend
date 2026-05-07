@@ -119,7 +119,7 @@ This keeps the workflow deterministic while reserving interpretation of author i
 
 ## Author Profile Architecture
 
-Author profiles live under `workspace/autores/` and are maintained by the Profile Agent and the Feedback Agent. The canonical protocol is defined in `docs/protocols/profile-agent-protocol.md`.
+Author profiles live under `workspace/autores/` and are maintained by the Profile Agent and the Feedback Agent. The canonical protocol is defined as a bundleable TypeScript constant in `src/mastra/agents/profile-agent.skill.ts` and composed by `src/mastra/agents/profile-agent.prompt.ts`.
 
 The profile follows a two-section structure:
 
@@ -138,7 +138,7 @@ The update protocol runs in three phases:
 2. **Transition**: advance semaphore states based on fresh session evidence.
 3. **Prune**: immediately delete any pattern that reached `🟢`.
 
-`CRITERIOS DE INTERVENCIÓN` is not semaphore-driven. It changes only via explicit author feedback processed by the Feedback Agent, whose protocol is defined in `docs/protocols/feedback-agent-protocol.md`.
+`CRITERIOS DE INTERVENCIÓN` is not semaphore-driven. It changes only via explicit author feedback processed by the Feedback Agent, whose protocol is defined in `src/mastra/agents/feedback-agent.skill.ts` and composed by `src/mastra/agents/feedback-agent.prompt.ts`.
 
 This design keeps correction context compact for the main agent while preserving durable author learning over time.
 
@@ -210,9 +210,6 @@ docs/
   observational-memory-config.md
   observational-memory-integration.md
   observational-memory-overview.md
-  protocols/
-    profile-agent-protocol.md
-    feedback-agent-protocol.md
 ```
 
 ## Shared Module Structure Template
@@ -400,8 +397,8 @@ That keeps Mastra stable as an orchestration shell while the actual business log
 - `docs/auth.md`
 - `docs/frontend-contract.md`
 - `docs/linting-and-file-anatomy.md`
-- `docs/protocols/profile-agent-protocol.md`
-- `docs/protocols/feedback-agent-protocol.md`
+- `src/mastra/agents/profile-agent.skill.ts`
+- `src/mastra/agents/feedback-agent.skill.ts`
 - `docs/observational-memory-overview.md`
 - `docs/observational-memory-config.md`
 - `docs/observational-memory-integration.md`
