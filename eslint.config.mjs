@@ -31,18 +31,53 @@ const SELECTORS = {
     message:
       "Exported zod schemas belong in a sibling *.schemas.ts file. Type aliases via z.infer<...> stay in *.types.ts.",
   },
+  mixedResponsibility: {
+    selector:
+      "Program:has(TSInterfaceDeclaration, TSTypeAliasDeclaration, TSEnumDeclaration):has(ClassDeclaration, FunctionDeclaration, VariableDeclaration)",
+    message:
+      "Implementation modules must not declare types/interfaces/enums. Move those contracts to a sibling *.types.ts file.",
+  },
+  siblingReexport: {
+    selector: "ExportNamedDeclaration[source]",
+    message:
+      "Runtime modules must not re-export from sibling files. Import the dedicated module directly instead of routing through implementation files.",
+  },
+  classImplTopLevelConst: {
+    selector:
+      "Program:has(ExportNamedDeclaration > ClassDeclaration, ExportNamedDeclaration > FunctionDeclaration) > VariableDeclaration[kind='const']",
+    message:
+      "Runtime modules must not declare top-level constants. Move them to a sibling *.constants.ts file.",
+  },
+  classImplTopLevelHelper: {
+    selector:
+      "Program:has(> ExportNamedDeclaration > ClassDeclaration) > FunctionDeclaration",
+    message:
+      "Class implementation files must not declare top-level helpers. Move them to a sibling *.helpers.ts file.",
+  },
+  classImplExportedHelper: {
+    selector:
+      "Program:has(> ExportNamedDeclaration > ClassDeclaration) > ExportNamedDeclaration:has(> FunctionDeclaration)",
+    message:
+      "Class implementation files must not export top-level helpers. Move them to a sibling *.helpers.ts file.",
+  },
 };
 
 function anatomyRule(...selectors) {
-  return { "no-restricted-syntax": ["warn", ...selectors] };
+  return { "no-restricted-syntax": ["error", ...selectors] };
 }
 
 function buildAnatomyRules() {
-  const all = [
+  const baseAnatomy = [
     SELECTORS.exportedType,
     SELECTORS.screamingConstant,
     SELECTORS.inlineAgentPrompt,
     SELECTORS.exportedZodSchema,
+    SELECTORS.mixedResponsibility,
+  ];
+  const classImplStrict = [
+    SELECTORS.classImplTopLevelConst,
+    SELECTORS.classImplTopLevelHelper,
+    SELECTORS.classImplExportedHelper,
   ];
   return [
     {
@@ -55,9 +90,25 @@ function buildAnatomyRules() {
         "src/**/*.prompt.ts",
         "src/**/*.skill.ts",
         "src/**/*.schemas.ts",
+        "src/**/*.helpers.ts",
+        "src/**/index.ts",
         "src/mastra/constants/**",
       ],
-      rules: anatomyRule(...all),
+      rules: anatomyRule(
+        ...baseAnatomy,
+        SELECTORS.siblingReexport,
+        ...classImplStrict,
+      ),
+    },
+    {
+      files: ["src/**/*.helpers.ts"],
+      ignores: ["src/**/*.test.ts", "src/**/*.spec.ts"],
+      rules: anatomyRule(...baseAnatomy, SELECTORS.siblingReexport),
+    },
+    {
+      files: ["src/**/index.ts"],
+      ignores: ["src/**/*.test.ts", "src/**/*.spec.ts"],
+      rules: anatomyRule(...baseAnatomy, ...classImplStrict),
     },
     {
       files: ["src/**/*.types.ts"],
@@ -134,6 +185,7 @@ export default [
       "sonarjs/no-redundant-boolean": "warn",
       "sonarjs/no-small-switch": "warn",
       "jsdoc/check-tag-names": "error",
+      "jsdoc/require-description": "error",
       "jsdoc/require-jsdoc": "off",
       "jsdoc/require-param": "off",
       "jsdoc/require-param-description": "off",
@@ -156,6 +208,52 @@ export default [
     },
   },
   ...buildAnatomyRules(),
+  {
+    files: ["src/**/*.types.ts"],
+    ignores: ["src/**/*.test.ts", "src/**/*.spec.ts"],
+    rules: {
+      "jsdoc/require-jsdoc": [
+        "error",
+        {
+          contexts: [
+            "TSInterfaceDeclaration",
+            "TSTypeAliasDeclaration",
+            "TSEnumDeclaration",
+          ],
+          publicOnly: false,
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/**/*.ts"],
+    ignores: [
+      "src/**/*.types.ts",
+      "src/**/*.constants.ts",
+      "src/**/*.prompt.ts",
+      "src/**/*.skill.ts",
+      "src/**/*.schemas.ts",
+      "src/**/*.test.ts",
+      "src/**/*.spec.ts",
+      "src/mastra/constants/**",
+    ],
+    rules: {
+      "jsdoc/require-jsdoc": [
+        "error",
+        {
+          publicOnly: true,
+          require: {
+            ArrowFunctionExpression: false,
+            ClassDeclaration: true,
+            ClassExpression: false,
+            FunctionDeclaration: true,
+            FunctionExpression: false,
+            MethodDefinition: false,
+          },
+        },
+      ],
+    },
+  },
   {
     files: ["src/**/*.helpers.ts"],
     rules: {
