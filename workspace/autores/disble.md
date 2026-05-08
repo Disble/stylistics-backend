@@ -9,20 +9,21 @@ slug: disble
 
 ### Ortografía
 
-- 🔴 Acentuación normativa: omite o añade tildes incorrectamente en esdrújulas, graves/llanas, interrogativas indirectas (ej. 'qué'), formas verbales, relativos (ej. 'donde' sin tilde) y confusiones en homófonos, incluyendo el uso incorrecto de mayúsculas iniciales en incisos narrativos sin verbo de habla.
-- 🔴 Grafía léxica: errores de escritura (ej. 'excusaba'), duplicidad, omisión de letras en formas verbales, confusiones homófonas y formas lexicalizadas mal segmentadas.
+- 🔴 Acentuación normativa: omite o añade tildes incorrectamente en esdrújulas (ej. 'vívidas'), graves/llanas, interrogativas indirectas (ej. 'qué'), formas verbales, relativos (ej. 'donde', 'quien' sin tilde), preposiciones y conjunciones comparativas (ej. 'hacia', 'como') y confusiones en homófonos.
+- 🔴 Grafía léxica: errores de escritura (ej. 'excusava', 'manutuvieron'), metátesis o inserción incorrecta de letras, duplicidad, omisión de letras en formas verbales, confusiones homófonas y formas lexicalizadas mal segmentadas.
 - 🔴 Mayúsculas y nombres propios: alterna mayúscula/minúscula donde hay nombres propios, referencias lexicalizadas o formas que exigen capitalización estable.
-- 🔴 Tildes en conjunciones: confusión en el uso de tildes en conjunciones (ej. 'que' vs 'qué').
+- 🔴 Tildes en conjunciones: confusión en el uso de tildes en conjunciones (ej. 'que' vs 'qué', 'si' vs 'sí').
+- 🔴 Puntuación y mayúsculas en incisos: uso de minúscula inicial en incisos narrativos sin verbo de habla; deben iniciar con mayúscula, cerrarse con punto (no dos puntos) cuando no introducen cita directa, y el diálogo anterior debe cerrarse con punto.
 
 ### Gramática
 
-- 🔴 Régimen preposicional y concordancia: omite, agrega o sustituye preposiciones exigidas (ej. 'darse cuenta de', 'antes de', 'por' de causa); errores de concordancia de género/número y paralelismo preposicional.
-- 🔴 Artículos y determinantes: omite artículos necesarios, usa artículos innecesarios ante conceptos generales o nombres propios, o repite determinantes sin concordancia estructural.
-- 🔴 Subordinación y nexos: omite relativos con preposición, conjunciones necesarias tras locuciones temporales o en casos de queísmo/dequeísmo (ej. 'se dio cuenta de que'); usa nexos inadecuados y rompe correlaciones verbales (ej. tras 'hubiera gustado que', correlación pretérito/imperfecto subjuntivo).
-- 🔴 Uso incorrecto de adjetivo en lugar de adverbio: emplea formas adjetivales donde se requiere adverbio para modificar verbo.
-- 🔴 Correlación temporal narrativa: mezcla tiempos verbales que rompen la coherencia (ej. pretérito imperfecto para estados mentales previos); omite o confunde el pretérito pluscuamperfecto para indicar anterioridad.
+- 🔴 Régimen preposicional y concordancia: omite, agrega o sustituye preposiciones exigidas (ej. 'darse cuenta de', 'tomar a alguien', 'antes de', 'por' de causa); errores de concordancia de género/número (incluyendo pronombre neutro) y paralelismo preposicional.
+- 🔴 Artículos y determinantes: omite artículos necesarios (ej. ante sustantivos abstractos), usa artículos innecesarios ante conceptos generales o nombres propios, o repite determinantes sin concordancia estructural.
+- 🔴 Subordinación y nexos: omite relativos con preposición, conjunciones necesarias tras locuciones temporales o en casos de queísmo/dequeísmo; usa nexos inadecuados y rompe correlaciones verbales (ej. pretérito/imperfecto subjuntivo; condicional compuesto en apódosis).
+- 🔴 Uso incorrecto de adjetivo en lugar de adverbio: emplea formas adjetivales (ej. 'media' por 'medio') donde se requiere adverbio.
+- 🔴 Correlación temporal narrativa: mezcla tiempos verbales que rompen la coherencia; omite o confunde el pretérito pluscuamperfecto para indicar anterioridad.
 - 🔴 Gerundios gramaticales: uso incorrecto del gerundio para expresar finalidad, complemento de sustantivo o posterioridad temporal.
-- 🔴 Precisión léxica normativa: elige términos próximos pero inexactos (ej. 'esferográfico' → 'bolígrafo'), dialectalismos no intencionales, calcos, locuciones fijas deformadas o giros regionales.
+- 🔴 Precisión léxica normativa: elige términos próximos pero inexactos (ej. 'esferográfico' → 'bolígrafo'; 'invernar' → 'hibernar'), dialectalismos no intencionales, calcos, locuciones fijas deformadas o giros regionales.
 - 🔴 Naturalidad idiomática léxica: usa calcos del inglés, desplazamientos adjetivales o formulaciones lexicales poco naturales.
 
 ### Puntuación
@@ -31,10 +32,10 @@ slug: disble
 
 ### Estilo
 
-- 🔴 Eco léxico: repite sustantivos, verbos, conectores o expresiones en proximidad suficiente como para empobrecer ritmo y variedad.
-- 🔴 Economía expresiva y naturalidad: mantiene auxiliares, verbos de apoyo, construcciones redundantes o calcos idiomáticos (ej. 'tomar el trabajo' → 'aceptar el trabajo') que pueden comprimirse o naturalizarse sin perder sentido.
+- 🔴 Eco léxico: repite sustantivos, verbos (ej. 'abrir', 'sonido/sonó'), conectores o expresiones en proximidad suficiente como para empobrecer ritmo y variedad.
+- 🔴 Economía expresiva y naturalidad: mantiene auxiliares, verbos de apoyo, construcciones redundantes (ej. 'así que', 'como un gato que fue atrapado') o calcos idiomáticos (ej. 'tomar el trabajo' → 'aceptar el trabajo'; uso de posesivos en partes del cuerpo) que pueden comprimirse o naturalizarse sin perder sentido.
 - 🔴 Claridad sintáctica: omite referentes necesarios; genera ambigüedad en referentes pronominales o errores de continuidad de personajes.
-- 🔴 Ritmo oracional: corta subordinadas o estructuras dependientes con puntuación fuerte cuando conviene mantener continuidad sintáctica; uso inadecuado de pasiva refleja (ej. 'se entregó' → 'fue entregada').
+- 🔴 Ritmo oracional: corta subordinadas o estructuras dependientes con puntuación fuerte cuando conviene mantener continuidad sintáctica; uso inadecuado de pasiva refleja.
 
 ## CRITERIOS DE INTERVENCIÓN
 
