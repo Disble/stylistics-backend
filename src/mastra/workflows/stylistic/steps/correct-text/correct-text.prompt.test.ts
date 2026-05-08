@@ -9,7 +9,7 @@ import { buildPrompt } from "./correct-text.prompt";
 
 /** Canonical prompt input reused across prompt-focused tests. */
 const baseInput: StylisticWorkflowInput = {
-  autorSlug: "disble",
+  documentUuid: "44444444-4444-4444-8444-444444444444",
   genero: "narrativa-literaria",
   text: "Era tarde y la casa seguia despierta.",
 };

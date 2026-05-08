@@ -27,11 +27,11 @@ export const correctText = createStep({
   execute: async ({ inputData, mastra }) => {
     logger.info(
       {
-        autorSlug: inputData.autorSlug,
+        documentUuid: inputData.documentUuid,
         genero: inputData.genero,
         textLength: inputData.text.length,
       },
-      "✏️ Iniciando corrección estilística",
+      "✏️ Starting stylistic correction",
     );
 
     const agent = mastra?.getAgent("stylisticAgent");
@@ -39,7 +39,7 @@ export const correctText = createStep({
     if (!agent) {
       logger.error(
         {
-          autorSlug: inputData.autorSlug,
+          documentUuid: inputData.documentUuid,
         },
         "❌ Stylistic agent not found",
       );
@@ -48,24 +48,25 @@ export const correctText = createStep({
 
     logger.info(
       {
-        autorSlug: inputData.autorSlug,
+        documentUuid: inputData.documentUuid,
         genero: inputData.genero,
       },
-      "🤖 Stylistic agent encontrado, iniciando corrección...",
+      "🤖 Stylistic agent found, starting correction...",
     );
 
-    // Strip the step-only profile fields before building the prompt payload.
     const workflowInput = {
       text: inputData.text,
-      autorSlug: inputData.autorSlug,
       genero: inputData.genero,
+      documentUuid: inputData.documentUuid,
+      title: inputData.title,
+      processingConfig: inputData.processingConfig,
     };
     const prompt = buildPrompt(workflowInput, inputData.authorProfile);
     const options = buildGenerateOptions(workflowInput.genero);
 
     logger.debug(
       {
-        autorSlug: inputData.autorSlug,
+        documentUuid: inputData.documentUuid,
         genero: inputData.genero,
         hasAuthorProfile: true,
         textLength: inputData.text.length,
@@ -87,7 +88,7 @@ export const correctText = createStep({
       if (safetyBlock) {
         logger.error(
           {
-            autorSlug: inputData.autorSlug,
+            documentUuid: inputData.documentUuid,
             genero: inputData.genero,
             textLength: inputData.text.length,
             promptLength: prompt.length,
@@ -97,7 +98,7 @@ export const correctText = createStep({
         );
 
         throw new Error(
-          `Google/Gemini blocked stylistic correction (blockReason=${safetyBlock.blockReason}, autorSlug=${inputData.autorSlug}, genero=${inputData.genero})`,
+          `Google/Gemini blocked stylistic correction (blockReason=${safetyBlock.blockReason}, documentUuid=${inputData.documentUuid}, genero=${inputData.genero})`,
           { cause: error },
         );
       }
@@ -109,13 +110,13 @@ export const correctText = createStep({
     if (!result.object) {
       logger.error(
         {
-          autorSlug: inputData.autorSlug,
+          documentUuid: inputData.documentUuid,
           finishReason: result.finishReason,
           responseModel: result.response?.modelId,
           warnings: result.warnings,
           textPreview: result.text.slice(0, 1200),
         },
-        "El agente no devolvio output estructurado",
+        "The agent did not return structured output",
       );
 
       throw new Error("No output structured received from stylistic agent");
@@ -123,18 +124,18 @@ export const correctText = createStep({
 
     logger.info(
       {
-        autorSlug: inputData.autorSlug,
+        documentUuid: inputData.documentUuid,
         suggestions: result.object.suggestions.length,
         cleanPatterns: result.object.cleanPatterns.length,
       },
-      "Correccion estilistica completada",
+      "Stylistic correction completed",
     );
 
     // Normalize no-op replacements before handing them to the document layer.
     return {
       suggestions: normalizeSuggestions(result.object.suggestions),
       cleanPatterns: result.object.cleanPatterns,
-      autorSlug: inputData.autorSlug,
+      documentContext: inputData.documentContext,
       authorProfile: inputData.authorProfile,
       authorProfileCorrectionPatternsWordCount:
         inputData.authorProfileCorrectionPatternsWordCount,

@@ -1,42 +1,32 @@
 /**
- * Builds the workspace-relative prompt used by the feedback workflow step.
+ * Builds the prompt used by the feedback workflow step.
  */
 import type { ProcessFeedbackPromptInput } from "./process-feedback.types";
 
-/**
- * Builds the feedback-processing prompt using paths relative to the mounted
- * Mastra workspace root.
- */
+/** Builds the DB-backed prompt used when feedback targets a persisted document profile. */
 export function buildProcessFeedbackPrompt(input: ProcessFeedbackPromptInput) {
-  const autorProfilePath = `autores/${input.autorSlug}.md`;
+  return `Procesás UN comentario explícito del autor sobre UNA corrección.
 
-  return `<workspace>
-Las rutas de este prompt son relativas a la raiz ya montada del workspace.
-No antepongas \`workspace/\` ni crees una carpeta \`workspace\` dentro del workspace actual.
-</workspace>
+Devolvé SOLO el output estructurado solicitado por el caller.
+NO menciones tools, archivos, rutas de workspace ni explicaciones extra fuera de la respuesta estructurada.
 
-<contrato>
-Procesá UN comentario de feedback del autor sobre una corrección.
-Usá el perfil del autor indicado en este prompt como documento objetivo.
-Ejecutá el protocolo completo: RAZONAR -> DECIDIR -> ACTUAR.
-Aplicá estrictamente la política de escritura segura de tu protocolo canónico.
-Este prompt solo aporta perfil y payload; la sección objetivo, reglas de edición, borrado y aborto están en tu protocolo.
-</contrato>
+Contrato:
+- Usá el perfil documental persistido provisto como documento objetivo.
+- Tratá esto como feedback a nivel documento.
+- Actualizá solo \`## CRITERIOS DE INTERVENCIÓN\` cuando el feedback exprese una preferencia reutilizable de intervención, un límite duro, una restricción de voz o una frontera de corrección.
+- Ignorá feedback contextual, vago o no reutilizable como criterio documental.
+- NO actualices \`## PATRONES VIVOS\` desde este workflow.
+- Preservá el contenido no afectado de forma literal cuando sea posible.
 
-<perfil>
-Perfil del autor: ${autorProfilePath}
+Document UUID: ${input.documentUuid}
 
-Perfil actual:
+Markdown actual del perfil documental:
 ~~~markdown
 ${input.authorProfile}
 ~~~
-</perfil>
 
-<payload>
+Payload de feedback:
 ${JSON.stringify(input, null, 2)}
-</payload>
 
-<respuesta-final>
-Confirmá si actualizaste el perfil o descartaste el feedback, con la razón.
-</respuesta-final>`;
+Devolvé un decision summary conciso explicando si el perfil fue actualizado o ignorado.`;
 }

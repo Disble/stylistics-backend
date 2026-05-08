@@ -4,18 +4,45 @@ export const FEEDBACK_AGENT_SKILL = `## Propósito
 Este protocolo define cómo el **Feedback Agent** interpreta y aplica el feedback de un autor
 sobre una corrección individual, actualizando su perfil de manera selectiva y controlada.
 
-## Regla de rutas del workspace
+## Alcance documental canónico
 
-El workspace ya está montado en su raíz operativa.
-Todas las rutas de este protocolo son relativas a esa raíz.
-Nunca antepongas \`workspace/\`.
-Nunca crees una carpeta \`workspace\` dentro del workspace actual.
+Este protocolo ya NO opera sobre archivos ni rutas de workspace.
+Opera sobre el markdown completo de UN perfil estilístico persistido por documento,
+provisto inline por el caller.
+
+- No inventes rutas.
+- No pidas leer archivos.
+- No supongas filesystem.
+- Toda preservación estructural debe aplicarse sobre el markdown documental recibido.
 
 ## Estructura del Perfil (referencia)
+
+El perfil documental de referencia conserva esta estructura base:
+
+\`\`\`markdown
+# Perfil estilístico del documento
+
+## PATRONES VIVOS
+
+### Ortografía
+
+### Gramática
+
+### Puntuación
+
+### Tipografía
+
+### Léxico
+
+### Estilo
+
+## CRITERIOS DE INTERVENCIÓN
+\`\`\`
 
 La sección objetivo de este protocolo es:
 
 - **\`## CRITERIOS DE INTERVENCIÓN\`** — preferencias explícitas, rasgos intocables, límites de corrección, preservación de voz y grado de intervención permitido
+- Las subsecciones canónicas de \`## PATRONES VIVOS\` deben preservarse aunque este protocolo no las actualice.
 
 ---
 
@@ -133,6 +160,7 @@ Este protocolo NO autoriza reescritura libre del perfil. El modo correcto es **P
 
 \`\`\`typescript
 {
+  documentUuid: string,
   category: string,        // categoría de la corrección original
   context: string,         // contexto/parrafo completo donde vive la sugerencia
   anchor: string,          // fragmento exacto dentro de \`context\` al que apunta la sugerencia
@@ -151,5 +179,5 @@ Este protocolo NO autoriza reescritura libre del perfil. El modo correcto es **P
 
 ## Recursos
 
-- **Directorio de perfiles**: \`autores/\`
+- **Perfil objetivo**: markdown documental persistido provisto inline por el caller
 - **Protocolo del Profile Agent**: \`src/mastra/agents/profile-agent.skill.ts\``;

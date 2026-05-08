@@ -53,3 +53,7 @@ workspace/output.json
 # Mastra runtime artifacts accidentally written under the public assets source folder
 src/mastra/public/*.duckdb
 src/mastra/public/*.duckdb.wal
+
+# Mastra local runtime database artifacts at repository root
+mastra.duckdb
+mastra.duckdb.wal

@@ -1,75 +1,88 @@
 /**
  * Implements the author-profile loading step for the stylistic workflow.
  */
+import type { BetterAuthUser } from "@mastra/auth-better-auth";
 import { createStep } from "@mastra/core/workflows";
+import { resolveDocumentContext } from "../../../../../application/documents/resolve-document-context";
+import { PgDocumentRepository } from "../../../../../infrastructure/persistence/repositories/document.repository";
 import { logger } from "../../../../utils/logger";
-import {
-  countAuthorProfileCorrectionPatternsWords,
-  loadRequiredAuthorProfileText,
-  resolveAuthorProfilePath,
-} from "./load-author-profile.helpers";
+import { countProfileCorrectionPatternsWords } from "./load-author-profile.helpers";
 import {
   loadAuthorProfileInputSchema,
   loadAuthorProfileOutputSchema,
 } from "./load-author-profile.schemas";
+
+const documentContextRepository = new PgDocumentRepository();
+
+function getAuthenticatedUserId(requestContext: {
+  get: <TKey extends string, TValue>(key: TKey) => TValue | undefined;
+}) {
+  return requestContext.get<"user", BetterAuthUser | undefined>("user")?.user
+    .id;
+}
 
 // Step 1 resolves the author profile as explicit workflow state so profile IO
 // remains visible in Mastra traces before any model call happens.
 export const loadAuthorProfile = createStep({
   id: "load-author-profile",
   description:
-    "Carga el perfil del autor y lo adjunta al contexto antes de corregir el texto",
+    "Loads the author profile and attaches it to the context before correcting text",
   inputSchema: loadAuthorProfileInputSchema,
   outputSchema: loadAuthorProfileOutputSchema,
-  execute: async ({ inputData }) => {
-    // Resolve the path first so both success and error logs point to the same file.
-    const authorProfilePath = resolveAuthorProfilePath(inputData.autorSlug);
+  execute: async ({ inputData, requestContext }) => {
+    const userId = getAuthenticatedUserId(requestContext);
 
-    logger.info(
-      {
-        autorSlug: inputData.autorSlug,
-        authorProfilePath,
-      },
-      "📚 Cargando perfil del autor",
-    );
-
-    let authorProfile: string;
-
-    try {
-      // The stylistic workflow requires a concrete profile before correction.
-      ({ authorProfile } = await loadRequiredAuthorProfileText(
-        inputData.autorSlug,
-      ));
-    } catch (error) {
-      logger.error(
-        {
-          autorSlug: inputData.autorSlug,
-          authorProfilePath,
-          error,
-        },
-        "❌ No se pudo resolver el perfil del autor",
+    if (!userId) {
+      throw new Error(
+        "Authenticated user is required to resolve document profile context.",
       );
-
-      throw error;
     }
 
+    logger.info(
+      {
+        documentUuid: inputData.documentUuid,
+        genero: inputData.genero,
+      },
+      "📚 Resolving document profile",
+    );
+
+    const resolvedContext = await resolveDocumentContext(
+      {
+        userId,
+        externalDocumentKey: inputData.documentUuid,
+        title: inputData.title,
+        defaultGenre: inputData.genero,
+        processingConfig: inputData.processingConfig,
+      },
+      documentContextRepository,
+    );
+
+    const authorProfile = resolvedContext.styleProfile.profileMarkdown;
     const authorProfileCorrectionPatternsWordCount =
-      countAuthorProfileCorrectionPatternsWords(authorProfile);
+      countProfileCorrectionPatternsWords(authorProfile);
 
     logger.info(
       {
-        autorSlug: inputData.autorSlug,
-        authorProfilePath,
+        documentUuid: inputData.documentUuid,
+        documentId: resolvedContext.document.id,
+        documentStyleProfileId: resolvedContext.styleProfile.id,
         authorProfileCorrectionPatternsWordCount,
       },
-      "✅ Perfil del autor resuelto",
+      "✅ Document profile resolved",
     );
 
     return {
       ...inputData,
-      authorProfilePath,
       authorProfile,
       authorProfileCorrectionPatternsWordCount,
+      documentContext: {
+        documentId: resolvedContext.document.id,
+        documentStyleProfileId: resolvedContext.styleProfile.id,
+        documentPreferencesId: resolvedContext.preferences.id,
+        documentUuid: resolvedContext.document.externalDocumentKey,
+        defaultGenre: resolvedContext.preferences.defaultGenre,
+        processingConfig: resolvedContext.preferences.processingConfig,
+      },
     };
   },
 });

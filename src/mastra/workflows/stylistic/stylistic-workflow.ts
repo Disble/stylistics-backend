@@ -24,5 +24,4 @@ const stylisticWorkflow = createWorkflow({
 
 stylisticWorkflow.commit();
 
-export { stylisticWorkflowInputSchema } from "./steps";
-export { stylisticWorkflow };
+export { stylisticWorkflow, stylisticWorkflowInputSchema };

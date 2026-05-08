@@ -15,9 +15,11 @@ import {
 import { auth } from "../auth/auth";
 import { getTrustedOrigins } from "../auth/auth-env";
 import { mastraAuth } from "../auth/mastra-auth";
+import { documentApiRoutes } from "../server/routes/document.routes";
+import type { AuthBridgeSession } from "./index.types";
+import { documentFeedbackAgent } from "./agents/document-feedback-agent";
+import { documentProfileAgent } from "./agents/document-profile-agent";
 import { editorialAgent } from "./agents/editorial-agent";
-import { feedbackAgent } from "./agents/feedback-agent";
-import { profileAgent } from "./agents/profile-agent";
 import { stylisticAgent } from "./agents/stylistic-agent";
 import { stylisticConsultationAgent } from "./agents/stylistic-consultation-agent";
 import { storageCompositeStore } from "./constants/storage";
@@ -25,23 +27,6 @@ import { pgVector, VECTOR_STORE } from "./constants/vector";
 import { editorialWorkflow } from "./workflows/editorial-workflow";
 import { feedbackWorkflow } from "./workflows/feedback/feedback-workflow";
 import { stylisticWorkflow } from "./workflows/stylistic/stylistic-workflow";
-
-/**
- * Auth session payload passed from the backend callback bridge to the add-in dialog.
- *
- * The add-in never receives Google provider tokens. It receives only the Better
- * Auth session token, which is the bearer credential accepted by Mastra auth.
- */
-type AuthBridgeSession = Readonly<{
-  token: string;
-  expiresAt: string | null;
-  user: Readonly<{
-    id: string;
-    name: string | null;
-    email: string | null;
-    image: string | null;
-  }>;
-}>;
 
 const AUTH_BRIDGE_SESSION_TTL_MS = 60_000;
 
@@ -213,8 +198,8 @@ export const mastra = new Mastra({
     editorialAgent,
     stylisticAgent,
     stylisticConsultationAgent,
-    profileAgent,
-    feedbackAgent,
+    documentProfileAgent,
+    documentFeedbackAgent,
   },
   storage: storageCompositeStore,
   vectors: {
@@ -223,6 +208,7 @@ export const mastra = new Mastra({
   server: {
     auth: mastraAuth,
     apiRoutes: [
+      ...documentApiRoutes,
       registerApiRoute("/auth/*", {
         method: "ALL",
         requiresAuth: false,

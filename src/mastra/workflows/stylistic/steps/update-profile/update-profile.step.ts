@@ -3,12 +3,15 @@
  * to the dedicated profile agent.
  */
 import { createStep } from "@mastra/core/workflows";
+import { updateDocumentStyleProfile } from "../../../../../application/documents/update-document-style-profile";
+import { PgDocumentRepository } from "../../../../../infrastructure/persistence/repositories/document.repository";
 import { logger } from "../../../../utils/logger";
-import { buildUpdateProfilePrompt } from "./update-profile.prompt";
 import {
   updateProfileInputSchema,
   updateProfileOutputSchema,
 } from "./update-profile.schemas";
+
+const documentContextRepository = new PgDocumentRepository();
 
 // Step 2 updates the persistent author profile from the latest session findings
 // and returns the original correction payload unchanged for the workflow caller.
@@ -19,47 +22,47 @@ export const updateProfile = createStep({
   inputSchema: updateProfileInputSchema,
   outputSchema: updateProfileOutputSchema,
   execute: async ({ inputData, mastra }) => {
-    const { authorProfile, authorProfileCorrectionPatternsWordCount } =
-      inputData;
-
-    logger.info(
-      {
-        autorSlug: inputData.autorSlug,
-        suggestionsCount: inputData.suggestions.length,
-        authorProfileCorrectionPatternsWordCount,
-      },
-      "📋 Iniciando actualización de perfil",
-    );
-
-    const agent = mastra?.getAgent("profileAgent");
+    const agent = mastra?.getAgent("documentProfileAgent");
 
     if (!agent) {
       logger.error(
         {
-          autorSlug: inputData.autorSlug,
+          documentUuid: inputData.documentContext.documentUuid,
+          documentStyleProfileId:
+            inputData.documentContext.documentStyleProfileId,
         },
-        "❌ Profile agent not found",
+        "❌ Document profile agent not found",
       );
-      throw new Error("Profile agent not found");
+      throw new Error("Document profile agent not found");
     }
 
-    const prompt = buildUpdateProfilePrompt(inputData);
-
-    logger.debug(
+    const result = await updateDocumentStyleProfile(
       {
-        autorSlug: inputData.autorSlug,
-        authorProfileLength: authorProfile.length,
-        authorProfileCorrectionPatternsWordCount,
-        prompt,
+        documentStyleProfileId:
+          inputData.documentContext.documentStyleProfileId,
+        currentProfileMarkdown: inputData.authorProfile,
+        correctionPatternsWordCount:
+          inputData.authorProfileCorrectionPatternsWordCount,
+        suggestions: inputData.suggestions,
+        cleanPatterns: inputData.cleanPatterns,
       },
-      "profile-update prompt",
+      {
+        agent,
+        repository: documentContextRepository,
+      },
     );
 
-    // Intentionally fire-and-forget: profile persistence should not block the
-    // response payload already produced for the caller.
-    agent.generate(prompt);
-
-    logger.info({ autorSlug: inputData.autorSlug }, "✅ Perfil actualizado");
+    logger.info(
+      {
+        documentUuid: inputData.documentContext.documentUuid,
+        documentStyleProfileId:
+          inputData.documentContext.documentStyleProfileId,
+        suggestionsCount: inputData.suggestions.length,
+        cleanPatternsCount: inputData.cleanPatterns.length,
+        changeSummary: result.changeSummary,
+      },
+      "📋 Document profile updated in DB",
+    );
 
     return {
       suggestions: inputData.suggestions,

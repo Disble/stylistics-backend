@@ -76,7 +76,19 @@ export const stylisticWorkflowOutputSchema = z.object({
 /** Adds author identity so downstream steps can update the proper profile. */
 export const stylisticCorrectionStepSchema =
   stylisticWorkflowOutputSchema.extend({
-    autorSlug: z.string(),
+    documentContext: z.object({
+      documentId: z.uuid(),
+      documentStyleProfileId: z.uuid(),
+      documentPreferencesId: z.uuid(),
+      documentUuid: z.uuid(),
+      defaultGenre: z.enum([
+        "narrativa-literaria",
+        "ensayo-academico",
+        "periodismo-cultural",
+        "general",
+      ]),
+      processingConfig: z.record(z.string(), z.unknown()),
+    }),
     authorProfile: z
       .string()
       .describe(

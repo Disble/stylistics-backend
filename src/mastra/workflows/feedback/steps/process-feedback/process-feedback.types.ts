@@ -1,9 +1,5 @@
-/**
- * Defines the minimal input contract needed to build the feedback-processing
- * prompt for the feedback workflow.
- */
-export interface ProcessFeedbackPromptInput {
-  autorSlug: string;
+/** Prompt input accepted by the document-backed feedback prompt builder. */
+export type ProcessFeedbackPromptInput = {
   authorProfile: string;
   category: string;
   context: string;
@@ -14,4 +10,5 @@ export interface ProcessFeedbackPromptInput {
   severity: "high" | "medium" | "low";
   suggestionType: "track-change" | "comment-only";
   comment?: string;
-}
+  documentUuid: string;
+};

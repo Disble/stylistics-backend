@@ -40,6 +40,7 @@ export type CommentOnlySuggestion = z.infer<
 /** Discriminated union over all suggestion variants. Narrow with `suggestion.type`. */
 export type WorkflowSuggestion = TrackChangeSuggestion | CommentOnlySuggestion;
 
+/** Base Mastra execution options specialized for stylistic structured output. */
 type StylisticAgentExecutionOptions =
   AgentExecutionOptions<StylisticWorkflowOutput>;
 
@@ -69,15 +70,15 @@ export type StylisticAgent = {
     };
   }>;
 };
-/** Minimal logger surface shared across stylistic workflow steps. */
 
+/** Minimal logger surface shared across stylistic workflow steps. */
 export type StylisticCorrectionLogger = {
   debug: (object: Record<string, unknown>, message: string) => void;
   info: (object: Record<string, unknown>, message: string) => void;
   error: (object: Record<string, unknown>, message: string) => void;
 };
-/** Normalized provider safety metadata extracted from nested thrown errors. */
 
+/** Normalized provider safety metadata extracted from nested thrown errors. */
 export type GoogleSafetyBlock = {
   blockReason: string;
   statusCode?: number;

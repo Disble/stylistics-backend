@@ -1,5 +1,7 @@
-const DEFAULT_BACKEND_URL = "http://localhost:4111";
-const DEFAULT_ADDON_ORIGIN = "https://localhost:3000";
+import {
+  DEFAULT_ADDON_ORIGIN,
+  DEFAULT_BACKEND_URL,
+} from "./auth-env.constants";
 
 /**
  * Reads a required environment variable and fails fast during server startup.

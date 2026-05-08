@@ -8,13 +8,7 @@ import {
   getUserMessageFromRunInput,
 } from "@mastra/evals/scorers/utils";
 import { z } from "zod";
-
-type TranslationAnalysisResult = {
-  nonEnglish?: boolean;
-  translated?: boolean;
-  confidence?: number;
-  explanation?: string;
-};
+import type { TranslationAnalysisResult } from "./weather-scorer.types";
 
 function getTranslationAnalysisResult(
   results: unknown,

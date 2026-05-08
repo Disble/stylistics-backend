@@ -1,52 +1,79 @@
 /**
  * Implements the author-profile loading step for the feedback workflow.
  */
+import type { BetterAuthUser } from "@mastra/auth-better-auth";
 import { createStep } from "@mastra/core/workflows";
+import { resolveDocumentContext } from "../../../../../application/documents/resolve-document-context";
+import { PgDocumentRepository } from "../../../../../infrastructure/persistence/repositories/document.repository";
 import { logger } from "../../../../utils/logger";
-import {
-  loadRequiredAuthorProfileText,
-  resolveAuthorProfilePath,
-} from "../../../stylistic/steps/load-author-profile/load-author-profile.helpers";
 import {
   loadAuthorProfileInputSchema,
   loadAuthorProfileOutputSchema,
 } from "./load-author-profile.schemas";
+
+const documentContextRepository = new PgDocumentRepository();
+
+function getAuthenticatedUserId(requestContext: {
+  get: <TKey extends string, TValue>(key: TKey) => TValue | undefined;
+}) {
+  return requestContext.get<"user", BetterAuthUser | undefined>("user")?.user
+    .id;
+}
 
 // Step 1 resolves the author profile as explicit workflow state so profile IO
 // remains visible in Mastra traces before any model call happens.
 export const loadAuthorProfile = createStep({
   id: "load-author-profile",
   description:
-    "Carga el perfil del autor y lo adjunta al contexto antes de procesar el feedback",
+    "Loads the author profile and attaches it to the context before processing feedback",
   inputSchema: loadAuthorProfileInputSchema,
   outputSchema: loadAuthorProfileOutputSchema,
-  execute: async ({ inputData }) => {
-    const authorProfilePath = resolveAuthorProfilePath(inputData.autorSlug);
+  execute: async ({ inputData, requestContext }) => {
+    const userId = getAuthenticatedUserId(requestContext);
 
-    logger.info(
-      { autorSlug: inputData.autorSlug, authorProfilePath },
-      "📚 Cargando perfil del autor",
-    );
-
-    let authorProfile: string;
-
-    try {
-      ({ authorProfile } = await loadRequiredAuthorProfileText(
-        inputData.autorSlug,
-      ));
-    } catch (error) {
-      logger.error(
-        { autorSlug: inputData.autorSlug, authorProfilePath, error },
-        "❌ No se pudo resolver el perfil del autor",
+    if (!userId) {
+      throw new Error(
+        "Authenticated user is required to resolve document profile context.",
       );
-      throw error;
     }
 
     logger.info(
-      { autorSlug: inputData.autorSlug, authorProfilePath },
-      "✅ Perfil del autor resuelto",
+      {
+        documentUuid: inputData.documentUuid,
+        category: inputData.category,
+        action: inputData.action,
+      },
+      "📚 Resolving document profile for feedback",
     );
 
-    return { ...inputData, authorProfilePath, authorProfile };
+    const resolvedContext = await resolveDocumentContext(
+      {
+        userId,
+        externalDocumentKey: inputData.documentUuid,
+      },
+      documentContextRepository,
+    );
+
+    logger.info(
+      {
+        documentUuid: inputData.documentUuid,
+        documentId: resolvedContext.document.id,
+        documentStyleProfileId: resolvedContext.styleProfile.id,
+      },
+      "✅ Document profile resolved for feedback",
+    );
+
+    return {
+      ...inputData,
+      authorProfile: resolvedContext.styleProfile.profileMarkdown,
+      documentContext: {
+        documentId: resolvedContext.document.id,
+        documentStyleProfileId: resolvedContext.styleProfile.id,
+        documentPreferencesId: resolvedContext.preferences.id,
+        documentUuid: resolvedContext.document.externalDocumentKey,
+        defaultGenre: resolvedContext.preferences.defaultGenre,
+        processingConfig: resolvedContext.preferences.processingConfig,
+      },
+    };
   },
 });

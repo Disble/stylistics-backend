@@ -4,28 +4,7 @@
  */
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
-
-/** Represents the subset of the geocoding response required by this tool. */
-interface GeocodingResponse {
-  results: {
-    latitude: number;
-    longitude: number;
-    name: string;
-  }[];
-}
-
-/** Represents the subset of the weather response required by this tool. */
-interface WeatherResponse {
-  current: {
-    time: string;
-    temperature_2m: number;
-    apparent_temperature: number;
-    relative_humidity_2m: number;
-    wind_speed_10m: number;
-    wind_gusts_10m: number;
-    weather_code: number;
-  };
-}
+import type { GeocodingResponse, WeatherResponse } from "./weather-tool.types";
 
 /** Fetches current weather metrics for one city name. */
 export const weatherTool = createTool({
