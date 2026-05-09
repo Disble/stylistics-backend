@@ -236,8 +236,14 @@ The flat config in `eslint.config.mjs` wires the following plugins:
 | `eslint-plugin-jsdoc` | tag-name validation on doc comments |
 
 Custom rules are expressed via `no-restricted-syntax` for AST-level detection
-and `no-restricted-imports` for the helpers purity rule. The full list of
-exemptions is co-located with each rule in `eslint.config.mjs`.
+and `no-restricted-imports` for helpers purity and layer-boundary rules. The
+full list of exemptions is co-located with each rule in `eslint.config.mjs`.
+
+Layer direction rules are lint-first conventions. For example,
+`src/infrastructure/**` must not import from `src/application/**`, and
+`src/domain/**` must not import from application, infrastructure, Mastra, or
+server adapters. Shared contracts needed by infrastructure belong in domain,
+ports, or infrastructure-local files instead of a higher-level use-case module.
 
 Run the full pipeline with `bun run validate`. It chains:
 

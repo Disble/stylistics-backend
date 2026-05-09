@@ -3,10 +3,11 @@
  * to the dedicated profile agent.
  */
 import { createStep } from "@mastra/core/workflows";
-import { updateDocumentStyleProfile } from "../../../../../application/documents/update-document-style-profile";
 import { PgDocumentRepository } from "../../../../../infrastructure/persistence/repositories/document.repository";
 import { logger } from "../../../../utils/logger";
+import { buildUpdateProfilePrompt } from "./update-profile.helpers";
 import {
+  updateDocumentStyleProfileResultSchema,
   updateProfileInputSchema,
   updateProfileOutputSchema,
 } from "./update-profile.schemas";
@@ -36,21 +37,34 @@ export const updateProfile = createStep({
       throw new Error("Document profile agent not found");
     }
 
-    const result = await updateDocumentStyleProfile(
-      {
-        documentStyleProfileId:
-          inputData.documentContext.documentStyleProfileId,
-        currentProfileMarkdown: inputData.authorProfile,
-        correctionPatternsWordCount:
-          inputData.authorProfileCorrectionPatternsWordCount,
-        suggestions: inputData.suggestions,
-        cleanPatterns: inputData.cleanPatterns,
+    const prompt = buildUpdateProfilePrompt({
+      documentStyleProfileId: inputData.documentContext.documentStyleProfileId,
+      currentProfileMarkdown: inputData.authorProfile,
+      correctionPatternsWordCount:
+        inputData.authorProfileCorrectionPatternsWordCount,
+      suggestions: inputData.suggestions,
+      cleanPatterns: inputData.cleanPatterns,
+    });
+    const generatedProfile = await agent.generate(prompt, {
+      structuredOutput: {
+        schema: updateDocumentStyleProfileResultSchema,
       },
-      {
-        agent,
-        repository: documentContextRepository,
-      },
+    });
+
+    if (!generatedProfile.object) {
+      throw new Error(
+        "Document profile agent did not return structured output.",
+      );
+    }
+
+    const result = updateDocumentStyleProfileResultSchema.parse(
+      generatedProfile.object,
     );
+
+    await documentContextRepository.updateDocumentStyleProfile({
+      documentStyleProfileId: inputData.documentContext.documentStyleProfileId,
+      profileMarkdown: result.profileMarkdown,
+    });
 
     logger.info(
       {

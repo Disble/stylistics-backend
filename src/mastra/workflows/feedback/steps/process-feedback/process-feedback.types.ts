@@ -12,3 +12,10 @@ export type ProcessFeedbackPromptInput = {
   comment?: string;
   documentUuid: string;
 };
+
+/** Structured result produced after one feedback comment is processed. */
+export type ProcessFeedbackResult = {
+  status: "updated" | "ignored";
+  decisionSummary: string;
+  profileMarkdown?: string;
+};

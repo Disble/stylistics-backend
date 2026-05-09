@@ -207,6 +207,45 @@ export default [
       "sonarjs/cognitive-complexity": "off",
     },
   },
+  {
+    files: ["src/infrastructure/**/*.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["**/application/**"],
+              message:
+                "Infrastructure must not depend on application/use-case modules. Move shared contracts to domain, ports, or infrastructure-local files.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/domain/**/*.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: [
+                "**/application/**",
+                "**/infrastructure/**",
+                "**/mastra/**",
+                "**/server/**",
+              ],
+              message:
+                "Domain must not depend on application, infrastructure, Mastra, or server adapters. Move shared contracts inward or invert the dependency.",
+            },
+          ],
+        },
+      ],
+    },
+  },
   ...buildAnatomyRules(),
   {
     files: ["src/**/*.types.ts"],

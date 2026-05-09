@@ -3,7 +3,6 @@
  */
 import type { BetterAuthUser } from "@mastra/auth-better-auth";
 import { createStep } from "@mastra/core/workflows";
-import { resolveDocumentContext } from "../../../../../application/documents/resolve-document-context";
 import { PgDocumentRepository } from "../../../../../infrastructure/persistence/repositories/document.repository";
 import { logger } from "../../../../utils/logger";
 import {
@@ -46,13 +45,11 @@ export const loadAuthorProfile = createStep({
       "📚 Resolving document profile for feedback",
     );
 
-    const resolvedContext = await resolveDocumentContext(
-      {
+    const resolvedContext =
+      await documentContextRepository.resolveDocumentContext({
         userId,
         externalDocumentKey: inputData.documentUuid,
-      },
-      documentContextRepository,
-    );
+      });
 
     logger.info(
       {

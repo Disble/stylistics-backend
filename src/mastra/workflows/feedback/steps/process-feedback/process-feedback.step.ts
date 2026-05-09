@@ -3,12 +3,13 @@
  * and delegates profile updates to the feedback agent.
  */
 import { createStep } from "@mastra/core/workflows";
-import { applyDocumentFeedback } from "../../../../../application/documents/apply-document-feedback";
 import { PgDocumentRepository } from "../../../../../infrastructure/persistence/repositories/document.repository";
 import { logger } from "../../../../utils/logger";
+import { buildProcessFeedbackPrompt } from "./process-feedback.prompt";
 import {
   processFeedbackInputSchema,
   processFeedbackOutputSchema,
+  processFeedbackResultSchema,
 } from "./process-feedback.schemas";
 
 const documentContextRepository = new PgDocumentRepository();
@@ -64,26 +65,46 @@ export const processFeedback = createStep({
       throw new Error("Document feedback agent not found");
     }
 
-    const result = await applyDocumentFeedback(
-      {
+    const prompt = buildProcessFeedbackPrompt({
+      authorProfile: inputData.authorProfile,
+      category: inputData.category,
+      context: inputData.context,
+      anchor: inputData.anchor,
+      suggestedText: inputData.suggestedText,
+      justification: inputData.justification,
+      action: inputData.action,
+      severity: inputData.severity,
+      suggestionType: inputData.suggestionType,
+      comment: inputData.comment,
+      documentUuid: inputData.documentContext.documentUuid,
+    });
+    const generatedFeedback = await agent.generate(prompt, {
+      structuredOutput: {
+        schema: processFeedbackResultSchema,
+      },
+    });
+
+    if (!generatedFeedback.object) {
+      throw new Error(
+        "Document feedback agent did not return structured output.",
+      );
+    }
+
+    const result = processFeedbackResultSchema.parse(generatedFeedback.object);
+
+    if (result.status === "updated") {
+      if (!result.profileMarkdown) {
+        throw new Error(
+          "Document feedback agent returned an updated status without profile markdown.",
+        );
+      }
+
+      await documentContextRepository.updateDocumentStyleProfile({
         documentStyleProfileId:
           inputData.documentContext.documentStyleProfileId,
-        currentProfileMarkdown: inputData.authorProfile,
-        category: inputData.category,
-        context: inputData.context,
-        anchor: inputData.anchor,
-        suggestedText: inputData.suggestedText,
-        justification: inputData.justification,
-        action: inputData.action,
-        severity: inputData.severity,
-        suggestionType: inputData.suggestionType,
-        comment: inputData.comment,
-      },
-      {
-        agent,
-        repository: documentContextRepository,
-      },
-    );
+        profileMarkdown: result.profileMarkdown,
+      });
+    }
 
     logger.info(
       {

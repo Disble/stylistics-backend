@@ -2,7 +2,6 @@ import type { BetterAuthUser } from "@mastra/auth-better-auth";
 import type { ContextWithMastra } from "@mastra/core/server";
 import { registerApiRoute } from "@mastra/core/server";
 
-import { resolveDocumentContext } from "../../application/documents/resolve-document-context";
 import { PgDocumentRepository } from "../../infrastructure/persistence/repositories/document.repository";
 import { resolveDocumentContextRouteRequestSchema } from "./document.routes.schemas";
 
@@ -108,16 +107,14 @@ export const documentApiRoutes = [
         );
       }
 
-      const resolvedContext = await resolveDocumentContext(
-        {
+      const resolvedContext =
+        await documentContextRepository.resolveDocumentContext({
           userId,
           externalDocumentKey: parsed.data.documentUuid,
           title: parsed.data.title,
           defaultGenre: parsed.data.genero,
           processingConfig: parsed.data.processingConfig,
-        },
-        documentContextRepository,
-      );
+        });
 
       return c.json(resolvedContext);
     },

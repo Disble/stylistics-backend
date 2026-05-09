@@ -1,4 +1,4 @@
-import type { UpdateDocumentStyleProfileInput } from "./update-document-style-profile.types";
+import type { UpdateDocumentStyleProfileInput } from "./update-profile.types";
 
 const PROFILE_WORD_COUNT_MIN = 550;
 const PROFILE_WORD_COUNT_MAX = 800;
@@ -29,8 +29,8 @@ function buildWordCountInstructions(
   return metricsLine + "ESTADO: ZONA VERDE. Aplicá una actualización normal.\n";
 }
 
-/** Builds the prompt used to update one persisted document style profile. */
-export function buildUpdateDocumentStyleProfilePrompt(
+/** Builds the prompt used by the update-profile step. */
+export function buildUpdateProfilePrompt(
   input: UpdateDocumentStyleProfileInput,
 ): string {
   const wordCountInstructions = buildWordCountInstructions(

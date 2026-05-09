@@ -3,7 +3,6 @@
  */
 import type { BetterAuthUser } from "@mastra/auth-better-auth";
 import { createStep } from "@mastra/core/workflows";
-import { resolveDocumentContext } from "../../../../../application/documents/resolve-document-context";
 import { PgDocumentRepository } from "../../../../../infrastructure/persistence/repositories/document.repository";
 import { logger } from "../../../../utils/logger";
 import { countProfileCorrectionPatternsWords } from "./load-author-profile.helpers";
@@ -46,16 +45,14 @@ export const loadAuthorProfile = createStep({
       "📚 Resolving document profile",
     );
 
-    const resolvedContext = await resolveDocumentContext(
-      {
+    const resolvedContext =
+      await documentContextRepository.resolveDocumentContext({
         userId,
         externalDocumentKey: inputData.documentUuid,
         title: inputData.title,
         defaultGenre: inputData.genero,
         processingConfig: inputData.processingConfig,
-      },
-      documentContextRepository,
-    );
+      });
 
     const authorProfile = resolvedContext.styleProfile.profileMarkdown;
     const authorProfileCorrectionPatternsWordCount =

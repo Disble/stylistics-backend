@@ -10,7 +10,7 @@ import type {
   DocumentContextRepository,
   ResolveDocumentContextInput,
   ResolvedDocumentContext,
-} from "../../../application/documents/resolve-document-context";
+} from "../../../domain/documents/document-context.types";
 import { persistenceDb } from "../db";
 import {
   document,

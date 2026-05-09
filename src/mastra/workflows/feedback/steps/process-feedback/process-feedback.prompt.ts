@@ -5,28 +5,43 @@ import type { ProcessFeedbackPromptInput } from "./process-feedback.types";
 
 /** Builds the DB-backed prompt used when feedback targets a persisted document profile. */
 export function buildProcessFeedbackPrompt(input: ProcessFeedbackPromptInput) {
-  return `Procesás UN comentario explícito del autor sobre UNA corrección.
+  return `<contract>
+Procesá UN comentario de feedback del autor sobre una corrección.
+Usá el perfil documental provisto en este prompt como documento objetivo.
+Ejecutá el protocolo completo: RAZONAR -> DECIDIR -> ACTUAR.
+Aplicá estrictamente la política de escritura segura de tu protocolo canónico.
+Este prompt solo aporta perfil y payload; la sección objetivo, reglas de edición, política de borrado y criterios de aborto viven en tu protocolo canónico.
+No inventes rutas, no menciones workspace y devolvé SOLO el output estructurado solicitado por el caller.
+Preservá intacta la estructura canónica completa de \`## PATRONES VIVOS\`, incluyendo \`### Ortografía\`, \`### Gramática\`, \`### Puntuación\`, \`### Tipografía\`, \`### Léxico\` y \`### Estilo\`.
+</contract>
 
-Devolvé SOLO el output estructurado solicitado por el caller.
-NO menciones tools, archivos, rutas de workspace ni explicaciones extra fuera de la respuesta estructurada.
-
-Contrato:
-- Usá el perfil documental persistido provisto como documento objetivo.
-- Tratá esto como feedback a nivel documento.
-- Actualizá solo \`## CRITERIOS DE INTERVENCIÓN\` cuando el feedback exprese una preferencia reutilizable de intervención, un límite duro, una restricción de voz o una frontera de corrección.
-- Ignorá feedback contextual, vago o no reutilizable como criterio documental.
-- NO actualices \`## PATRONES VIVOS\` desde este workflow.
-- Preservá el contenido no afectado de forma literal cuando sea posible.
-
-Document UUID: ${input.documentUuid}
-
-Markdown actual del perfil documental:
+<profile>
+Perfil documental actual:
 ~~~markdown
 ${input.authorProfile}
 ~~~
+</profile>
 
-Payload de feedback:
-${JSON.stringify(input, null, 2)}
+<payload>
+${JSON.stringify(
+  {
+    category: input.category,
+    context: input.context,
+    anchor: input.anchor,
+    suggestedText: input.suggestedText,
+    justification: input.justification,
+    action: input.action,
+    severity: input.severity,
+    suggestionType: input.suggestionType,
+    comment: input.comment,
+  },
+  null,
+  2,
+)}
+</payload>
 
-Devolvé un decision summary conciso explicando si el perfil fue actualizado o ignorado.`;
+<final-response>
+Si devolvés status \`updated\`, DEBÉS devolver también el perfil markdown completo actualizado.
+Si devolvés status \`ignored\`, explicá la categoría asignada y la razón del descarte en un decision summary conciso.
+</final-response>`;
 }

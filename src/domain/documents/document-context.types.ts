@@ -1,14 +1,15 @@
-import type { z } from "zod";
+import type { DocumentGenre } from "./document.types";
 
-import type { DocumentGenre } from "../../../domain/documents/document.types";
-import type { resolveDocumentContextInputSchema } from "./resolve-document-context.schemas";
+/** Input required to resolve or create a persisted document context. */
+export type ResolveDocumentContextInput = {
+  userId: string;
+  externalDocumentKey: string;
+  title?: string;
+  defaultGenre?: DocumentGenre;
+  processingConfig?: Record<string, unknown>;
+};
 
-/** Validated input accepted by the document-context resolution use case. */
-export type ResolveDocumentContextInput = z.infer<
-  typeof resolveDocumentContextInputSchema
->;
-
-/** Persisted document context returned after resolution/upsert. */
+/** Persisted document context returned after document resolution. */
 export type ResolvedDocumentContext = {
   document: {
     id: string;
@@ -30,7 +31,7 @@ export type ResolvedDocumentContext = {
   };
 };
 
-/** Repository contract required by the document-context resolution use case. */
+/** Repository contract for resolving persisted document context. */
 export type DocumentContextRepository = {
   resolveDocumentContext(
     input: ResolveDocumentContextInput,
