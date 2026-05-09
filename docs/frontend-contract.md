@@ -23,7 +23,7 @@ no pertenecen a un documento específico y solo afectan la corrección activa de
 texto. No se usan para actualizar el perfil del documento ni para procesar
 feedback.
 
-### `GET /api/user/preferences`
+### `GET /user/preferences`
 
 Devuelve las preferencias globales del usuario autenticado.
 
@@ -34,7 +34,7 @@ type UserPreferencesResponse = {
 };
 ```
 
-### `PUT /api/user/preferences`
+### `PUT /user/preferences`
 
 Actualiza las instrucciones globales de corrección.
 
@@ -60,6 +60,13 @@ type UserPreferencesResponse = {
   correctionInstructionsMaxLength: 4000;
 };
 ```
+
+> **Importante:** estas rutas son **custom routes** de Mastra registradas con
+> `registerApiRoute()`, no endpoints built-in del runtime. Por eso se consumen
+> sin prefijo `/api`. En este backend:
+>
+> - custom routes: `/user/preferences`, `/documents/resolve`
+> - built-in Mastra routes: `/api/...`
 
 ---
 
