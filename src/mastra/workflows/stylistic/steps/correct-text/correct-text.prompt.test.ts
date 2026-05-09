@@ -5,7 +5,10 @@
 import { describe, expect, it } from "bun:test";
 
 import type { StylisticWorkflowInput } from "../load-author-profile/load-author-profile.types";
-import { buildPrompt } from "./correct-text.prompt";
+import {
+  buildCorrectionInstructionsSystemMessage,
+  buildPrompt,
+} from "./correct-text.prompt";
 
 /** Canonical prompt input reused across prompt-focused tests. */
 const baseInput: StylisticWorkflowInput = {
@@ -31,6 +34,8 @@ describe("buildPrompt", () => {
     expect(prompt).toContain("<respuesta-final>");
     expect(prompt).toContain("</respuesta-final>");
     expect(prompt).toContain("Prefiere frases cortas en escenas tensas.");
+    expect(prompt).toContain("contexto del documento");
+    expect(prompt).toContain("preservar la voz autoral");
     expect(prompt).toContain(
       "NO uses herramientas para leer archivos en esta tarea",
     );
@@ -71,5 +76,33 @@ describe("buildPrompt", () => {
       "texto dentro del markdown debe coincidir exactamente",
     );
     expect(prompt).not.toContain("Ejemplo invalido");
+  });
+});
+
+describe("buildCorrectionInstructionsSystemMessage", () => {
+  it("omits the system message when instructions are empty", () => {
+    expect(buildCorrectionInstructionsSystemMessage(null)).toBeUndefined();
+    expect(buildCorrectionInstructionsSystemMessage("   ")).toBeUndefined();
+  });
+
+  it("wraps user correction instructions in the agreed correction scope", () => {
+    const systemMessage = buildCorrectionInstructionsSystemMessage(
+      "Vigilá subordinadas demasiado largas.",
+    );
+
+    expect(systemMessage).toContain("<instrucciones-globales-correccion>");
+    expect(systemMessage).toContain(
+      "Estas instrucciones complementan el perfil del documento",
+    );
+    expect(systemMessage).toContain(
+      "priorizá estas instrucciones sin destruir la voz autoral documentada",
+    );
+    expect(systemMessage).toContain(
+      "No reemplazan el perfil, no lo actualizan",
+    );
+    expect(systemMessage).toContain("Vigilá subordinadas demasiado largas.");
+    expect(systemMessage).not.toContain("documental local");
+    expect(systemMessage).not.toContain("sigue siendo");
+    expect(systemMessage).not.toContain("maxima prioridad");
   });
 });

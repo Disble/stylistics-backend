@@ -4,6 +4,7 @@ export default defineConfig({
   schema: [
     "./src/auth/auth-schema.ts",
     "./src/infrastructure/persistence/schema/document.schemas.ts",
+    "./src/infrastructure/persistence/schema/user-preferences.schemas.ts",
   ],
   out: "./drizzle/migrations",
   dialect: "postgresql",

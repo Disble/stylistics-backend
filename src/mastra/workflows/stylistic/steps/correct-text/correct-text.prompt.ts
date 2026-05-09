@@ -107,7 +107,10 @@ export function buildPrompt(
   // Keep the profile inline so the agent never needs extra workspace reads.
   const authorProfileSection = authorProfile
     ? `<perfil-autor>
-Usa este perfil como contexto de maxima prioridad y como checklist activo de patrones. NO uses herramientas para leer archivos en esta tarea; el perfil relevante ya esta incluido.
+Usa este perfil como contexto del documento y checklist activo de patrones de voz, estilo y hábitos detectados.
+El perfil es obligatorio para preservar la voz autoral.
+Si una instrucción global de corrección entra en tensión con este perfil, conciliá ambos: corregí el defecto indicado por el usuario sin borrar la identidad estilística documentada.
+NO uses herramientas para leer archivos en esta tarea; el perfil relevante ya esta incluido.
 
 ${authorProfile}
 </perfil-autor>`
@@ -143,7 +146,28 @@ ${input.genero}
 ${input.text}
 </texto-corregir>
 
-<respuesta-final>
+    <respuesta-final>
 Devolvé únicamente la salida estructurada solicitada por el workflow.
 </respuesta-final>`;
+}
+
+/**
+ * Builds a call-scoped system message for explicit user correction preferences.
+ */
+export function buildCorrectionInstructionsSystemMessage(
+  correctionInstructions: string | null | undefined,
+) {
+  const normalizedInstructions = correctionInstructions?.trim();
+
+  if (!normalizedInstructions) {
+    return undefined;
+  }
+
+  return `<instrucciones-globales-correccion>
+Estas instrucciones complementan el perfil del documento y orientan focos de vigilancia durante la corrección.
+Cuando entren en tensión con el perfil del documento, priorizá estas instrucciones sin destruir la voz autoral documentada.
+No reemplazan el perfil, no lo actualizan y no deben interpretarse como patrones aprendidos.
+
+${normalizedInstructions}
+</instrucciones-globales-correccion>`;
 }

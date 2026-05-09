@@ -15,6 +15,13 @@
       "when": 1778258099532,
       "tag": "0001_burly_thundra",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778343191038,
+      "tag": "0002_legal_whistler",
+      "breakpoints": true
     }
   ]
 }

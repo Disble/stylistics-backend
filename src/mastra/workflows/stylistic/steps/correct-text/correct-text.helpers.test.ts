@@ -106,6 +106,16 @@ describe("buildGenerateOptions", () => {
     expect(options.structuredOutput.schema).toBeDefined();
     expect(options.modelSettings.temperature).toBe(0);
     expect(options.providerOptions).toBeUndefined();
+    expect(options.system).toBeUndefined();
+  });
+
+  it("adds correction instructions as a scoped system message when provided", () => {
+    const options = buildGenerateOptions(
+      "general",
+      "<instrucciones-globales-correccion>Vigilá repeticiones.</instrucciones-globales-correccion>",
+    );
+
+    expect(options.system).toContain("Vigilá repeticiones.");
   });
 
   it("keeps fiction safety overrides for narrative texts using a mutable copy", () => {

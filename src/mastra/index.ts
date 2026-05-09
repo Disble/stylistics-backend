@@ -16,6 +16,7 @@ import { auth } from "../auth/auth";
 import { getTrustedOrigins } from "../auth/auth-env";
 import { mastraAuth } from "../auth/mastra-auth";
 import { documentApiRoutes } from "../server/routes/document.routes";
+import { userPreferencesApiRoutes } from "../server/routes/user-preferences.routes";
 import type { AuthBridgeSession } from "./index.types";
 import { documentFeedbackAgent } from "./agents/document-feedback-agent";
 import { documentProfileAgent } from "./agents/document-profile-agent";
@@ -209,6 +210,7 @@ export const mastra = new Mastra({
     auth: mastraAuth,
     apiRoutes: [
       ...documentApiRoutes,
+      ...userPreferencesApiRoutes,
       registerApiRoute("/auth/*", {
         method: "ALL",
         requiresAuth: false,

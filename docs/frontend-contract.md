@@ -15,6 +15,54 @@ del workflow una vez que la request ya está autenticada.
 
 ---
 
+## Preferencias globales de corrección
+
+El usuario puede definir instrucciones globales para orientar focos de vigilancia
+durante la corrección estilística. Estas instrucciones son globales por usuario:
+no pertenecen a un documento específico y solo afectan la corrección activa de
+texto. No se usan para actualizar el perfil del documento ni para procesar
+feedback.
+
+### `GET /api/user/preferences`
+
+Devuelve las preferencias globales del usuario autenticado.
+
+```ts
+type UserPreferencesResponse = {
+  correctionInstructions: string | null;
+  correctionInstructionsMaxLength: 4000;
+};
+```
+
+### `PUT /api/user/preferences`
+
+Actualiza las instrucciones globales de corrección.
+
+```ts
+type UpdateUserPreferencesRequest = {
+  correctionInstructions: string | null;
+};
+```
+
+Reglas:
+
+- `correctionInstructions` acepta `null` para limpiar el campo.
+- El backend recorta espacios al guardar.
+- Si el valor queda vacío, el workflow no envía ningún mensaje `system` extra al
+  LLM.
+- Longitud máxima: `4000` caracteres.
+
+Respuesta exitosa:
+
+```ts
+type UserPreferencesResponse = {
+  correctionInstructions: string | null;
+  correctionInstructionsMaxLength: 4000;
+};
+```
+
+---
+
 ## Input
 
 ```ts
