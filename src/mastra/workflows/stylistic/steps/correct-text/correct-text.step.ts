@@ -5,16 +5,13 @@
 import type { BetterAuthUser } from "@mastra/auth-better-auth";
 import { createStep } from "@mastra/core/workflows";
 import { PgUserPreferencesRepository } from "../../../../../infrastructure/persistence/repositories/user-preferences.repository";
-import { logger } from "../../../../utils/logger";
+import { logger } from "../../../../../shared/logger";
 import {
   buildGenerateOptions,
   getGoogleSafetyBlock,
   normalizeSuggestions,
 } from "./correct-text.helpers";
-import {
-  buildCorrectionInstructionsSystemMessage,
-  buildPrompt,
-} from "./correct-text.prompt";
+import { buildPrompt } from "./correct-text.prompt";
 import {
   correctTextInputSchema,
   correctTextOutputSchema,
@@ -80,13 +77,12 @@ export const correctText = createStep({
       ? (await userPreferencesRepository.getUserPreferences(userId))
           .correctionInstructions
       : null;
-    const correctionInstructionsSystemMessage =
-      buildCorrectionInstructionsSystemMessage(correctionInstructions);
-    const prompt = buildPrompt(workflowInput, inputData.authorProfile);
-    const options = buildGenerateOptions(
-      workflowInput.genero,
-      correctionInstructionsSystemMessage,
+    const prompt = buildPrompt(
+      workflowInput,
+      inputData.authorProfile,
+      correctionInstructions,
     );
+    const options = buildGenerateOptions(workflowInput.genero);
 
     logger.debug(
       {
@@ -96,7 +92,7 @@ export const correctText = createStep({
         textLength: inputData.text.length,
         promptLength: prompt.length,
         fictionFrameActive: inputData.genero === "narrativa-literaria",
-        hasCorrectionInstructions: Boolean(correctionInstructionsSystemMessage),
+        hasCorrectionInstructions: Boolean(correctionInstructions),
         safetySettings: options.providerOptions?.google?.safetySettings,
       },
       "stylistic-workflow prompt prepared",

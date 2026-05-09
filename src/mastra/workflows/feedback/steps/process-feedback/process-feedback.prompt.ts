@@ -6,13 +6,13 @@ import type { ProcessFeedbackPromptInput } from "./process-feedback.types";
 /** Builds the DB-backed prompt used when feedback targets a persisted document profile. */
 export function buildProcessFeedbackPrompt(input: ProcessFeedbackPromptInput) {
   return `<contract>
-Procesá UN comentario de feedback del autor sobre una corrección.
-Usá el perfil documental provisto en este prompt como documento objetivo.
-Ejecutá el protocolo completo: RAZONAR -> DECIDIR -> ACTUAR.
-Aplicá estrictamente la política de escritura segura de tu protocolo canónico.
+Procesa UN comentario de feedback del autor sobre una corrección.
+Usa el perfil documental provisto en este prompt como documento objetivo.
+Ejecuta el protocolo completo: RAZONAR -> DECIDIR -> ACTUAR.
+Aplica estrictamente la política de escritura segura de tu protocolo canónico.
 Este prompt solo aporta perfil y payload; la sección objetivo, reglas de edición, política de borrado y criterios de aborto viven en tu protocolo canónico.
-No inventes rutas, no menciones workspace y devolvé SOLO el output estructurado solicitado por el caller.
-Preservá intacta la estructura canónica completa de \`## PATRONES VIVOS\`, incluyendo \`### Ortografía\`, \`### Gramática\`, \`### Puntuación\`, \`### Tipografía\`, \`### Léxico\` y \`### Estilo\`.
+No inventes rutas, no menciones workspace y devuelve SOLO el output estructurado solicitado por el caller.
+Preserva intacta la estructura canónica completa de \`## PATRONES VIVOS\`, incluyendo \`### Ortografía\`, \`### Gramática\`, \`### Puntuación\`, \`### Tipografía\`, \`### Léxico\` y \`### Estilo\`.
 </contract>
 
 <profile>
@@ -41,7 +41,7 @@ ${JSON.stringify(
 </payload>
 
 <final-response>
-Si devolvés status \`updated\`, DEBÉS devolver también el perfil markdown completo actualizado.
-Si devolvés status \`ignored\`, explicá la categoría asignada y la razón del descarte en un decision summary conciso.
+Si devuelves status \`updated\`, DEBES devolver también el perfil markdown completo actualizado.
+Si devuelves status \`ignored\`, explica la categoría asignada y la razón del descarte en un decision summary conciso.
 </final-response>`;
 }

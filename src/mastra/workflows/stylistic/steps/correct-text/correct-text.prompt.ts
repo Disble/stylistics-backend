@@ -81,13 +81,13 @@ Ejemplo:
 - Nunca uses \`type: "track-change"\` con \`anchor === suggestedText\`.
 - Nunca dejes que \`suggestedText\` modifique texto fuera del span exacto de \`anchor\`.
 - Si usas \`*anchor*\` o \`**anchor**\`, el texto dentro del markdown debe coincidir exactamente con \`anchor\`.
-- Si no hay cambio textual que proponer, usa \`comment-only\`. Si queres borrar el \`anchor\`, usa \`track-change\` con \`suggestedText: ""\`.
+- Si no hay cambio textual que proponer, usa \`comment-only\`. Si quieres borrar el \`anchor\`, usa \`track-change\` con \`suggestedText: ""\`.
 
 Checklist antes de emitir un \`track-change\`:
 1. \`anchor\` aparece literalmente dentro de \`context\`.
 2. \`suggestedText !== anchor\`.
 3. Si \`suggestedText\` usa markdown tipografico, el texto interno coincide exactamente con \`anchor\`.
-4. \`suggestedText\` afecta solo el \`anchor\`; si la correccion requiere una region mayor, expandi el \`anchor\` o usa \`comment-only\`.
+4. \`suggestedText\` afecta solo el \`anchor\`; si la correccion requiere una region mayor, expande el \`anchor\` o usa \`comment-only\`.
 </tipos-sugerencia>`;
 
 /**
@@ -97,6 +97,7 @@ Checklist antes de emitir un \`track-change\`:
 export function buildPrompt(
   input: StylisticWorkflowInput,
   authorProfile?: string | null,
+  correctionInstructions?: string | null,
 ) {
   let promptIntroduction = "";
   const editorialFrame =
@@ -108,8 +109,8 @@ export function buildPrompt(
   const authorProfileSection = authorProfile
     ? `<perfil-autor>
 Usa este perfil como contexto del documento y checklist activo de patrones de voz, estilo y hábitos detectados.
-El perfil es obligatorio para preservar la voz autoral.
-Si una instrucción global de corrección entra en tensión con este perfil, conciliá ambos: corregí el defecto indicado por el usuario sin borrar la identidad estilística documentada.
+Usa el perfil como contexto prioritario para preservar la voz autoral, sin convertirlo en una regla absoluta frente a instrucciones explícitas del usuario.
+Si una instrucción global de corrección entra en tensión con este perfil, concilia ambos: corrige el defecto indicado por el usuario sin borrar la identidad estilística documentada.
 NO uses herramientas para leer archivos en esta tarea; el perfil relevante ya esta incluido.
 
 ${authorProfile}
@@ -119,6 +120,9 @@ No hay perfil previo disponible para este autor. Corrige sin contexto previo y N
 </perfil-autor>`;
   const correctionInstruction =
     "Aplica correccion ortotipografica y de estilo integrada respetando la voz autoral y usando el perfil provisto solo si aparece en este prompt.";
+  const userCorrectionFocusSection = buildUserCorrectionFocusSection(
+    correctionInstructions,
+  );
 
   if (editorialFrame) {
     promptIntroduction = `${editorialFrame}\n\n`;
@@ -131,10 +135,12 @@ No hay perfil previo disponible para este autor. Corrige sin contexto previo y N
   return `${promptIntroduction}<contrato>
 ${correctionInstruction}
 No leas archivos ni busques perfiles por tu cuenta durante esta tarea.
-Usá las instrucciones del agente como protocolo canónico y este prompt solo como payload de ejecución.
+Usa las instrucciones del agente como protocolo base de corrección y salida estructurada. Las instrucciones explícitas de este prompt delimitan el alcance de intervención para este texto.
 </contrato>
 
 ${SUGGESTION_TYPES_SECTION}
+
+${userCorrectionFocusSection}
 
 ${authorProfileSection}
 
@@ -147,27 +153,43 @@ ${input.text}
 </texto-corregir>
 
     <respuesta-final>
-Devolvé únicamente la salida estructurada solicitada por el workflow.
+Devuelve únicamente la salida estructurada solicitada por el workflow.
 </respuesta-final>`;
 }
 
 /**
- * Builds a call-scoped system message for explicit user correction preferences.
+ * Turns free-form user preferences into an explicit correction checklist inside
+ * the execution prompt, where the model performs the concrete text audit.
  */
-export function buildCorrectionInstructionsSystemMessage(
+function buildUserCorrectionFocusSection(
   correctionInstructions: string | null | undefined,
 ) {
   const normalizedInstructions = correctionInstructions?.trim();
 
   if (!normalizedInstructions) {
-    return undefined;
+    return `<focos-usuario>
+No hay instrucciones globales de corrección para este usuario.
+</focos-usuario>`;
   }
 
-  return `<instrucciones-globales-correccion>
-Estas instrucciones complementan el perfil del documento y orientan focos de vigilancia durante la corrección.
-Cuando entren en tensión con el perfil del documento, priorizá estas instrucciones sin destruir la voz autoral documentada.
-No reemplazan el perfil, no lo actualizan y no deben interpretarse como patrones aprendidos.
+  return `<focos-usuario>
+Estas instrucciones orientan la auditoría de ESTE texto y deben aplicarse durante la revisión con evidencia textual concreta.
 
+Instrucciones del usuario:
 ${normalizedInstructions}
-</instrucciones-globales-correccion>`;
+
+Proceso de auditoría:
+1. Convierte las instrucciones del usuario en criterios operativos verificables para este texto.
+2. Aplica esos criterios cuando haya evidencia textual concreta: error local, patrón recurrente, desviación de registro, problema de claridad, inconsistencia editorial o tensión con el género.
+3. Evalúa concentración, cercanía, recurrencia, función expresiva, registro, género y efecto en el lector antes de sugerir una intervención.
+4. Intervén cuando la evidencia afecte comprensión, coherencia, naturalidad, consistencia editorial o el criterio explícito del usuario.
+5. En la \`justification\`, nombra el criterio de usuario aplicado y la evidencia textual que justifica la intervención.
+
+Escalera de decisión:
+1. Respeta siempre el contrato de salida y la evidencia textual disponible.
+2. Si la instrucción del usuario define un límite de intervención, trátalo como restricción operativa: no propongas cambios fuera de ese límite salvo error normativo inequívoco o problema grave de comprensión.
+3. Si la instrucción del usuario define un foco de auditoría, aplícalo con evidencia concreta sin convertirlo en hallazgo obligatorio.
+4. Si el foco del usuario entra en tensión con el perfil autoral o el género, ajusta solo el defecto señalado y conserva los rasgos de voz que no formen parte del problema.
+5. Si no hay tensión, integra instrucciones del usuario, perfil, género y corrección general en una misma decisión editorial.
+</focos-usuario>`;
 }

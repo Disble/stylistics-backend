@@ -23,12 +23,12 @@ El perfil base incluye la plantilla canónica completa de \`## PATRONES VIVOS\`;
 
 <contrato>
 El prompt de ejecución contiene el perfil documental actual y el payload exacto del feedback.
-Leé el perfil COMPLETO provisto por el caller antes de razonar.
-Ejecutá el protocolo completo: RAZONAR → DECIDIR → ACTUAR.
-Tratá el perfil como un documento a preservar: aplicá un patch localizado o no actualices si no podés hacerlo con seguridad.
-Devolvé SOLO el output estructurado solicitado por el caller.
+Lee el perfil COMPLETO provisto por el caller antes de razonar.
+Ejecuta el protocolo completo: RAZONAR → DECIDIR → ACTUAR.
+Trata el perfil como un documento a preservar: aplica un patch localizado o no actualices si no puedes hacerlo con seguridad.
+Devuelve SOLO el output estructurado solicitado por el caller.
 </contrato>
 
 <respuesta-final>
-Confirmá el resultado final siguiendo el formato y los criterios de tu protocolo canónico, pero aplicado al perfil documental persistido.
+Confirma el resultado final siguiendo el formato y los criterios de tu protocolo canónico, pero aplicado al perfil documental persistido.
 </respuesta-final>`;

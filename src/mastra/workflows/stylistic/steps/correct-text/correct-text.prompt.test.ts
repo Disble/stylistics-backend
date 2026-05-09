@@ -5,10 +5,7 @@
 import { describe, expect, it } from "bun:test";
 
 import type { StylisticWorkflowInput } from "../load-author-profile/load-author-profile.types";
-import {
-  buildCorrectionInstructionsSystemMessage,
-  buildPrompt,
-} from "./correct-text.prompt";
+import { buildPrompt } from "./correct-text.prompt";
 
 /** Canonical prompt input reused across prompt-focused tests. */
 const baseInput: StylisticWorkflowInput = {
@@ -46,6 +43,10 @@ describe("buildPrompt", () => {
     const prompt = buildPrompt(baseInput);
 
     expect(prompt).toContain("No hay perfil previo disponible para este autor");
+    expect(prompt).toContain("<focos-usuario>");
+    expect(prompt).toContain(
+      "No hay instrucciones globales de corrección para este usuario",
+    );
     expect(prompt).toContain("<perfil-autor>");
     expect(prompt).toContain("</perfil-autor>");
     expect(prompt).toContain(
@@ -69,7 +70,7 @@ describe("buildPrompt", () => {
     expect(prompt).toContain('suggestedText": "*post mortem*"');
     expect(prompt).toContain('suggestedText": "**PRIME**"');
     expect(prompt).toContain(
-      'Si queres borrar el `anchor`, usa `track-change` con `suggestedText: ""`',
+      'Si quieres borrar el `anchor`, usa `track-change` con `suggestedText: ""`',
     );
     expect(prompt).toContain("### Errores prohibidos");
     expect(prompt).toContain(
@@ -77,32 +78,44 @@ describe("buildPrompt", () => {
     );
     expect(prompt).not.toContain("Ejemplo invalido");
   });
-});
 
-describe("buildCorrectionInstructionsSystemMessage", () => {
-  it("omits the system message when instructions are empty", () => {
-    expect(buildCorrectionInstructionsSystemMessage(null)).toBeUndefined();
-    expect(buildCorrectionInstructionsSystemMessage("   ")).toBeUndefined();
-  });
-
-  it("wraps user correction instructions in the agreed correction scope", () => {
-    const systemMessage = buildCorrectionInstructionsSystemMessage(
-      "Vigilá subordinadas demasiado largas.",
+  it("turns user correction instructions into an active audit checklist", () => {
+    const prompt = buildPrompt(
+      baseInput,
+      null,
+      "Vigila abuso de puntos suspensivos, comas, listas y ecos léxicos.",
     );
 
-    expect(systemMessage).toContain("<instrucciones-globales-correccion>");
-    expect(systemMessage).toContain(
-      "Estas instrucciones complementan el perfil del documento",
+    expect(prompt).toContain("<focos-usuario>");
+    expect(prompt).toContain("orientan la auditoría de ESTE texto");
+    expect(prompt).toContain(
+      "Vigila abuso de puntos suspensivos, comas, listas y ecos léxicos.",
     );
-    expect(systemMessage).toContain(
-      "priorizá estas instrucciones sin destruir la voz autoral documentada",
+    expect(prompt).toContain(
+      "Convierte las instrucciones del usuario en criterios operativos verificables",
     );
-    expect(systemMessage).toContain(
-      "No reemplazan el perfil, no lo actualizan",
+    expect(prompt).toContain(
+      "error local, patrón recurrente, desviación de registro",
     );
-    expect(systemMessage).toContain("Vigilá subordinadas demasiado largas.");
-    expect(systemMessage).not.toContain("documental local");
-    expect(systemMessage).not.toContain("sigue siendo");
-    expect(systemMessage).not.toContain("maxima prioridad");
+    expect(prompt).toContain(
+      "Evalúa concentración, cercanía, recurrencia, función expresiva",
+    );
+    expect(prompt).toContain(
+      "nombra el criterio de usuario aplicado y la evidencia textual",
+    );
+    expect(prompt).toContain("Escalera de decisión");
+    expect(prompt).toContain(
+      "trátalo como restricción operativa: no propongas cambios fuera de ese límite",
+    );
+    expect(prompt).toContain(
+      "ajusta solo el defecto señalado y conserva los rasgos de voz",
+    );
+    expect(prompt).not.toContain(
+      "por ejemplo: puntos suspensivos, comas, listas",
+    );
+    expect(prompt).not.toContain("No dependas");
+    expect(prompt).not.toContain("No marques");
+    expect(prompt).not.toContain("no inventes");
+    expect(prompt).not.toContain("Casos guía");
   });
 });

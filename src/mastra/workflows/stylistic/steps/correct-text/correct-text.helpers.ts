@@ -146,7 +146,6 @@ export function normalizeSuggestions(
  */
 export function buildGenerateOptions(
   genero: StylisticWorkflowInput["genero"],
-  correctionInstructionsSystemMessage?: string,
 ): StylisticGenerateOptions {
   let providerOptions: StylisticGenerateOptions["providerOptions"];
 
@@ -171,10 +170,6 @@ export function buildGenerateOptions(
     modelSettings: { temperature: 0 },
     providerOptions,
   };
-
-  if (correctionInstructionsSystemMessage) {
-    options.system = correctionInstructionsSystemMessage;
-  }
 
   return options;
 }

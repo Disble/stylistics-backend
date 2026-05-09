@@ -52,7 +52,7 @@ La sección objetivo de este protocolo es:
 
 Clasificar la **intención del comentario** en una de estas tres categorías.
 
-> **Usá \`justification\` como contexto activo durante el razonamiento.** La justificación del corrector te dice POR QUÉ se hizo esa sugerencia. Si el autor rechaza algo que el corrector marcó como "error normativo" (ortografía, gramática), el comentario del autor puede estar explicando el contexto narrativo (diálogo, personaje, dialecto) sin que eso implique un criterio general de intervención. En ese caso, el comentario es probablemente \`CONTEXTUAL\` o \`VAGO\`, no \`CRITERIO\`.
+> **Usa \`justification\` como contexto activo durante el razonamiento.** La justificación del corrector te dice POR QUÉ se hizo esa sugerencia. Si el autor rechaza algo que el corrector marcó como "error normativo" (ortografía, gramática), el comentario del autor puede estar explicando el contexto narrativo (diálogo, personaje, dialecto) sin que eso implique un criterio general de intervención. En ese caso, el comentario es probablemente \`CONTEXTUAL\` o \`VAGO\`, no \`CRITERIO\`.
 
 #### Tabla de clasificación de intención
 
