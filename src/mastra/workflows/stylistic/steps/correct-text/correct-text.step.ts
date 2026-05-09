@@ -2,9 +2,7 @@
  * Implements the structured stylistic-correction step that invokes the
  * registered correction agent and normalizes its result.
  */
-import type { BetterAuthUser } from "@mastra/auth-better-auth";
 import { createStep } from "@mastra/core/workflows";
-import { PgUserPreferencesRepository } from "../../../../../infrastructure/persistence/repositories/user-preferences.repository";
 import { logger } from "../../../../../shared/logger";
 import {
   buildGenerateOptions,
@@ -12,30 +10,43 @@ import {
   normalizeSuggestions,
 } from "./correct-text.helpers";
 import { buildPrompt } from "./correct-text.prompt";
+import { correctTextScorers } from "./correct-text.scorers";
 import {
   correctTextInputSchema,
   correctTextOutputSchema,
 } from "./correct-text.schemas";
 import type { StylisticCorrectionResult } from "./correct-text.types";
 
-const userPreferencesRepository = new PgUserPreferencesRepository();
-
-function getAuthenticatedUserId(requestContext: {
-  get?: <TKey extends string, TValue>(key: TKey) => TValue | undefined;
-}) {
-  return requestContext.get?.<"user", BetterAuthUser | undefined>("user")?.user
-    .id;
-}
-
 // Step 2 produces the structured correction payload using the already-loaded
 // profile context from the previous workflow step.
-export const correctText = createStep({
+export const correctText = createStep<
+  "correct-text",
+  undefined,
+  typeof correctTextInputSchema,
+  typeof correctTextOutputSchema
+>({
   id: "correct-text",
   description:
     "Aplica corrección ortotipográfica y de estilo integrada sobre el texto del autor",
   inputSchema: correctTextInputSchema,
   outputSchema: correctTextOutputSchema,
-  execute: async ({ inputData, mastra, requestContext }) => {
+  scorers: {
+    falsePositiveSuppression: {
+      scorer: correctTextScorers.falsePositiveSuppressionScorer,
+      sampling: {
+        type: "ratio",
+        rate: 1,
+      },
+    },
+    voicePreservation: {
+      scorer: correctTextScorers.voicePreservationScorer,
+      sampling: {
+        type: "ratio",
+        rate: 1,
+      },
+    },
+  },
+  execute: async ({ inputData, mastra }) => {
     logger.info(
       {
         documentUuid: inputData.documentUuid,
@@ -72,15 +83,10 @@ export const correctText = createStep({
       title: inputData.title,
       processingConfig: inputData.processingConfig,
     };
-    const userId = getAuthenticatedUserId(requestContext ?? {});
-    const correctionInstructions = userId
-      ? (await userPreferencesRepository.getUserPreferences(userId))
-          .correctionInstructions
-      : null;
     const prompt = buildPrompt(
       workflowInput,
       inputData.authorProfile,
-      correctionInstructions,
+      inputData.previousCorrection,
     );
     const options = buildGenerateOptions(workflowInput.genero);
 
@@ -92,7 +98,7 @@ export const correctText = createStep({
         textLength: inputData.text.length,
         promptLength: prompt.length,
         fictionFrameActive: inputData.genero === "narrativa-literaria",
-        hasCorrectionInstructions: Boolean(correctionInstructions),
+        hasPreviousCorrection: Boolean(inputData.previousCorrection),
         safetySettings: options.providerOptions?.google?.safetySettings,
       },
       "stylistic-workflow prompt prepared",

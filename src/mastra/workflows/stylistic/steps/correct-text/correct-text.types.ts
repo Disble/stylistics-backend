@@ -4,9 +4,9 @@
 import type { AgentExecutionOptions } from "@mastra/core/agent";
 import type { z } from "zod";
 
-import type { StylisticProfileContext } from "../load-author-profile/load-author-profile.types";
 import type {
   stylisticCommentOnlySuggestionSchema,
+  correctTextInputSchema,
   stylisticCorrectionStepSchema,
   stylisticTrackChangeSuggestionSchema,
   stylisticWorkflowOutputSchema,
@@ -90,4 +90,4 @@ export type GoogleSafetyBlock = {
 };
 
 /** Aliases the correction-step input to the already-loaded profile context. */
-export type CorrectTextStepInput = StylisticProfileContext;
+export type CorrectTextStepInput = z.infer<typeof correctTextInputSchema>;

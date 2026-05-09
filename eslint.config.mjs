@@ -60,6 +60,22 @@ const SELECTORS = {
     message:
       "Class implementation files must not export top-level helpers. Move them to a sibling *.helpers.ts file.",
   },
+  scorerTopLevelConst: {
+    selector: "Program > VariableDeclaration[kind='const']",
+    message:
+      "Scorer implementation files must not declare top-level constants. Move them to a sibling *.constants.ts file.",
+  },
+  scorerTopLevelHelper: {
+    selector: "Program > FunctionDeclaration",
+    message:
+      "Scorer implementation files must not declare top-level helpers. Move them to a sibling *.helpers.ts file.",
+  },
+  scorerExportMustUseCreateScorer: {
+    selector:
+      "ExportNamedDeclaration > VariableDeclaration > VariableDeclarator:not(:has(CallExpression[callee.name='createScorer']))",
+    message:
+      "A *.scorer.ts file must export only createScorer-based scorer instances. Move aggregators elsewhere and keep prebuilt scorers out of runtime scorer implementation files.",
+  },
 };
 
 function anatomyRule(...selectors) {
@@ -89,6 +105,7 @@ function buildAnatomyRules() {
         "src/**/*.constants.ts",
         "src/**/*.prompt.ts",
         "src/**/*.skill.ts",
+        "src/**/*.scorer.ts",
         "src/**/*.schemas.ts",
         "src/**/*.helpers.ts",
         "src/**/index.ts",
@@ -98,6 +115,19 @@ function buildAnatomyRules() {
         ...baseAnatomy,
         SELECTORS.siblingReexport,
         ...classImplStrict,
+      ),
+    },
+    {
+      files: [
+        "src/mastra/agents/**/*.scorer.ts",
+        "src/mastra/workflows/**/*.scorer.ts",
+      ],
+      rules: anatomyRule(
+        ...baseAnatomy,
+        SELECTORS.siblingReexport,
+        SELECTORS.scorerTopLevelConst,
+        SELECTORS.scorerTopLevelHelper,
+        SELECTORS.scorerExportMustUseCreateScorer,
       ),
     },
     {
@@ -265,12 +295,40 @@ export default [
     },
   },
   {
+    files: [
+      "src/mastra/agents/**/*.scorer.ts",
+      "src/mastra/workflows/**/*.scorer.ts",
+    ],
+    rules: {
+      "jsdoc/require-jsdoc": [
+        "error",
+        {
+          publicOnly: {
+            ancestorsOnly: true,
+            cjs: false,
+            esm: true,
+            window: false,
+          },
+          require: {
+            ArrowFunctionExpression: false,
+            ClassDeclaration: false,
+            ClassExpression: false,
+            FunctionDeclaration: false,
+            FunctionExpression: false,
+            MethodDefinition: false,
+          },
+        },
+      ],
+    },
+  },
+  {
     files: ["src/**/*.ts"],
     ignores: [
       "src/**/*.types.ts",
       "src/**/*.constants.ts",
       "src/**/*.prompt.ts",
       "src/**/*.skill.ts",
+      "src/**/*.scorer.ts",
       "src/**/*.schemas.ts",
       "src/**/*.test.ts",
       "src/**/*.spec.ts",
@@ -351,11 +409,23 @@ export default [
           "src/**/": "KEBAB_CASE",
         },
       ],
+      "check-file/folder-match-with-fex": [
+        "error",
+        {
+          "*.scorer.ts": "**/scores/*/",
+          "*-scorer.helpers.ts": "**/scores/*/",
+          "*-scorer.constants.ts": "**/scores/*/",
+          "*-scorer.schemas.ts": "**/scores/*/",
+          "*-scorer.types.ts": "**/scores/*/",
+        },
+      ],
       "check-file/filename-blocklist": [
         "error",
         {
           "src/**/utils.ts": "*.helpers.ts",
           "src/**/Utils.ts": "*.helpers.ts",
+          "src/mastra/agents/**/*-scorer.ts": "*.scorer.ts",
+          "src/mastra/workflows/**/*-scorer.ts": "*.scorer.ts",
         },
       ],
     },

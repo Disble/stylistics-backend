@@ -4,6 +4,8 @@
  */
 import { z } from "zod";
 
+import { stylisticProfileContextSchema } from "../load-author-profile/load-author-profile.schemas";
+
 /** Canonical correction categories shared by the stylistic agent and author profiles. */
 export const stylisticCorrectionCategorySchema = z.enum([
   "ortografia",
@@ -73,6 +75,18 @@ export const stylisticWorkflowOutputSchema = z.object({
     ),
 });
 
+/** Represents the optional prior preference-focused run fed into correct-text. */
+export const previousCorrectionSchema = stylisticWorkflowOutputSchema
+  .nullable()
+  .describe(
+    "Optional previous structured correction run generated before the integrated correction step.",
+  );
+
+/** Extends the loaded profile context with the optional previous correction run. */
+export const correctTextInputSchema = stylisticProfileContextSchema.extend({
+  previousCorrection: previousCorrectionSchema,
+});
+
 /** Adds author identity so downstream steps can update the proper profile. */
 export const stylisticCorrectionStepSchema =
   stylisticWorkflowOutputSchema.extend({
@@ -105,4 +119,3 @@ export const stylisticCorrectionStepSchema =
 
 /** Reuses the correction-step schema as the step output contract. */
 export const correctTextOutputSchema = stylisticCorrectionStepSchema;
-export { stylisticProfileContextSchema as correctTextInputSchema } from "../load-author-profile/load-author-profile.schemas";

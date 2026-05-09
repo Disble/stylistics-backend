@@ -6,6 +6,7 @@ import { createWorkflow } from "@mastra/core/workflows";
 import {
   correctText,
   loadAuthorProfile,
+  preferenceGuidedCorrection,
   stylisticWorkflowInputSchema,
   stylisticWorkflowOutputSchema,
   updateProfile,
@@ -19,6 +20,7 @@ const stylisticWorkflow = createWorkflow({
   outputSchema: stylisticWorkflowOutputSchema,
 })
   .then(loadAuthorProfile) // NOSONAR - Mastra DSL chaining, not Promise chaining
+  .then(preferenceGuidedCorrection) // NOSONAR - Mastra DSL chaining, not Promise chaining
   .then(correctText) // NOSONAR - Mastra DSL chaining, not Promise chaining
   .then(updateProfile); // NOSONAR - Mastra DSL chaining, not Promise chaining
 

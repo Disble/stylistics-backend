@@ -6,12 +6,29 @@ import { describe, expect, it } from "bun:test";
 
 import type { StylisticWorkflowInput } from "../load-author-profile/load-author-profile.types";
 import { buildPrompt } from "./correct-text.prompt";
+import type { StylisticWorkflowOutput } from "./correct-text.types";
 
 /** Canonical prompt input reused across prompt-focused tests. */
 const baseInput: StylisticWorkflowInput = {
   documentUuid: "44444444-4444-4444-8444-444444444444",
   genero: "narrativa-literaria",
   text: "Era tarde y la casa seguia despierta.",
+};
+
+const previousCorrection: StylisticWorkflowOutput = {
+  suggestions: [
+    {
+      type: "track-change",
+      context: "Era tarde y la casa seguia despierta.",
+      anchor: "seguia",
+      suggestedText: "seguía",
+      justification:
+        "Preferencia explícita del usuario por tildación correcta.",
+      category: "ortografia",
+      severity: "high",
+    },
+  ],
+  cleanPatterns: ["sin-abuso-de-comas"],
 };
 
 describe("buildPrompt", () => {
@@ -31,8 +48,8 @@ describe("buildPrompt", () => {
     expect(prompt).toContain("<respuesta-final>");
     expect(prompt).toContain("</respuesta-final>");
     expect(prompt).toContain("Prefiere frases cortas en escenas tensas.");
-    expect(prompt).toContain("contexto del documento");
-    expect(prompt).toContain("preservar la voz autoral");
+    expect(prompt).toContain("contexto de maxima prioridad");
+    expect(prompt).not.toContain("<correcion-previa>");
     expect(prompt).toContain(
       "NO uses herramientas para leer archivos en esta tarea",
     );
@@ -43,10 +60,7 @@ describe("buildPrompt", () => {
     const prompt = buildPrompt(baseInput);
 
     expect(prompt).toContain("No hay perfil previo disponible para este autor");
-    expect(prompt).toContain("<focos-usuario>");
-    expect(prompt).toContain(
-      "No hay instrucciones globales de corrección para este usuario",
-    );
+    expect(prompt).not.toContain("<correcion-previa>");
     expect(prompt).toContain("<perfil-autor>");
     expect(prompt).toContain("</perfil-autor>");
     expect(prompt).toContain(
@@ -79,43 +93,18 @@ describe("buildPrompt", () => {
     expect(prompt).not.toContain("Ejemplo invalido");
   });
 
-  it("turns user correction instructions into an active audit checklist", () => {
-    const prompt = buildPrompt(
-      baseInput,
-      null,
-      "Vigila abuso de puntos suspensivos, comas, listas y ecos léxicos.",
-    );
+  it("injects a conditional <correcion-previa> block when a previous correction exists", () => {
+    const prompt = buildPrompt(baseInput, null, previousCorrection);
 
-    expect(prompt).toContain("<focos-usuario>");
-    expect(prompt).toContain("orientan la auditoría de ESTE texto");
+    expect(prompt).toContain("<correcion-previa>");
     expect(prompt).toContain(
-      "Vigila abuso de puntos suspensivos, comas, listas y ecos léxicos.",
+      "Considera este material como insumo editorial enfocado en preferencias explícitas del usuario",
     );
+    expect(prompt).toContain('"anchor": "seguia"');
+    expect(prompt).toContain("<clean-patterns>");
     expect(prompt).toContain(
-      "Convierte las instrucciones del usuario en criterios operativos verificables",
+      "intégralas solo cuando mejoren la corrección final",
     );
-    expect(prompt).toContain(
-      "error local, patrón recurrente, desviación de registro",
-    );
-    expect(prompt).toContain(
-      "Evalúa concentración, cercanía, recurrencia, función expresiva",
-    );
-    expect(prompt).toContain(
-      "nombra el criterio de usuario aplicado y la evidencia textual",
-    );
-    expect(prompt).toContain("Escalera de decisión");
-    expect(prompt).toContain(
-      "trátalo como restricción operativa: no propongas cambios fuera de ese límite",
-    );
-    expect(prompt).toContain(
-      "ajusta solo el defecto señalado y conserva los rasgos de voz",
-    );
-    expect(prompt).not.toContain(
-      "por ejemplo: puntos suspensivos, comas, listas",
-    );
-    expect(prompt).not.toContain("No dependas");
-    expect(prompt).not.toContain("No marques");
-    expect(prompt).not.toContain("no inventes");
-    expect(prompt).not.toContain("Casos guía");
+    expect(prompt).toContain("</correcion-previa>");
   });
 });

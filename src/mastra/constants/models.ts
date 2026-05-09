@@ -28,6 +28,16 @@ export const modelPool = {
 } as const satisfies Record<string, AgentConfig["model"]>;
 
 /**
+ * Judge models used by runtime eval scorers. Kept as a pool so future scorers
+ * can opt into different complexity tiers without rewriting call sites.
+ */
+export const evalModelPool = {
+  light: "opencode-go/deepseek-v4-flash",
+  standard: "opencode-go/deepseek-v4-flash",
+  complex: "opencode-go/deepseek-v4-flash",
+} as const;
+
+/**
  * Google model thinking levels for enhanced reasoning.
  * Controls the depth of reasoning in gemini models.
  */
