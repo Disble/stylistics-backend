@@ -4,7 +4,7 @@
  */
 import { createStep } from "@mastra/core/workflows";
 import { PgDocumentRepository } from "../../../../../infrastructure/persistence/repositories/document.repository";
-import { logger } from "../../../../utils/logger";
+import { logger } from "../../../../../shared/logger";
 import { buildProcessFeedbackPrompt } from "./process-feedback.prompt";
 import {
   processFeedbackInputSchema,

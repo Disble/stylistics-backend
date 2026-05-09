@@ -4,7 +4,7 @@
 import type { BetterAuthUser } from "@mastra/auth-better-auth";
 import { createStep } from "@mastra/core/workflows";
 import { PgDocumentRepository } from "../../../../../infrastructure/persistence/repositories/document.repository";
-import { logger } from "../../../../utils/logger";
+import { logger } from "../../../../../shared/logger";
 import { countProfileCorrectionPatternsWords } from "./load-author-profile.helpers";
 import {
   loadAuthorProfileInputSchema,

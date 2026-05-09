@@ -4,6 +4,7 @@ import { registerApiRoute } from "@mastra/core/server";
 
 import { CORRECTION_INSTRUCTIONS_MAX_LENGTH } from "../../domain/user-preferences/user-preferences.constants";
 import { PgUserPreferencesRepository } from "../../infrastructure/persistence/repositories/user-preferences.repository";
+import { logger } from "../../shared/logger";
 import {
   invalidJsonBodyErrorOpenApiSchema,
   invalidUserPreferencesRequestErrorOpenApiSchema,
@@ -11,6 +12,7 @@ import {
   updateUserPreferencesRequestOpenApiSchema,
   updateUserPreferencesRouteRequestSchema,
   userPreferencesResponseOpenApiSchema,
+  userPreferencesUpdateFailedErrorOpenApiSchema,
 } from "./user-preferences.routes.schemas";
 
 const userPreferencesRepository = new PgUserPreferencesRepository();
@@ -79,6 +81,18 @@ export const userPreferencesApiRoutes = [
               schema: unauthenticatedErrorOpenApiSchema,
               example: {
                 error: "unauthenticated",
+              },
+            },
+          },
+        },
+        500: {
+          description:
+            "The backend failed while persisting the authenticated user's preferences.",
+          content: {
+            "application/json": {
+              schema: userPreferencesUpdateFailedErrorOpenApiSchema,
+              example: {
+                error: "user_preferences_update_failed",
               },
             },
           },
@@ -239,17 +253,32 @@ export const userPreferencesApiRoutes = [
         );
       }
 
-      const preferences = await userPreferencesRepository.updateUserPreferences(
-        {
-          userId,
-          correctionInstructions: parsed.data.correctionInstructions,
-        },
-      );
+      try {
+        const preferences =
+          await userPreferencesRepository.updateUserPreferences({
+            userId,
+            correctionInstructions: parsed.data.correctionInstructions,
+          });
 
-      return c.json({
-        correctionInstructions: preferences.correctionInstructions,
-        correctionInstructionsMaxLength: CORRECTION_INSTRUCTIONS_MAX_LENGTH,
-      });
+        return c.json({
+          correctionInstructions: preferences.correctionInstructions,
+          correctionInstructionsMaxLength: CORRECTION_INSTRUCTIONS_MAX_LENGTH,
+        });
+      } catch (error) {
+        logger.error(
+          {
+            err: error,
+            userId,
+            hasCorrectionInstructions:
+              parsed.data.correctionInstructions !== null,
+            correctionInstructionsLength:
+              parsed.data.correctionInstructions?.length ?? 0,
+          },
+          "Failed to update authenticated user preferences",
+        );
+
+        return c.json({ error: "user_preferences_update_failed" }, 500);
+      }
     },
   }),
 ];

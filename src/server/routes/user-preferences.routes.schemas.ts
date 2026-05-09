@@ -17,6 +17,8 @@ const UNAUTHENTICATED_ERROR_SCHEMA_ID = "UnauthenticatedError";
 const INVALID_JSON_BODY_ERROR_SCHEMA_ID = "InvalidJsonBodyError";
 const INVALID_USER_PREFERENCES_REQUEST_ERROR_SCHEMA_ID =
   "InvalidUserPreferencesRequestError";
+const USER_PREFERENCES_UPDATE_FAILED_ERROR_SCHEMA_ID =
+  "UserPreferencesUpdateFailedError";
 
 export const updateUserPreferencesRouteRequestSchema = z
   .object({
@@ -72,6 +74,12 @@ export const invalidUserPreferencesRequestRouteErrorSchema = z
   })
   .strict();
 
+export const userPreferencesUpdateFailedRouteErrorSchema = z
+  .object({
+    error: z.literal("user_preferences_update_failed"),
+  })
+  .strict();
+
 const userPreferencesRouteOpenApiRegistry = new OpenAPIRegistry();
 
 userPreferencesRouteOpenApiRegistry.register(
@@ -97,6 +105,11 @@ userPreferencesRouteOpenApiRegistry.register(
 userPreferencesRouteOpenApiRegistry.register(
   INVALID_USER_PREFERENCES_REQUEST_ERROR_SCHEMA_ID,
   invalidUserPreferencesRequestRouteErrorSchema,
+);
+
+userPreferencesRouteOpenApiRegistry.register(
+  USER_PREFERENCES_UPDATE_FAILED_ERROR_SCHEMA_ID,
+  userPreferencesUpdateFailedRouteErrorSchema,
 );
 
 const userPreferencesRouteOpenApiGenerator = new OpenApiGeneratorV31(
@@ -134,3 +147,6 @@ export const invalidJsonBodyErrorOpenApiSchema = getGeneratedOpenApiSchema(
 
 export const invalidUserPreferencesRequestErrorOpenApiSchema =
   getGeneratedOpenApiSchema(INVALID_USER_PREFERENCES_REQUEST_ERROR_SCHEMA_ID);
+
+export const userPreferencesUpdateFailedErrorOpenApiSchema =
+  getGeneratedOpenApiSchema(USER_PREFERENCES_UPDATE_FAILED_ERROR_SCHEMA_ID);
