@@ -1,91 +1,19 @@
 import type { BetterAuthUser } from "@mastra/auth-better-auth";
 import type { ContextWithMastra } from "@mastra/core/server";
 import { registerApiRoute } from "@mastra/core/server";
-import type { OpenAPIV3_1 } from "openapi-types";
 
 import { CORRECTION_INSTRUCTIONS_MAX_LENGTH } from "../../domain/user-preferences/user-preferences.constants";
 import { PgUserPreferencesRepository } from "../../infrastructure/persistence/repositories/user-preferences.repository";
-import { updateUserPreferencesRouteRequestSchema } from "./user-preferences.routes.schemas";
+import {
+  invalidJsonBodyErrorOpenApiSchema,
+  invalidUserPreferencesRequestErrorOpenApiSchema,
+  unauthenticatedErrorOpenApiSchema,
+  updateUserPreferencesRequestOpenApiSchema,
+  updateUserPreferencesRouteRequestSchema,
+  userPreferencesResponseOpenApiSchema,
+} from "./user-preferences.routes.schemas";
 
 const userPreferencesRepository = new PgUserPreferencesRepository();
-
-const userPreferencesResponseOpenApiSchema: OpenAPIV3_1.SchemaObject = {
-  type: "object",
-  required: ["correctionInstructions", "correctionInstructionsMaxLength"],
-  properties: {
-    correctionInstructions: {
-      type: ["string", "null"],
-      description:
-        "User-defined global correction instructions applied only during the active correction step.",
-    },
-    correctionInstructionsMaxLength: {
-      type: "integer",
-      enum: [CORRECTION_INSTRUCTIONS_MAX_LENGTH],
-      description: "Maximum number of characters accepted by the backend.",
-    },
-  },
-  additionalProperties: false,
-};
-
-const updateUserPreferencesRequestOpenApiSchema: OpenAPIV3_1.SchemaObject = {
-  type: "object",
-  required: ["correctionInstructions"],
-  properties: {
-    correctionInstructions: {
-      type: ["string", "null"],
-      maxLength: CORRECTION_INSTRUCTIONS_MAX_LENGTH,
-      description:
-        "Global correction instructions declared explicitly by the user. Send null to clear the field.",
-    },
-  },
-  additionalProperties: false,
-};
-
-const unauthenticatedErrorOpenApiSchema: OpenAPIV3_1.SchemaObject = {
-  type: "object",
-  required: ["error"],
-  properties: {
-    error: {
-      type: "string",
-      enum: ["unauthenticated"],
-    },
-  },
-  additionalProperties: false,
-};
-
-const invalidJsonBodyErrorOpenApiSchema: OpenAPIV3_1.SchemaObject = {
-  type: "object",
-  required: ["error"],
-  properties: {
-    error: {
-      type: "string",
-      enum: ["invalid_json_body"],
-    },
-  },
-  additionalProperties: false,
-};
-
-const invalidUserPreferencesRequestErrorOpenApiSchema: OpenAPIV3_1.SchemaObject =
-  {
-    type: "object",
-    required: ["error", "issues"],
-    properties: {
-      error: {
-        type: "string",
-        enum: ["invalid_user_preferences_request"],
-      },
-      issues: {
-        type: "array",
-        description:
-          "Zod validation issues describing why the payload was rejected.",
-        items: {
-          type: "object",
-          additionalProperties: true,
-        },
-      },
-    },
-    additionalProperties: false,
-  };
 
 function getAuthenticatedUserId(c: ContextWithMastra): string | undefined {
   const requestContext = c.get("requestContext");
