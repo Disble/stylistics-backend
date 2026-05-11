@@ -1,0 +1,19 @@
+node_modules
+.mastra
+dist
+coverage
+bun.lock
+*.lock
+*.log
+.env
+.env.*
+docker
+docker-compose.yml
+workspace/autores
+workspace/dpd
+
+# Markdown is curated by hand (tables, line breaks are intentional)
+*.md
+.agents/**
+.atl/**
+docs/**

@@ -41,6 +41,7 @@ Model selection, storage, vector configuration, and observability are defined ce
 | Workflows | Deterministic sequencing and validated handoffs | `src/mastra/workflows/` |
 | Agents | Reasoning-heavy tasks and structured generation | `src/mastra/agents/` |
 | Runtime constants | Models, memory, vectors, database, workspace mounting | `src/mastra/constants/` |
+| Authentication | Better Auth configuration, Google provider, bearer sessions, Mastra auth adapter | `src/auth/` |
 | Supporting runtime code | Logging, tools, scorers | `src/mastra/utils/`, `src/mastra/tools/`, `src/mastra/scorers/` |
 | Workspace knowledge | Author profiles, DPD references, repo-local skills | `workspace/` |
 | Project documentation | Contracts and architecture notes | `docs/` |
@@ -54,11 +55,36 @@ It registers:
 - workflows: `stylisticWorkflow`, `feedbackWorkflow`, plus example/demo workflows,
 - agents: `stylisticAgent`, `profileAgent`, `feedbackAgent`, `stylisticConsultationAgent`, and supporting/demo agents,
 - storage: PostgreSQL via `PostgresStore`,
+- auth: Better Auth through `@mastra/auth-better-auth`,
+- custom public auth routes: `/auth/*`, `/auth-complete`, and `/auth-bridge-session`,
 - vector search: `PgVector`,
 - observability: `DefaultExporter`, `CloudExporter`, and `SensitiveDataFilter`,
 - logging: `PinoLogger`.
 
 This gives the backend one central place for runtime wiring instead of scattering infrastructure concerns across feature code.
+
+### Authentication boundary
+
+Authentication is an infrastructure boundary, not workflow logic. Better Auth
+configuration lives under `src/auth/`; Mastra only receives the adapted provider
+through `server.auth` in `src/mastra/index.ts`.
+
+The Word add-in logs in with Google through Better Auth and then calls protected
+Mastra routes with the Better Auth session token as a bearer token. Workflows and
+agents should consume the authenticated user only through explicit runtime
+context/contracts; they must not call provider-specific Google APIs directly.
+
+The Office add-in OAuth bridge is also assembled in `src/mastra/index.ts` because
+it is runtime HTTP wiring:
+
+- `/auth/*` delegates to Better Auth.
+- `/auth-complete` converts the backend callback session into a one-time bridge
+  code.
+- `/auth-bridge-session` lets the add-in origin exchange that code for the
+  session payload.
+
+Keep the bridge code store short-lived and single-use. If the backend becomes
+multi-instance, move the store out of process memory.
 
 ## Core Flows
 
@@ -93,10 +119,12 @@ This keeps the workflow deterministic while reserving interpretation of author i
 
 ## Author Profile Architecture
 
-Author profiles live under `workspace/autores/` and follow a two-layer structure defined by the local `perfil-autor` skill:
+Author profiles live under `workspace/autores/` and are maintained by the Profile Agent and the Feedback Agent. The canonical protocol is defined as a bundleable TypeScript constant in `src/mastra/agents/profile-agent.skill.ts` and composed by `src/mastra/agents/profile-agent.prompt.ts`.
 
-- `REFLEXIONES`: a short executive summary optimized for the corrector.
-- `OBSERVACIONES`: a larger pattern catalog that tracks active, improving, and resolved author behaviors.
+The profile follows a two-section structure:
+
+- `## PATRONES VIVOS`: active correctional patterns organized by category (Ortografía, Gramática, Puntuación, Tipografía, Léxico, Estilo). Each pattern carries a semaphore state.
+- `## CRITERIOS DE INTERVENCIÓN`: explicit author preferences, hard limits, and intervention scope. No semaphore — only flat bullets from direct author feedback.
 
 The profile lifecycle is semaphore-driven:
 
@@ -104,12 +132,13 @@ The profile lifecycle is semaphore-driven:
 - `🟡` first clean confirmation,
 - `🟢` confirmed and immediately pruned.
 
-The update protocol is:
+The update protocol runs in three phases:
 
-1. Observe new suggestions and clean patterns.
-2. Transition existing patterns based on fresh evidence.
-3. Prune resolved patterns.
-4. Rewrite reflections from the updated observation set.
+1. **Observe**: compare session `suggestions` and `cleanPatterns` against existing live patterns in `PATRONES VIVOS`.
+2. **Transition**: advance semaphore states based on fresh session evidence.
+3. **Prune**: immediately delete any pattern that reached `🟢`.
+
+`CRITERIOS DE INTERVENCIÓN` is not semaphore-driven. It changes only via explicit author feedback processed by the Feedback Agent, whose protocol is defined in `src/mastra/agents/feedback-agent.skill.ts` and composed by `src/mastra/agents/feedback-agent.prompt.ts`.
 
 This design keeps correction context compact for the main agent while preserving durable author learning over time.
 
@@ -155,6 +184,12 @@ That separation matters because it prevents workflow files from becoming provide
 
 ```text
 src/
+  auth/
+    auth.ts
+    auth-db.ts
+    auth-env.ts
+    auth-schema.ts
+    mastra-auth.ts
   mastra/
     index.ts
     agents/
@@ -169,7 +204,9 @@ workspace/
   skills/
 docs/
   ARCHITECTURE.md
+  auth.md
   frontend-contract.md
+  linting-and-file-anatomy.md
   observational-memory-config.md
   observational-memory-integration.md
   observational-memory-overview.md
@@ -357,7 +394,11 @@ That keeps Mastra stable as an orchestration shell while the actual business log
 
 - `AGENTS.md`
 - `CLAUDE.md`
+- `docs/auth.md`
 - `docs/frontend-contract.md`
+- `docs/linting-and-file-anatomy.md`
+- `src/mastra/agents/profile-agent.skill.ts`
+- `src/mastra/agents/feedback-agent.skill.ts`
 - `docs/observational-memory-overview.md`
 - `docs/observational-memory-config.md`
 - `docs/observational-memory-integration.md`

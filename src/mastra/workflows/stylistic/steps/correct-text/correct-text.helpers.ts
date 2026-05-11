@@ -163,11 +163,13 @@ export function buildGenerateOptions(
     };
   }
 
-  return {
+  const options: StylisticGenerateOptions = {
     structuredOutput: {
       schema: stylisticWorkflowOutputSchema,
     },
     modelSettings: { temperature: 0 },
     providerOptions,
   };
+
+  return options;
 }

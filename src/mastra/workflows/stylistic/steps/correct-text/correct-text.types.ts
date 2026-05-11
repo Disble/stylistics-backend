@@ -4,9 +4,9 @@
 import type { AgentExecutionOptions } from "@mastra/core/agent";
 import type { z } from "zod";
 
-import type { StylisticProfileContext } from "../load-author-profile/load-author-profile.types";
 import type {
   stylisticCommentOnlySuggestionSchema,
+  correctTextInputSchema,
   stylisticCorrectionStepSchema,
   stylisticTrackChangeSuggestionSchema,
   stylisticWorkflowOutputSchema,
@@ -40,6 +40,7 @@ export type CommentOnlySuggestion = z.infer<
 /** Discriminated union over all suggestion variants. Narrow with `suggestion.type`. */
 export type WorkflowSuggestion = TrackChangeSuggestion | CommentOnlySuggestion;
 
+/** Base Mastra execution options specialized for stylistic structured output. */
 type StylisticAgentExecutionOptions =
   AgentExecutionOptions<StylisticWorkflowOutput>;
 
@@ -47,8 +48,7 @@ type StylisticAgentExecutionOptions =
  * Describes the generate options used by the stylistic correction step.
  * Derived from Mastra's execution options to avoid local drift.
  */
-export interface StylisticGenerateOptions
-  extends StylisticAgentExecutionOptions {
+export interface StylisticGenerateOptions extends StylisticAgentExecutionOptions {
   structuredOutput: StylisticAgentExecutionOptions["structuredOutput"] & {
     schema: typeof stylisticWorkflowOutputSchema;
   };
@@ -70,15 +70,15 @@ export type StylisticAgent = {
     };
   }>;
 };
-/** Minimal logger surface shared across stylistic workflow steps. */
 
+/** Minimal logger surface shared across stylistic workflow steps. */
 export type StylisticCorrectionLogger = {
   debug: (object: Record<string, unknown>, message: string) => void;
   info: (object: Record<string, unknown>, message: string) => void;
   error: (object: Record<string, unknown>, message: string) => void;
 };
-/** Normalized provider safety metadata extracted from nested thrown errors. */
 
+/** Normalized provider safety metadata extracted from nested thrown errors. */
 export type GoogleSafetyBlock = {
   blockReason: string;
   statusCode?: number;
@@ -90,4 +90,4 @@ export type GoogleSafetyBlock = {
 };
 
 /** Aliases the correction-step input to the already-loaded profile context. */
-export type CorrectTextStepInput = StylisticProfileContext;
+export type CorrectTextStepInput = z.infer<typeof correctTextInputSchema>;

@@ -1,42 +1,47 @@
 /**
- * Builds the workspace-relative prompt used by the feedback workflow step.
+ * Builds the prompt used by the feedback workflow step.
  */
 import type { ProcessFeedbackPromptInput } from "./process-feedback.types";
 
-/**
- * Builds the feedback-processing prompt using paths relative to the mounted
- * Mastra workspace root.
- */
+/** Builds the DB-backed prompt used when feedback targets a persisted document profile. */
 export function buildProcessFeedbackPrompt(input: ProcessFeedbackPromptInput) {
-  const autorProfilePath = `autores/${input.autorSlug}.md`;
+  return `<contract>
+Procesa UN comentario de feedback del autor sobre una corrección.
+Usa el perfil documental provisto en este prompt como documento objetivo.
+Ejecuta el protocolo completo: RAZONAR -> DECIDIR -> ACTUAR.
+Aplica estrictamente la política de escritura segura de tu protocolo canónico.
+Este prompt solo aporta perfil y payload; la sección objetivo, reglas de edición, política de borrado y criterios de aborto viven en tu protocolo canónico.
+No inventes rutas, no menciones workspace y devuelve SOLO el output estructurado solicitado por el caller.
+Preserva intacta la estructura canónica completa de \`## PATRONES VIVOS\`, incluyendo \`### Ortografía\`, \`### Gramática\`, \`### Puntuación\`, \`### Tipografía\`, \`### Léxico\` y \`### Estilo\`.
+</contract>
 
-  return `<workspace>
-Las rutas de este prompt son relativas a la raiz ya montada del workspace.
-No antepongas \`workspace/\` ni crees una carpeta \`workspace\` dentro del workspace actual.
-</workspace>
-
-<contrato>
-Procesá UN comentario de feedback del autor sobre una corrección.
-Usá el perfil del autor indicado en este prompt como documento objetivo.
-Ejecutá el protocolo completo: RAZONAR -> DECIDIR -> ACTUAR.
-Aplicá estrictamente la política de escritura segura de tu protocolo canónico.
-Este prompt solo aporta perfil y payload; la sección objetivo, reglas de edición, borrado y aborto están en tu protocolo.
-</contrato>
-
-<perfil>
-Perfil del autor: ${autorProfilePath}
-
-Perfil actual:
+<profile>
+Perfil documental actual:
 ~~~markdown
 ${input.authorProfile}
 ~~~
-</perfil>
+</profile>
 
 <payload>
-${JSON.stringify(input, null, 2)}
+${JSON.stringify(
+  {
+    category: input.category,
+    context: input.context,
+    anchor: input.anchor,
+    suggestedText: input.suggestedText,
+    justification: input.justification,
+    action: input.action,
+    severity: input.severity,
+    suggestionType: input.suggestionType,
+    comment: input.comment,
+  },
+  null,
+  2,
+)}
 </payload>
 
-<respuesta-final>
-Confirmá si actualizaste el perfil o descartaste el feedback, con la razón.
-</respuesta-final>`;
+<final-response>
+Si devuelves status \`updated\`, DEBES devolver también el perfil markdown completo actualizado.
+Si devuelves status \`ignored\`, explica la categoría asignada y la razón del descarte en un decision summary conciso.
+</final-response>`;
 }

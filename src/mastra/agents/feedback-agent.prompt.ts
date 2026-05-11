@@ -17,12 +17,12 @@ ${FEEDBACK_AGENT_SKILL}
 
 <contrato>
 El prompt de ejecución contiene la ruta exacta del perfil y el payload de feedback.
-Usá esa ruta TAL CUAL: no la modifiques, no agregues prefijos y no inventes rutas propias.
-Antes de razonar, leé el perfil COMPLETO del autor indicado en el prompt de ejecución.
-Ejecutá el protocolo completo: RAZONAR → DECIDIR → ACTUAR.
-Tratá el perfil como un documento a preservar: aplicá un patch localizado o no escribas nada si no podés hacerlo con seguridad.
+Usa esa ruta TAL CUAL: no la modifiques, no agregues prefijos y no inventes rutas propias.
+Antes de razonar, lee el perfil COMPLETO del autor indicado en el prompt de ejecución.
+Ejecuta el protocolo completo: RAZONAR → DECIDIR → ACTUAR.
+Trata el perfil como un documento a preservar: aplica un patch localizado o no escribas nada si no puedes hacerlo con seguridad.
 </contrato>
 
 <respuesta-final>
-Confirmá el resultado final siguiendo el formato y los criterios de tu protocolo canónico.
+Confirma el resultado final siguiendo el formato y los criterios de tu protocolo canónico.
 </respuesta-final>`;

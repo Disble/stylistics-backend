@@ -91,7 +91,9 @@ Skills are automatically available to agents in your project once installed. Age
 | Skill | Description | Source |
 |-------|-------------|--------|
 | `mastra` | Guía base para trabajar con APIs vigentes de Mastra y verificar documentación antes de escribir código | [.agents/skills/mastra/SKILL.md](.agents/skills/mastra/SKILL.md) |
+| `stylistics-endpoint-creation` | Guía específica del repo para crear endpoints nuevos con estructura de rutas, validación runtime y documentación OpenAPI rica | [.agents/skills/stylistics-endpoint-creation/SKILL.md](.agents/skills/stylistics-endpoint-creation/SKILL.md) |
 | `stylistics-mastra-architecture` | Arquitectura objetivo del backend: Mastra como orquestación, workflows livianos, lógica de aplicación separada y límites para evitar workflows espagueti | [.agents/skills/stylistics-mastra-architecture/SKILL.md](.agents/skills/stylistics-mastra-architecture/SKILL.md) |
+| `stylistics-layer-boundaries` | Reglas de dirección entre layers, co-location de steps y arquitectura lint-first para evitar imports invertidos y wrappers anémicos | [.agents/skills/stylistics-layer-boundaries/SKILL.md](.agents/skills/stylistics-layer-boundaries/SKILL.md) |
 | `stylistics-mastra-working-strategy` | Practical operating strategy for implementing Mastra features in this repo without overengineering workflows, prompts, helpers, or provider glue | [.agents/skills/stylistics-mastra-working-strategy/SKILL.md](.agents/skills/stylistics-mastra-working-strategy/SKILL.md) |
 
 ### Workspace Skills
@@ -99,7 +101,8 @@ Skills are automatically available to agents in your project once installed. Age
 | Skill | Description | Source |
 |-------|-------------|--------|
 | `diccionario` | Consultar el DLE usando el binario local `dlexa.exe` | [SKILL.md](workspace/skills/diccionario/SKILL.md) |
-| `perfil-autor` | Gestiona perfiles de corrección de autores en `workspace/autores/`; cargar siempre antes de corregir | [SKILL.md](workspace/skills/perfil-autor/SKILL.md) |
+
+> **Author profile protocols** are defined as bundleable TypeScript constants in `src/mastra/agents/profile-agent.skill.ts` and `src/mastra/agents/feedback-agent.skill.ts`, then composed by their sibling `*.prompt.ts` files.
 
 ## KIN Docs Routing
 

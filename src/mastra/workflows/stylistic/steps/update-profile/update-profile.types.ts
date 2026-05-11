@@ -7,9 +7,19 @@ import type {
   StylisticWorkflowOutput,
 } from "../correct-text/correct-text.types";
 
-/** Minimal profile-agent surface required by the update-profile step. */
-export type UpdateProfileAgent = {
-  generate: (prompt: string) => Promise<unknown>;
+/** Input used to generate the next persisted document style profile. */
+export type UpdateDocumentStyleProfileInput = {
+  documentStyleProfileId: string;
+  currentProfileMarkdown: string;
+  correctionPatternsWordCount: number;
+  suggestions: StylisticCorrectionStepOutput["suggestions"];
+  cleanPatterns: string[];
+};
+
+/** Structured result returned by the document-profile agent. */
+export type UpdateDocumentStyleProfileResult = {
+  profileMarkdown: string;
+  changeSummary: string;
 };
 
 /** Reuses the correction logger shape for profile updates. */

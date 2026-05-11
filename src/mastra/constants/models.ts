@@ -5,7 +5,7 @@ const stylisticReasoningModels = [
     model: "google/gemini-3.1-pro-preview",
   },
   {
-    model: "google/gemini-3.1-flash-lite-preview",
+    model: "google/gemini-3.1-flash-lite",
   },
 ] as const satisfies AgentConfig["model"];
 
@@ -15,17 +15,27 @@ export const modelPool = {
   "stylistic-consultation-agent": stylisticReasoningModels,
   "profile-agent": [
     {
-      model: "google/gemini-3.1-flash-lite-preview",
+      model: "google/gemini-3.1-flash-lite",
     },
     {
-      model: "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
+      model: "opencode-go/deepseek-v4-flash",
     },
-    {
-      model: "lmstudio/qwen3.6-35b-a3b@q2_k_xl",
-    },
+    // {
+    //   model: "lmstudio/qwen3.6-35b-a3b@q2_k_xl",
+    // },
   ],
   "feedback-agent": "lmstudio/qwen3.6-35b-a3b@q2_k_xl",
 } as const satisfies Record<string, AgentConfig["model"]>;
+
+/**
+ * Judge models used by runtime eval scorers. Kept as a pool so future scorers
+ * can opt into different complexity tiers without rewriting call sites.
+ */
+export const evalModelPool = {
+  light: "opencode-go/deepseek-v4-flash",
+  standard: "opencode-go/deepseek-v4-flash",
+  complex: "opencode-go/deepseek-v4-flash",
+} as const;
 
 /**
  * Google model thinking levels for enhanced reasoning.

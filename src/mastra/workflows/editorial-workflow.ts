@@ -4,7 +4,7 @@
  */
 import { createStep, createWorkflow } from "@mastra/core/workflows";
 import { z } from "zod";
-import { logger } from "../utils/logger";
+import { logger } from "../../shared/logger";
 
 /** Describes the structured editorial suggestions returned by the workflow. */
 const editorialWorkflowOutputSchema = z.object({

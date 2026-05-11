@@ -59,24 +59,3 @@ export const workspaceProfile = new Workspace({
   lsp: lspBase,
   tools: toolsBase,
 });
-
-/**
- * Feedback workspace tools configuration.
- * Extends base tools with write file operations disabled.
- */
-const toolsFeedback = {
-  ...toolsBase,
-  [WORKSPACE_TOOLS.FILESYSTEM.WRITE_FILE]: { enabled: false },
-};
-
-/**
- * Feedback workspace configuration.
- * Similar to profile workspace but with additional write file restrictions.
- */
-export const workspaceFeedback = new Workspace({
-  filesystem: fileSystemBase,
-  sandbox: sandboxBase,
-  skills: skillsBase,
-  lsp: lspBase,
-  tools: toolsFeedback,
-});

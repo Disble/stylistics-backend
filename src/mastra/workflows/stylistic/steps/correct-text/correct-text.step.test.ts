@@ -4,25 +4,38 @@
  */
 import { describe, expect, it } from "bun:test";
 
-import type { StylisticProfileContext } from "../load-author-profile/load-author-profile.types";
 import { correctTextOutputSchema } from "./correct-text.schemas";
 import { correctText } from "./correct-text.step";
-import type { StylisticAgent } from "./correct-text.types";
+import type {
+  CorrectTextStepInput,
+  StylisticAgent,
+} from "./correct-text.types";
 
 /** Shared step input reused across correction-step unit tests. */
-const baseInput: StylisticProfileContext = {
+const baseInput: CorrectTextStepInput = {
   text: "Era tarde y la casa seguia despierta.",
-  autorSlug: "disble",
+  documentUuid: "44444444-4444-4444-8444-444444444444",
   genero: "narrativa-literaria",
-  authorProfilePath: "workspace/autores/disble.md",
   authorProfile: "Prefiere frases cortas y tensión progresiva.",
   authorProfileCorrectionPatternsWordCount: 42,
+  previousCorrection: null,
+  documentContext: {
+    documentId: "11111111-1111-4111-8111-111111111111",
+    documentStyleProfileId: "22222222-2222-4222-8222-222222222222",
+    documentPreferencesId: "33333333-3333-4333-8333-333333333333",
+    documentUuid: "44444444-4444-4444-8444-444444444444",
+    defaultGenre: "general",
+    processingConfig: {},
+  },
 };
 
 /** Builds a Mastra step-parameter object with the minimum surface needed by the tests. */
-function createStepParams(agent?: StylisticAgent) {
+function createStepParams(
+  agent?: StylisticAgent,
+  inputData: CorrectTextStepInput = baseInput,
+) {
   return {
-    inputData: baseInput,
+    inputData,
     mastra: {
       getAgent: (agentId: string) =>
         agentId === "stylisticAgent" ? agent : undefined,
@@ -42,7 +55,7 @@ function createStepParams(agent?: StylisticAgent) {
     outputWriter: undefined,
     validateSchemas: false,
     setState: async () => undefined,
-    getInitData: () => baseInput,
+    getInitData: () => inputData,
     getStepResult: () => undefined,
     suspend: async () => undefined as never,
     bail: () => undefined as never,
@@ -76,11 +89,12 @@ describe("correctText step", () => {
     const result = correctTextOutputSchema.parse(rawResult);
     const suggestion = result.suggestions[0];
 
-    expect(result.autorSlug).toBe("disble");
+    expect(result.documentContext.documentUuid).toBe(baseInput.documentUuid);
     expect(result.authorProfile).toBe(baseInput.authorProfile);
     expect(result.authorProfileCorrectionPatternsWordCount).toBe(
       baseInput.authorProfileCorrectionPatternsWordCount,
     );
+    expect(baseInput.previousCorrection).toBeNull();
     expect(result.cleanPatterns).toEqual(["frases-breves"]);
     expect(result.suggestions).toHaveLength(1);
     expect(suggestion).toBeDefined();
@@ -140,7 +154,9 @@ describe("correctText step", () => {
       "Google/Gemini blocked stylistic correction",
     );
     expect((thrown as Error).message).toContain("blockReason=SAFETY");
-    expect((thrown as Error).message).toContain("autorSlug=disble");
+    expect((thrown as Error).message).toContain(
+      "documentUuid=44444444-4444-4444-8444-444444444444",
+    );
     expect((thrown as Error).message).toContain("genero=narrativa-literaria");
     expect((thrown as Error).cause).toBe(providerError);
   });
@@ -168,5 +184,46 @@ describe("correctText step", () => {
     expect((thrown as Error).message).toBe(
       "No output structured received from stylistic agent",
     );
+  });
+
+  it("includes previousCorrection in the prompt context when provided", async () => {
+    let receivedPrompt = "";
+    const agent: StylisticAgent = {
+      generate: async (prompt) => {
+        receivedPrompt = prompt;
+
+        return {
+          object: {
+            suggestions: [],
+            cleanPatterns: [],
+          },
+          text: "ok",
+        };
+      },
+    };
+
+    const rawResult = await correctText.execute(
+      createStepParams(agent, {
+        ...baseInput,
+        previousCorrection: {
+          suggestions: [
+            {
+              type: "comment-only",
+              context: "Era tarde y la casa seguia despierta.",
+              anchor: "seguia",
+              justification: "Preferencia previa por revisar tildes.",
+              category: "ortografia",
+              severity: "medium",
+            },
+          ],
+          cleanPatterns: ["sin-solecismos"],
+        },
+      }),
+    );
+
+    expect(receivedPrompt).toContain("<correcion-previa>");
+    expect(receivedPrompt).toContain('"anchor": "seguia"');
+    expect(receivedPrompt).toContain("<clean-patterns>");
+    expect(correctTextOutputSchema.parse(rawResult).cleanPatterns).toEqual([]);
   });
 });

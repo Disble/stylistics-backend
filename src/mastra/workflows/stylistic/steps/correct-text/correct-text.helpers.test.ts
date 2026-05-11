@@ -106,6 +106,7 @@ describe("buildGenerateOptions", () => {
     expect(options.structuredOutput.schema).toBeDefined();
     expect(options.modelSettings.temperature).toBe(0);
     expect(options.providerOptions).toBeUndefined();
+    expect(options.system).toBeUndefined();
   });
 
   it("keeps fiction safety overrides for narrative texts using a mutable copy", () => {

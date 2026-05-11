@@ -1,9 +1,12 @@
 pre-commit:
   commands:
-    biome:
-      run: bun run lint:staged
+    lint:
+      glob: "*.{ts,mts,cts,js,mjs,cjs}"
+      run: bunx eslint --fix {staged_files}
       stage_fixed: true
-    filenames:
-      run: bun run check:filenames
+    format:
+      glob: "*.{ts,mts,cts,js,mjs,cjs,json,md,yml,yaml}"
+      run: bunx prettier --write {staged_files}
+      stage_fixed: true
     typecheck:
       run: bun run typecheck

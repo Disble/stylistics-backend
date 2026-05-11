@@ -1,52 +1,42 @@
-/** Canonical protocol for the Profile Agent — inlined from perfil-autor skill. */
-export const PROFILE_AGENT_SKILL = `
-## Regla de rutas del workspace
+/** Canonical protocol for the Profile Agent. */
+export const PROFILE_AGENT_SKILL = `## Alcance documental canónico
 
-El workspace ya está montado en su raíz operativa.
-Todas las rutas de este protocolo son relativas a esa raíz.
-Nunca antepongas \`workspace/\`.
-Nunca crees una carpeta \`workspace\` dentro del workspace actual.
+Este protocolo ya NO opera sobre archivos de autor ni sobre rutas de workspace.
+Opera sobre el markdown completo de UN perfil estilístico persistido por documento,
+provisto inline por el caller.
+
+- No inventes rutas.
+- No pidas leer archivos.
+- No supongas filesystem.
+- Toda preservación estructural debe aplicarse sobre el markdown documental recibido.
 
 ## Estructura canónica
 
 \`\`\`markdown
----
-autor: { nombre }
-slug: { slug }
----
-
-# Perfil de Corrección: {nombre}
+# Perfil estilístico del documento
 
 ## PATRONES VIVOS
 
 ### Ortografía
 
-- (pendiente de primera corrección)
-
 ### Gramática
-
-- (pendiente de primera corrección)
 
 ### Puntuación
 
-- (pendiente de primera corrección)
-
 ### Tipografía
-
-- (pendiente de primera corrección)
 
 ### Léxico
 
-- (pendiente de primera corrección)
-
 ### Estilo
 
-- (pendiente de primera corrección)
-
 ## CRITERIOS DE INTERVENCIÓN
-
-- (pendiente de primer criterio)
 \`\`\`
+
+Notas:
+
+- El template inicial debe incluir SIEMPRE la grilla completa de \`## PATRONES VIVOS\`: \`### Ortografía\`, \`### Gramática\`, \`### Puntuación\`, \`### Tipografía\`, \`### Léxico\`, \`### Estilo\`, aunque alguna subsección todavía no tenga viñetas.
+- Las subsecciones \`### ...\` dentro de \`## PATRONES VIVOS\` se preservan y se rellenan, fusionan o reorganizan según lo exija la taxonomía canónica y la evidencia activa; no elimines categorías canónicas solo porque hoy estén vacías.
+- No agregues frontmatter ni metadatos de archivo heredados del modelo por autor.
 
 ## Taxonomía canónica de patrones
 
@@ -67,7 +57,11 @@ En JSON se usan valores estables sin tildes; en Markdown se usan encabezados leg
 - Perfil actual completo.
 - \`suggestions\` de la sesión actual.
 - \`cleanPatterns\` de la sesión actual.
-- Metadata determinística del prompt cuando exista, por ejemplo conteo de palabras de \`## PATRONES VIVOS\` y zona de activación.
+- Metadata determinística del prompt cuando exista, por ejemplo:
+  - \`documentUuid\`
+  - \`documentStyleProfileId\`
+  - conteo de palabras de \`## PATRONES VIVOS\`
+  - zona de activación / presión de compactación
 
 ## Protocolo de actualización normal
 
@@ -165,7 +159,7 @@ Reglas clave:
 
 ## Política de escritura segura (obligatoria)
 
-Este protocolo NO autoriza reescritura libre en actualización normal. El modo correcto es **PATCH CONSERVADOR**.
+Este protocolo NO autoriza reescritura libre en actualización normal. El modo correcto es **PATCH CONSERVADOR** sobre el markdown documental actual.
 
 1. Antes de escribir, identificar la estructura actual completa del archivo: \`## PATRONES VIVOS\`, sus subsecciones \`### ...\`, y \`## CRITERIOS DE INTERVENCIÓN\`.
 2. Todo encabezado y toda viñeta que no esté siendo modificada por evidencia directa o compactación explícita debe sobrevivir **verbatim**.
@@ -193,17 +187,7 @@ Este protocolo NO autoriza reescritura libre en actualización normal. El modo c
 - NO sección de deprecados.
 - NO categorías fuera de la taxonomía canónica sin cambiar primero este protocolo y el contrato del corrector.
 
-## Convención de Slug
-
-| Nombre del autor | Slug correcto |
-| --- | --- |
-| María García | maria-garcia |
-| Jorge Luis Borges | jorge-luis-borges |
-| Ana María López Ruiz | ana-maria-lopez-ruiz |
-
-- Minúsculas, sin tildes, guiones en lugar de espacios.
-- Si tiene seudónimo: usar el identificador acordado en el proyecto.
-
 ## Recursos
 
-- **Directorio de perfiles**: \`autores/\``;
+- **Perfil objetivo**: markdown documental persistido provisto inline por el caller
+- **Secciones canónicas**: \`## PATRONES VIVOS\` y \`## CRITERIOS DE INTERVENCIÓN\``;
