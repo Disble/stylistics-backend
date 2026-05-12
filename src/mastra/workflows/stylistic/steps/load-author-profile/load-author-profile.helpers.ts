@@ -5,7 +5,7 @@
 
 const CORRECTION_PATTERNS_SECTION_HEADING = "## PATRONES VIVOS";
 const TOP_LEVEL_SECTION_PATTERN = /^##\s+/gm;
-const WORD_PATTERN = /[\p{L}\p{N}]+(?:['’\u2019-][\p{L}\p{N}]+)*/gu;
+const WORD_PATTERN = /[\p{L}\p{N}]+(?:['’-][\p{L}\p{N}]+)*/gu;
 
 /**
  * Extracts the markdown body that belongs to the living-patterns section. The

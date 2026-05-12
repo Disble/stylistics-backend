@@ -26,9 +26,7 @@ function getAuthenticatedUserId(c: ContextWithMastra): string | undefined {
   return authUser?.user.id;
 }
 
-async function readJsonBody(
-  c: ContextWithMastra,
-): Promise<unknown | undefined> {
+async function readJsonBody(c: ContextWithMastra): Promise<unknown> {
   try {
     return await c.req.json();
   } catch {

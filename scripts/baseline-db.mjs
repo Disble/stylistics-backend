@@ -385,9 +385,11 @@ async function assertProductUpdatedAtTriggers(client) {
     `SELECT trigger_name FROM information_schema.triggers WHERE event_object_schema = 'public' AND trigger_name = ANY($1::text[])`,
     [triggerNames],
   );
-  const actualTriggerNames = result.rows.map((row) => row.trigger_name);
+  const actualTriggerNames = new Set(
+    result.rows.map((row) => row.trigger_name),
+  );
   const missingTriggerNames = triggerNames.filter(
-    (name) => !actualTriggerNames.includes(name),
+    (name) => !actualTriggerNames.has(name),
   );
 
   if (missingTriggerNames.length > 0) {

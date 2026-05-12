@@ -2,9 +2,12 @@ import type { InstructionComplianceAnalysis } from "./instruction-compliance-sco
 
 /** Safely extracts the content of a tagged section from a prompt. */
 export function extractTagContent(prompt: string, tagName: string) {
-  const escapedTagName = tagName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const escapedTagName = tagName.replace(
+    /[.*+?^${}()|[\]\\]/g,
+    String.raw`\$&`,
+  );
   const pattern = new RegExp(
-    String.raw`<${escapedTagName}>([\\s\\S]*?)</${escapedTagName}>`,
+    String.raw`<${escapedTagName}>([\s\S]*?)</${escapedTagName}>`,
     "i",
   );
   const match = pattern.exec(prompt);

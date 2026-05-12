@@ -2,7 +2,6 @@ import { ollama } from "ai-sdk-ollama";
 import { VECTOR_STORE } from "./vector";
 
 const embedder = ollama.embedding(VECTOR_STORE.EMBEDDING_NAME);
-// const embedder = new ModelRouterEmbeddingModel("openai/text-embedding-3-small");
 /**
  * Default embedder configuration for the Mastra memory system.
  * Uses Ollama's Qwen3-Embedding:0.6b model which produces 768-dimensional vectors.

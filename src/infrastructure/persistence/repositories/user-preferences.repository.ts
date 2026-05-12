@@ -17,7 +17,7 @@ export class PgUserPreferencesRepository implements UserPreferencesRepository {
   ) {
     const normalized = value?.trim();
 
-    return normalized ? normalized : null;
+    return normalized || null;
   }
 
   async getUserPreferences(userId: string): Promise<ResolvedUserPreferences> {
