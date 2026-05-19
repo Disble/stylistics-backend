@@ -10,7 +10,7 @@ import { logger } from "../../../../../shared/logger";
 import {
   buildGenerateOptions,
   getGoogleSafetyBlock,
-  normalizeSuggestions,
+  normalizeWorkflowOutput,
 } from "../correct-text/correct-text.helpers";
 import type { StylisticCorrectionResult } from "../correct-text/correct-text.types";
 import { buildPreferenceGuidedCorrectionPrompt } from "./preference-guided-correction.prompt";
@@ -149,12 +149,11 @@ export const preferenceGuidedCorrection = createStep({
       "Preference-guided correction completed",
     );
 
+    const normalizedPreviousCorrection = normalizeWorkflowOutput(result.object);
+
     return {
       ...inputData,
-      previousCorrection: {
-        suggestions: normalizeSuggestions(result.object.suggestions),
-        cleanPatterns: result.object.cleanPatterns,
-      },
+      previousCorrection: normalizedPreviousCorrection,
     };
   },
 });

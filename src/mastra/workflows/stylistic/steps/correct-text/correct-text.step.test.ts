@@ -105,6 +105,41 @@ describe("correctText step", () => {
     expect("suggestedText" in suggestion).toBe(false);
   });
 
+  it("downgrades malformed track-change transport items without suggestedText", async () => {
+    const agent: StylisticAgent = {
+      generate: async () => ({
+        object: {
+          suggestions: [
+            {
+              type: "track-change",
+              context: "Era tarde y la casa seguia despierta.",
+              anchor: "seguia",
+              justification: "Falta reemplazo concreto.",
+              category: "ortografia",
+              severity: "high",
+            },
+          ],
+          cleanPatterns: [],
+        },
+        text: "ok",
+      }),
+    };
+
+    const rawResult = await correctText.execute(createStepParams(agent));
+    const result = correctTextOutputSchema.parse(rawResult);
+
+    expect(result.suggestions).toEqual([
+      {
+        type: "comment-only",
+        context: "Era tarde y la casa seguia despierta.",
+        anchor: "seguia",
+        justification: "Falta reemplazo concreto.",
+        category: "ortografia",
+        severity: "high",
+      },
+    ]);
+  });
+
   it("throws when the stylistic agent is not registered", async () => {
     let thrown: unknown;
 

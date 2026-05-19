@@ -16,52 +16,77 @@ export const stylisticCorrectionCategorySchema = z.enum([
   "estilo",
 ]);
 
+const stylisticSuggestionBaseSchema = z
+  .object({
+    context: z
+      .string()
+      .describe(
+        "Fragmento suficientemente largo para localizar la corrección de forma inequívoca en el documento.",
+      ),
+    anchor: z
+      .string()
+      .describe(
+        "Parte exacta del texto que se resalta y reemplaza. Puede ser un solo carácter, una palabra, o un párrafo completo.",
+      ),
+    justification: z.string(),
+    category: stylisticCorrectionCategorySchema,
+    severity: z.enum(["high", "medium", "low"]),
+  })
+  .strict();
+
+/** Portable transport schema shared across providers for one model-emitted suggestion. */
+export const portableStylisticSuggestionSchema = stylisticSuggestionBaseSchema
+  .extend({
+    type: z.enum(["track-change", "comment-only"]),
+    suggestedText: z
+      .string()
+      .optional()
+      .describe(
+        "Representación textual del reemplazo del anchor. Solo es obligatoria para track-change; comment-only debe omitirla.",
+      ),
+  })
+  .strict();
+
 /** Validates one replacement-oriented suggestion emitted by the correction agent. */
-export const stylisticTrackChangeSuggestionSchema = z.object({
-  type: z.literal("track-change"),
-  context: z
-    .string()
-    .describe(
-      "Fragmento suficientemente largo para localizar la corrección de forma inequívoca en el documento.",
-    ),
-  anchor: z
-    .string()
-    .describe(
-      "Parte exacta del texto que se resalta y reemplaza. Puede ser un solo carácter, una palabra, o un párrafo completo.",
-    ),
-  suggestedText: z
-    .string()
-    .describe("Reemplazo exacto del anchor. Nunca igual al anchor."),
-  justification: z.string(),
-  category: stylisticCorrectionCategorySchema,
-  severity: z.enum(["high", "medium", "low"]),
-});
+export const stylisticTrackChangeSuggestionSchema =
+  stylisticSuggestionBaseSchema
+    .extend({
+      type: z.literal("track-change"),
+      suggestedText: z
+        .string()
+        .describe("Reemplazo exacto del anchor. Nunca igual al anchor."),
+    })
+    .strict();
 
 /** Validates one editorial note that should not rewrite the source text. */
-export const stylisticCommentOnlySuggestionSchema = z.object({
-  type: z.literal("comment-only"),
-  context: z
-    .string()
-    .describe(
-      "Fragmento suficientemente largo para localizar el comentario de forma inequívoca en el documento.",
-    ),
-  anchor: z
-    .string()
-    .describe(
-      "Parte exacta del texto sobre la que recae el comentario. No se reemplaza.",
-    ),
-  justification: z.string(),
-  category: stylisticCorrectionCategorySchema,
-  severity: z.enum(["high", "medium", "low"]),
-});
+export const stylisticCommentOnlySuggestionSchema =
+  stylisticSuggestionBaseSchema
+    .extend({
+      type: z.literal("comment-only"),
+    })
+    .strict();
 
-/** Accepts either supported suggestion shape produced by the correction agent. */
+/** Accepts either supported internal suggestion shape after deterministic normalization. */
 export const stylisticSuggestionSchema = z.discriminatedUnion("type", [
   stylisticTrackChangeSuggestionSchema,
   stylisticCommentOnlySuggestionSchema,
 ]);
 
-/** Describes the public workflow output returned to correction callers. */
+/** Describes the portable structured output requested from the model transport. */
+export const portableStylisticWorkflowOutputSchema = z.object({
+  suggestions: z
+    .array(portableStylisticSuggestionSchema)
+    .describe(
+      "Corrections to apply. Each item must describe one localized change only.",
+    ),
+  cleanPatterns: z
+    .array(z.string())
+    .describe(
+      "Profile patterns found in the text with positive evidence of correct usage.",
+    ),
+});
+
+/** Describes the normalized workflow output returned to correction callers. */
 export const stylisticWorkflowOutputSchema = z.object({
   suggestions: z
     .array(stylisticSuggestionSchema)

@@ -6,10 +6,15 @@ import { z } from "zod";
 import { GOOGLE_MODEL_THINKING_LEVELS } from "../../../../constants/models";
 import type { StylisticWorkflowInput } from "../load-author-profile/load-author-profile.types";
 import { GOOGLE_FICTION_SAFETY_SETTINGS } from "./correct-text.constants";
-import { stylisticWorkflowOutputSchema } from "./correct-text.schemas";
+import {
+  portableStylisticWorkflowOutputSchema,
+  stylisticWorkflowOutputSchema,
+} from "./correct-text.schemas";
 import type {
   GoogleSafetyBlock,
+  PortableWorkflowSuggestion,
   StylisticGenerateOptions,
+  StylisticWorkflowOutput,
   WorkflowSuggestion,
 } from "./correct-text.types";
 
@@ -121,22 +126,60 @@ export function getGoogleSafetyBlock(
 }
 
 /**
- * Converts no-op track-change suggestions into comment-only suggestions so the
- * downstream document integration never receives redundant replacements.
+ * Normalizes one provider-portable suggestion into the internal discriminated
+ * union while enforcing deterministic invariants outside the prompt/schema.
+ */
+export function normalizeSuggestion(
+  suggestion: PortableWorkflowSuggestion,
+): WorkflowSuggestion {
+  if (suggestion.type === "comment-only") {
+    const { suggestedText: _suggestedText, ...rest } = suggestion;
+    return {
+      ...rest,
+      type: "comment-only",
+    };
+  }
+
+  if (
+    typeof suggestion.suggestedText !== "string" ||
+    suggestion.suggestedText === suggestion.anchor
+  ) {
+    const { suggestedText: _suggestedText, ...rest } = suggestion;
+    return {
+      ...rest,
+      type: "comment-only",
+    };
+  }
+
+  return {
+    ...suggestion,
+    type: "track-change",
+    suggestedText: suggestion.suggestedText,
+  };
+}
+
+/**
+ * Converts provider-portable suggestions into the internal workflow union so the
+ * downstream document integration never receives incoherent replacements.
  */
 export function normalizeSuggestions(
-  suggestions: WorkflowSuggestion[],
+  suggestions: PortableWorkflowSuggestion[],
 ): WorkflowSuggestion[] {
-  return suggestions.map((suggestion) => {
-    if (
-      suggestion.type === "track-change" &&
-      suggestion.suggestedText === suggestion.anchor
-    ) {
-      const { suggestedText: _suggestedText, ...rest } = suggestion;
-      return { ...rest, type: "comment-only" };
-    }
+  return suggestions.map(normalizeSuggestion);
+}
 
-    return suggestion;
+/**
+ * Validates and normalizes the full provider-portable workflow output emitted by
+ * the model before handing it to downstream workflow steps.
+ */
+export function normalizeWorkflowOutput(
+  output: unknown,
+): StylisticWorkflowOutput {
+  const parsed = portableStylisticWorkflowOutputSchema.parse(output);
+
+  return stylisticWorkflowOutputSchema.parse({
+    suggestions: normalizeSuggestions(parsed.suggestions),
+    cleanPatterns: parsed.cleanPatterns,
   });
 }
 
@@ -165,7 +208,7 @@ export function buildGenerateOptions(
 
   const options: StylisticGenerateOptions = {
     structuredOutput: {
-      schema: stylisticWorkflowOutputSchema,
+      schema: portableStylisticWorkflowOutputSchema,
     },
     modelSettings: { temperature: 0 },
     providerOptions,

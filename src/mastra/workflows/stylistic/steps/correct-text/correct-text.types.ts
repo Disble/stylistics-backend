@@ -5,6 +5,8 @@ import type { AgentExecutionOptions } from "@mastra/core/agent";
 import type { z } from "zod";
 
 import type {
+  portableStylisticSuggestionSchema,
+  portableStylisticWorkflowOutputSchema,
   stylisticCommentOnlySuggestionSchema,
   correctTextInputSchema,
   stylisticCorrectionStepSchema,
@@ -22,6 +24,11 @@ export type StylisticWorkflowOutput = z.infer<
   typeof stylisticWorkflowOutputSchema
 >;
 
+/** Represents the provider-portable structured payload emitted before normalization. */
+export type PortableStylisticWorkflowOutput = z.infer<
+  typeof portableStylisticWorkflowOutputSchema
+>;
+
 /** Represents the correction-step payload before the profile-update handoff. */
 export type StylisticCorrectionStepOutput = z.infer<
   typeof stylisticCorrectionStepSchema
@@ -37,12 +44,17 @@ export type CommentOnlySuggestion = z.infer<
   typeof stylisticCommentOnlySuggestionSchema
 >;
 
+/** Flat transport suggestion shape accepted across providers before validation. */
+export type PortableWorkflowSuggestion = z.infer<
+  typeof portableStylisticSuggestionSchema
+>;
+
 /** Discriminated union over all suggestion variants. Narrow with `suggestion.type`. */
 export type WorkflowSuggestion = TrackChangeSuggestion | CommentOnlySuggestion;
 
 /** Base Mastra execution options specialized for stylistic structured output. */
 type StylisticAgentExecutionOptions =
-  AgentExecutionOptions<StylisticWorkflowOutput>;
+  AgentExecutionOptions<PortableStylisticWorkflowOutput>;
 
 /**
  * Describes the generate options used by the stylistic correction step.
@@ -50,7 +62,7 @@ type StylisticAgentExecutionOptions =
  */
 export interface StylisticGenerateOptions extends StylisticAgentExecutionOptions {
   structuredOutput: StylisticAgentExecutionOptions["structuredOutput"] & {
-    schema: typeof stylisticWorkflowOutputSchema;
+    schema: typeof portableStylisticWorkflowOutputSchema;
   };
   modelSettings: NonNullable<StylisticAgentExecutionOptions["modelSettings"]>;
 }
@@ -61,7 +73,7 @@ export type StylisticAgent = {
     prompt: string,
     options: StylisticGenerateOptions,
   ) => Promise<{
-    object?: StylisticWorkflowOutput;
+    object?: PortableStylisticWorkflowOutput;
     text: string;
     finishReason?: unknown;
     warnings?: unknown;

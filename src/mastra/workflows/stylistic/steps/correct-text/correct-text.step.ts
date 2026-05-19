@@ -7,7 +7,7 @@ import { logger } from "../../../../../shared/logger";
 import {
   buildGenerateOptions,
   getGoogleSafetyBlock,
-  normalizeSuggestions,
+  normalizeWorkflowOutput,
 } from "./correct-text.helpers";
 import { buildPrompt } from "./correct-text.prompt";
 import { correctTextScorers } from "./correct-text.scorers";
@@ -158,10 +158,12 @@ export const correctText = createStep<
       "Stylistic correction completed",
     );
 
-    // Normalize no-op replacements before handing them to the document layer.
+    const normalizedOutput = normalizeWorkflowOutput(result.object);
+
+    // Normalize transport-level portability tradeoffs before handing them to the document layer.
     return {
-      suggestions: normalizeSuggestions(result.object.suggestions),
-      cleanPatterns: result.object.cleanPatterns,
+      suggestions: normalizedOutput.suggestions,
+      cleanPatterns: normalizedOutput.cleanPatterns,
       documentContext: inputData.documentContext,
       authorProfile: inputData.authorProfile,
       authorProfileCorrectionPatternsWordCount:

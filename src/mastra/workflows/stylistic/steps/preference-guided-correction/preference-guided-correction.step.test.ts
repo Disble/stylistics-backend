@@ -159,4 +159,61 @@ describe("preferenceGuidedCorrection step", () => {
         originalGetUserPreferences;
     }
   });
+
+  it("normalizes portable track-change transport without replacement into comment-only previousCorrection", async () => {
+    const originalGetUserPreferences =
+      PgUserPreferencesRepository.prototype.getUserPreferences;
+    const agent = {
+      generate: mock(async () => ({
+        text: "ok",
+        object: {
+          suggestions: [
+            {
+              type: "track-change" as const,
+              context: "Era tarde y la casa seguia despierta.",
+              anchor: "seguia",
+              justification: "La instrucción existe, pero no trae reemplazo.",
+              category: "ortografia" as const,
+              severity: "high" as const,
+            },
+          ],
+          cleanPatterns: [],
+        },
+      })),
+    };
+
+    PgUserPreferencesRepository.prototype.getUserPreferences = mock(
+      async () => ({
+        id: "pref-1",
+        userId: "user-123",
+        correctionInstructions: "Revisa tildes.",
+      }),
+    );
+
+    try {
+      const result = await preferenceGuidedCorrection.execute(
+        createStepParams(createBaseInput(), {
+          getAgent: (agentId: string) =>
+            agentId === "stylisticAgent" ? agent : undefined,
+        }),
+      );
+
+      expect(result.previousCorrection).toEqual({
+        suggestions: [
+          {
+            type: "comment-only",
+            context: "Era tarde y la casa seguia despierta.",
+            anchor: "seguia",
+            justification: "La instrucción existe, pero no trae reemplazo.",
+            category: "ortografia",
+            severity: "high",
+          },
+        ],
+        cleanPatterns: [],
+      });
+    } finally {
+      PgUserPreferencesRepository.prototype.getUserPreferences =
+        originalGetUserPreferences;
+    }
+  });
 });

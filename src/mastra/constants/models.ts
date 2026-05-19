@@ -3,9 +3,15 @@ import type { AgentConfig } from "@mastra/core/agent";
 const stylisticReasoningModels = [
   {
     model: "google/gemini-3.1-pro-preview",
+    maxRetries: 3,
   },
   {
     model: "google/gemini-3.1-flash-lite",
+    maxRetries: 3,
+  },
+  {
+    model: "openai/gpt-5.4",
+    maxRetries: 3,
   },
 ] as const satisfies AgentConfig["model"];
 
@@ -16,9 +22,15 @@ export const modelPool = {
   "profile-agent": [
     {
       model: "google/gemini-3.1-flash-lite",
+      maxRetries: 3,
     },
     {
       model: "opencode-go/deepseek-v4-flash",
+      maxRetries: 3,
+    },
+    {
+      model: "openai/gpt-5.4-nano",
+      maxRetries: 3,
     },
     // {
     //   model: "lmstudio/qwen3.6-35b-a3b@q2_k_xl",
@@ -35,7 +47,7 @@ export const evalModelPool = {
   light: "opencode-go/deepseek-v4-flash",
   standard: "opencode-go/deepseek-v4-flash",
   complex: "opencode-go/deepseek-v4-flash",
-} as const;
+} as const satisfies Record<string, AgentConfig["model"]>;
 
 /**
  * Google model thinking levels for enhanced reasoning.

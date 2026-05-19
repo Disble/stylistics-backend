@@ -8,13 +8,15 @@ import { GOOGLE_FICTION_SAFETY_SETTINGS } from "./correct-text.constants";
 import {
   buildGenerateOptions,
   getGoogleSafetyBlock,
+  normalizeSuggestion,
   normalizeSuggestions,
+  normalizeWorkflowOutput,
 } from "./correct-text.helpers";
-import type { WorkflowSuggestion } from "./correct-text.types";
+import type { PortableWorkflowSuggestion } from "./correct-text.types";
 
 describe("normalizeSuggestions", () => {
   it("converts track-change to comment-only when suggestedText === anchor", () => {
-    const suggestions: WorkflowSuggestion[] = [
+    const suggestions: PortableWorkflowSuggestion[] = [
       {
         type: "track-change",
         context: "Aquí está el texto completo de contexto.",
@@ -42,7 +44,7 @@ describe("normalizeSuggestions", () => {
   });
 
   it("leaves track-change unchanged when suggestedText !== anchor", () => {
-    const suggestions: WorkflowSuggestion[] = [
+    const suggestions: PortableWorkflowSuggestion[] = [
       {
         type: "track-change",
         context: "El niño corre por el parque.",
@@ -70,7 +72,7 @@ describe("normalizeSuggestions", () => {
   });
 
   it("leaves comment-only suggestions unchanged", () => {
-    const suggestions: WorkflowSuggestion[] = [
+    const suggestions: PortableWorkflowSuggestion[] = [
       {
         type: "comment-only",
         context: "La oscuridad lo envolvió como un manto.",
@@ -96,6 +98,100 @@ describe("normalizeSuggestions", () => {
 
   it("returns empty array when given empty array", () => {
     expect(normalizeSuggestions([])).toEqual([]);
+  });
+});
+
+describe("normalizeSuggestion", () => {
+  it("downgrades track-change without suggestedText to comment-only", () => {
+    const result = normalizeSuggestion({
+      type: "track-change",
+      context: "Era tarde y la casa seguia despierta.",
+      anchor: "seguia",
+      justification: "Hace falta revisar la tildación.",
+      category: "ortografia",
+      severity: "high",
+    });
+
+    expect(result).toEqual({
+      type: "comment-only",
+      context: "Era tarde y la casa seguia despierta.",
+      anchor: "seguia",
+      justification: "Hace falta revisar la tildación.",
+      category: "ortografia",
+      severity: "high",
+    });
+  });
+
+  it("drops suggestedText from explicit comment-only transport items", () => {
+    const result = normalizeSuggestion({
+      type: "comment-only",
+      context: "La oscuridad lo envolvió como un manto.",
+      anchor: "como un manto",
+      suggestedText: "no debería pasar",
+      justification: "Observación editorial.",
+      category: "estilo",
+      severity: "low",
+    });
+
+    expect(result).toEqual({
+      type: "comment-only",
+      context: "La oscuridad lo envolvió como un manto.",
+      anchor: "como un manto",
+      justification: "Observación editorial.",
+      category: "estilo",
+      severity: "low",
+    });
+  });
+});
+
+describe("normalizeWorkflowOutput", () => {
+  it("validates the transport payload and returns the internal workflow shape", () => {
+    const result = normalizeWorkflowOutput({
+      suggestions: [
+        {
+          type: "track-change",
+          context: "Era tarde y la casa seguia despierta.",
+          anchor: "seguia",
+          suggestedText: "seguía",
+          justification: "Hace falta revisar la tildación.",
+          category: "ortografia",
+          severity: "high",
+        },
+        {
+          type: "comment-only",
+          context: "La oscuridad lo envolvió como un manto.",
+          anchor: "como un manto",
+          suggestedText: "ignorar",
+          justification: "Observación editorial.",
+          category: "estilo",
+          severity: "low",
+        },
+      ],
+      cleanPatterns: ["sin-abuso-de-comas"],
+    });
+
+    expect(result).toEqual({
+      suggestions: [
+        {
+          type: "track-change",
+          context: "Era tarde y la casa seguia despierta.",
+          anchor: "seguia",
+          suggestedText: "seguía",
+          justification: "Hace falta revisar la tildación.",
+          category: "ortografia",
+          severity: "high",
+        },
+        {
+          type: "comment-only",
+          context: "La oscuridad lo envolvió como un manto.",
+          anchor: "como un manto",
+          justification: "Observación editorial.",
+          category: "estilo",
+          severity: "low",
+        },
+      ],
+      cleanPatterns: ["sin-abuso-de-comas"],
+    });
   });
 });
 

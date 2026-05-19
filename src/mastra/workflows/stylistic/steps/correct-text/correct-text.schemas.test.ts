@@ -5,6 +5,8 @@ import { describe, expect, it } from "bun:test";
 
 import {
   correctTextInputSchema,
+  portableStylisticSuggestionSchema,
+  portableStylisticWorkflowOutputSchema,
   stylisticCommentOnlySuggestionSchema,
   stylisticSuggestionSchema,
   stylisticTrackChangeSuggestionSchema,
@@ -52,6 +54,42 @@ describe("stylisticSuggestionSchema", () => {
     const { type: _type, ...withoutType } = validTrackChange;
     const result = stylisticSuggestionSchema.safeParse(withoutType);
     expect(result.success).toBe(false);
+  });
+
+  it("rejects comment-only objects that still carry suggestedText internally", () => {
+    const result = stylisticSuggestionSchema.safeParse({
+      ...validCommentOnly,
+      suggestedText: "sobrante",
+    });
+
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("portableStylisticSuggestionSchema", () => {
+  it("accepts comment-only transport items without suggestedText", () => {
+    const result =
+      portableStylisticSuggestionSchema.safeParse(validCommentOnly);
+
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts track-change transport items with suggestedText", () => {
+    const result =
+      portableStylisticSuggestionSchema.safeParse(validTrackChange);
+
+    expect(result.success).toBe(true);
+  });
+});
+
+describe("portableStylisticWorkflowOutputSchema", () => {
+  it("accepts mixed portable transport suggestions without unions in the input contract", () => {
+    const result = portableStylisticWorkflowOutputSchema.safeParse({
+      suggestions: [validTrackChange, validCommentOnly],
+      cleanPatterns: ["uso-correcto-de-rayas"],
+    });
+
+    expect(result.success).toBe(true);
   });
 });
 
